@@ -1,0 +1,23 @@
+div.container {
+	display: inline-block;
+	vertical-align: top;
+	padding: 0 1em;
+}
+
+#monster-selector {
+	width: calc(20% - 2em);
+}
+
+#monster-stats {
+	width: calc(79% - 2em);
+}
+
+label {
+	display: block;
+	margin-bottom: .5em;
+}
+
+select {
+	margin-bottom: 1em;
+	min-width: 100px;
+}
