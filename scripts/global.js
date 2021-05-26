@@ -173,9 +173,9 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
 }
 
 /**
- * Calcualtes the modifier for an ability score
+ * Calculates the modifier for an ability score
  *
- * @param {string} ability The ability score
+ * @param {string} ability The ability score value
  * @return {number} The ability score modifier
  */
  function abilityScoreModifier(ability) {
