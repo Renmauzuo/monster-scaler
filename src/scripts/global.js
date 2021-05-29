@@ -49,7 +49,7 @@ function calculateSelectedMonster() {
 
     //Once we have all the stats populate the statblock:
     $('#monster-name').html(selectedMonster.slug);
-    $('#monster-subtitle').html(sizes[derivedStats.size].name + ' ' + selectedMonster.type + ', ' + selectedMonster.alignment);
+    $('#monster-type').html(sizes[derivedStats.size].name + ' ' + selectedMonster.type + ', ' + selectedMonster.alignment);
     for (let i = 0; i < abilityScores.length; i++) {
         let abilityScore = abilityScores[i];
         let modifier = abilityScoreModifier(derivedStats[abilityScore]);

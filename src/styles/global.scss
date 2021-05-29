@@ -1,23 +1,77 @@
-div.container {
-	display: inline-block;
-	vertical-align: top;
-	padding: 0 1em;
+.container {
+	width: 980px;
+	max-width: 90%;
+	margin: auto;
 }
 
 #monster-selector {
-	width: calc(20% - 2em);
+	label {
+		display: block;
+		margin-bottom: .5em;
+	}
+	
+	select {
+		margin-bottom: 1em;
+		min-width: 100px;
+	}
 }
 
 #monster-stats {
-	width: calc(79% - 2em);
+    text-align: center;
+
+    #stat-block {
+        background: #FDF1DC;
+        padding: 0 10px;
+        box-shadow: 0 0 1.5em #867453;
+        margin: 50px auto;
+        display: inline-block;
+        min-width: 300px;
+        text-align: left;
+
+        &:before,
+        &:after {
+            content: '';
+            display: block;
+            background: #E69A28;
+            border: 1px solid #000;
+            height: 5px;
+            padding: 0 10px 0;
+            margin: 0 -10px;
+        }
+
+        .tapered-rule{
+            display: block;
+            width: 100%;
+            height: 5px;
+            border: none;
+            color: #922610;
+            fill: #922610;
+            stroke: #922610;
+        }
+
+        h2 {
+            font-family: 'Libre Baskerville', 'Lora', 'Calisto MT', 'Bookman Old Style', Bookman, 'Goudy Old Style', Garamond, 'Hoefler Text', 'Bitstream Charter', Georgia, serif;
+            color: #922610;
+            font-size: 23px;
+            line-height: 1.2em;
+            margin: 10px 0 0;
+            letter-spacing: 1px;
+            font-variant: small-caps;
+            font-weight: bold;
+        }
+
+        p {
+
+            &#monster-type {
+                font-weight: normal;
+                font-style: italic;
+                font-size: 12px;
+                line-height: 1.2em;
+                margin: 0 0 10px;
+            }
+            
+ 
+        }
+    }
 }
 
-label {
-	display: block;
-	margin-bottom: .5em;
-}
-
-select {
-	margin-bottom: 1em;
-	min-width: 100px;
-}

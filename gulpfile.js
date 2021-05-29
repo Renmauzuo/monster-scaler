@@ -19,7 +19,7 @@ const cleanHTML = () => promisedDel('docs/**/*.html');
 const cleanJS = () => promisedDel('docs/**/*.js');
 
 const html = () =>
-	gulp.src('src/**/*.pug', { base: 'src' })
+	gulp.src('src/pages/**/*.pug', { base: 'src/pages/' })
 		.pipe($.pug())
 		.pipe(development($.htmlBeautify({
 			'indent_size': 1,
@@ -56,7 +56,7 @@ const js = () =>
 	gulp.src('src/**/*.js', { base: 'src' })
 		.pipe(development($.sourcemaps.init()))
 		.pipe(rollup({
-			treeshake: false,
+			treeshake: false, //No treeshaking because some of the constants in mosnters.js aren't used until runtime
 			plugins: [rollupBabel()]
 		}, {
 			format: 'cjs'
