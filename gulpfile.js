@@ -13,10 +13,10 @@ const $ = gulpLoadPlugins();
 const development = $.environments.development;
 const production = $.environments.production;
 
-const clean = () => promisedDel('dist');
-const cleanCSS = () => promisedDel('dist/**/*.css');
-const cleanHTML = () => promisedDel('dist/**/*.html');
-const cleanJS = () => promisedDel('dist/**/*.js');
+const clean = () => promisedDel('docs');
+const cleanCSS = () => promisedDel('docs/**/*.css');
+const cleanHTML = () => promisedDel('docs/**/*.html');
+const cleanJS = () => promisedDel('docs/**/*.js');
 
 const html = () =>
 	gulp.src('src/**/*.pug', { base: 'src' })
@@ -29,7 +29,7 @@ const html = () =>
 		})))
 		.pipe(production($.htmlmin({ collapseWhitespace: true })))
 		.pipe(production($.eol()))
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('docs'));
 
 const css = () =>
 	gulp.src('src/**/*.scss', { base: 'src' })
@@ -49,7 +49,7 @@ const css = () =>
 		}))
 		.pipe(development($.sourcemaps.write('.')))
 		.pipe($.eol())
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('docs'));
 
 
 const js = () =>
@@ -66,7 +66,7 @@ const js = () =>
 		}))
 		.pipe(development($.sourcemaps.write('.')))
 		.pipe(production($.eol()))
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('docs'));
 
 const build = gulp.parallel(css, js, html);
 
