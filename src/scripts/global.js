@@ -31,7 +31,7 @@ function calculateSelectedMonster() {
     if(!derivedStats.size) {
         let sizeBenchmarks = findBenchmarksForStat("size", targetCR, selectedMonster);
         derivedStats.size = extrapolateFromBenchmark("size", targetCR, sizeBenchmarks, true);
-        derivedStats.size = Math.min(6, Math.round(derivedStats.size));
+        derivedStats.size = Math.min(6, derivedStats.size);
     }
 
     let abilityScores = ["str", "con", "dex", "int", "wis", "cha"];
@@ -39,17 +39,43 @@ function calculateSelectedMonster() {
     for (let i = 0; i < abilityScores.length; i++) {
         if (!derivedStats[abilityScores[i]]) {
             let abilityBenchmarks = findBenchmarksForStat(abilityScores[i], targetCR, selectedMonster);
-            derivedStats[abilityScores[i]] = Math.round(extrapolateFromBenchmark(abilityScores[i], targetCR, abilityBenchmarks, false));
+            derivedStats[abilityScores[i]] = extrapolateFromBenchmark(abilityScores[i], targetCR, abilityBenchmarks, false);
         }
         derivedStats.abilityModifiers[abilityScores[i]] = abilityScoreModifier(derivedStats[abilityScores[i]]);
     }
 
+    if (!derivedStats.naturalArmor) {
+        /* 
+         * CR is more concerned with dervid stats like total AC than source stats like natural armor bonus
+         * So instead of extrapolating natural armor on its own we extrapolate total AC then reverse engineer natural armor based on other AC mods
+         * This also solves the problem of average natural armor by CR being hard to calcualte, since many creatures don't have natural armor.
+         */
+        let acBenchmarks = findBenchmarksForStat(["naturalArmor", "dex"], targetCR, selectedMonster);
+        //Creature may not have natural armor at all, in which case we skip this step
+        if (acBenchmarks) {
+            for (let benchmark in acBenchmarks) {
+                //5e is sometimes vague about monster stat calculations, so for simplicity we assume all natural armor allows the full dex modifier
+                acBenchmarks[benchmark].ac = 10 + acBenchmarks[benchmark].naturalArmor + abilityScoreModifier(acBenchmarks[benchmark].dex);
+            }
+            let targetAC = extrapolateFromBenchmark('ac', targetCR, acBenchmarks, false);
+            //The max check shouldn't really be necessary, but we don't want to risk a creature with abnormally high dex resulting in a negative natural armor rating
+            derivedStats.naturalArmor = Math.max(0, targetAC - 10 - derivedStats.abilityModifiers.dex);
+        }
+    }
 
-    console.log(JSON.stringify(derivedStats));
+    //console.log(JSON.stringify(derivedStats));
 
     //Once we have all the stats populate the statblock:
     $('#monster-name').html(selectedMonster.slug);
     $('#monster-type').html(sizes[derivedStats.size].name + ' ' + selectedMonster.type + ', ' + selectedMonster.alignment);
+
+    //TODO: Pick the appropriate AC formula if a creature has options (ie, natural armor vs worn armor)
+    if (derivedStats.naturalArmor) {
+        $('#armor-class span').html((10 + derivedStats.naturalArmor + derivedStats.abilityModifiers.dex) + ' (Natural Armor)');
+    } else {
+        $('#armor-class span').html(10 + derivedStats.abilityModifiers.dex);
+    }
+
     for (let i = 0; i < abilityScores.length; i++) {
         let abilityScore = abilityScores[i];
         let modifier = abilityScoreModifier(derivedStats[abilityScore]);
@@ -91,7 +117,7 @@ function stepForCR(cr) {
  */
 function findBenchmarksForStat(stats, targetCR, selectedMonster) {
     let statList = Array.isArray(stats) ? stats : [stats];
-    let benchmarks = {}
+    let benchmarks = null;
     for (let cr in selectedMonster.stats) {
         let statBlock = selectedMonster.stats[cr];
         let allStatsFound = true;
@@ -99,6 +125,9 @@ function findBenchmarksForStat(stats, targetCR, selectedMonster) {
             allStatsFound = allStatsFound && statBlock[statList[i]];
         }
         if (allStatsFound) {
+            if (!benchmarks) {
+                benchmarks = {};
+            }
             if (cr > targetCR) {
                 if (!benchmarks.upper || benchmarks.upper.cr > cr) {
                     benchmarks.upper = {
@@ -166,11 +195,11 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
             let targetStep = stepForCR(targetCR);
             let upperWeight = (upperStep - targetStep) / stepRange;
             let lowerWeight = (targetStep - lowerStep) / stepRange;
-            return upperWeight * upperValue + lowerWeight * lowerValue;
+            return Math.round(upperWeight * upperValue + lowerWeight * lowerValue);
         }
-        return lowerValue;
+        return Math.round(lowerValue);
     }
-    return upperValue;
+    return Math.round(upperValue);
 }
 
 /**

@@ -47,6 +47,7 @@
             color: #922610;
             fill: #922610;
             stroke: #922610;
+            margin-bottom: 10px;
         }
 
         h2 {
@@ -70,7 +71,21 @@
                 margin: 0 0 10px;
             }
             
- 
+            &.property {
+                margin: 0;
+                color: #922610;
+                font-size: 13.5px;
+                line-height: 1.2em;
+                font-weight: bold;
+
+                span {
+                    font-weight: normal;
+                }
+            }
+
+            + .tapered-rule {
+                margin-top: 10px;
+            }
         }
     }
 }

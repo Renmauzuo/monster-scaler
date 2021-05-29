@@ -61,7 +61,7 @@ const monsterList = {
 
 const averageStats = {
     0 : {
-        ac: 11, 
+        ac: 12, 
         str: 5,
         dex: 12,
         con: 10,
@@ -71,7 +71,7 @@ const averageStats = {
         size: sizeSmall - .5 //Low end of small
     },
     .125 : {
-        ac: 12, 
+        ac: 13, 
         str: 9,
         dex: 12,
         con: 10,
@@ -81,7 +81,7 @@ const averageStats = {
         size: sizeSmall
     },
     .25 : {
-        ac: 12, 
+        ac: 13, 
         str: 10,
         dex: 12,
         con: 10,
@@ -91,7 +91,7 @@ const averageStats = {
         size: sizeMedium - .5 //Low end of medium
     },
     .5 : {
-        ac: 12, 
+        ac: 13, 
         str: 11,
         dex: 12,
         con: 11,
@@ -121,7 +121,7 @@ const averageStats = {
         size: sizeMedium
     },
     3 : {
-        ac: 14, 
+        ac: 13, 
         str: 14,
         dex: 13,
         con: 14,
@@ -141,7 +141,7 @@ const averageStats = {
         size: sizeMedium + .4 //High end of medium
     },
     5 : {
-        ac: 14, 
+        ac: 15, 
         str: 16,
         dex: 13,
         con: 16,
@@ -171,7 +171,7 @@ const averageStats = {
         size: sizeLarge - .3
     },
     8 : {
-        ac: 15, 
+        ac: 16, 
         str: 17,
         dex: 13,
         con: 16,
@@ -181,7 +181,7 @@ const averageStats = {
         size: sizeLarge - .25
     },
     9 : {
-        ac: 15, 
+        ac: 16, 
         str: 17,
         dex: 13,
         con: 17,
@@ -191,7 +191,7 @@ const averageStats = {
         size: sizeLarge - .15
     },
     10 : {
-        ac: 16, 
+        ac: 17, 
         str: 18,
         dex: 14,
         con: 18,
@@ -201,7 +201,7 @@ const averageStats = {
         size: sizeLarge
     },
     11 : {
-        ac: 16, 
+        ac: 17, 
         str: 18,
         dex: 14,
         con: 18,
@@ -211,7 +211,7 @@ const averageStats = {
         size: sizeLarge + .1
     },
     12 : {
-        ac: 16, 
+        ac: 17, 
         str: 18,
         dex: 14,
         con: 19,
@@ -221,7 +221,7 @@ const averageStats = {
         size: sizeLarge + .2
     },
     13 : {
-        ac: 17, 
+        ac: 18, 
         str: 19,
         dex: 14,
         con: 19,
@@ -231,7 +231,7 @@ const averageStats = {
         size: sizeLarge + .3
     },
     14 : {
-        ac: 17, 
+        ac: 18, 
         str: 19,
         dex: 14,
         con: 19,
@@ -301,7 +301,7 @@ const averageStats = {
         size: sizeHuge + .2
     },
     21 : {
-        ac: 20, 
+        ac: 19, 
         str: 25,
         dex: 15,
         con: 23,
@@ -311,7 +311,7 @@ const averageStats = {
         size: sizeHuge + .3
     },
     22 : {
-        ac: 20, 
+        ac: 19, 
         str: 26,
         dex: 15,
         con: 24,
@@ -321,7 +321,7 @@ const averageStats = {
         size: sizeHuge + .4
     },
     23 : {
-        ac: 20, 
+        ac: 19,
         str: 27,
         dex: 15,
         con: 25,
@@ -331,7 +331,7 @@ const averageStats = {
         size: sizeGargantuan - .2
     },
     24 : {
-        ac: 21, 
+        ac: 19,
         str: 27,
         dex: 15,
         con: 25,
@@ -341,7 +341,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     25 : {
-        ac: 22, 
+        ac: 19,
         str: 28,
         dex: 15,
         con: 26,
@@ -351,7 +351,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     26 : {
-        ac: 22, 
+        ac: 19,
         str: 28,
         dex: 15,
         con: 26,
@@ -361,7 +361,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     27 : {
-        ac: 23, 
+        ac: 19, 
         str: 29,
         dex: 15,
         con: 27,
@@ -371,7 +371,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     28 : {
-        ac: 23, 
+        ac: 19, 
         str: 29,
         dex: 15,
         con: 28,
@@ -381,7 +381,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     29 : {
-        ac: 24, 
+        ac: 19, 
         str: 30,
         dex: 15,
         con: 29,
@@ -391,7 +391,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     30 : {
-        ac: 25, 
+        ac: 19,
         str: 30,
         dex: 15,
         con: 30,
