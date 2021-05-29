@@ -1,3 +1,5 @@
+
+
 $(function () {
 
     for (let monster in monsterList) {
@@ -121,7 +123,6 @@ function findBenchmarksForStat(stats, targetCR, selectedMonster) {
     return benchmarks;
 }
 
-//Extrapolates the value for a stat at a target CR 
 /**
  * Finds the closest statblocks above and below the target CR that have the target stat
  *

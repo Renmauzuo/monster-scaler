@@ -1,0 +1,65 @@
+doctype html
+head
+  meta(charset='UTF-8')
+  title Monster Scaler
+  link(rel='stylesheet' type='text/css' href='styles/global.min.css')
+#monster-selector.container
+  h2 Pick a monster
+  label(for='monster-select') Monster Template:
+  select#monster-select(name='monster-select')
+  label(for='cr-select') Challenge Rating:
+  select#cr-select(name='cr-select')
+    option(value='0') 0
+    option(value='0.125') 1/8
+    option(value='0.25') 1/4
+    option(value='0.5') 1/2
+    option(value='1') 1
+    option(value='2') 2
+    option(value='3') 3
+    option(value='4') 4
+    option(value='5') 5
+    option(value='6') 6
+    option(value='7') 7
+    option(value='8') 8
+    option(value='9') 9
+    option(value='10') 10
+    option(value='11') 11
+    option(value='12') 12
+    option(value='13') 13
+    option(value='14') 14
+    option(value='15') 15
+    option(value='16') 16
+    option(value='17') 17
+    option(value='18') 18
+    option(value='19') 19
+    option(value='20') 20
+    option(value='21') 21
+    option(value='22') 22
+    option(value='23') 23
+    option(value='24') 24
+    option(value='25') 25
+    option(value='26') 26
+    option(value='27') 27
+    option(value='28') 28
+    option(value='29') 29
+    option(value='30') 30
+  p
+    | If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
+#monster-stats.container
+  h2#monster-name
+  p#monster-subtitle
+  p STR
+  p#monster-str
+  p DEX
+  p#monster-dex
+  p CON
+  p#monster-con
+  p INT
+  p#monster-int
+  p WIS
+  p#monster-wis
+  p CHA
+  p#monster-cha
+script(src='https://code.jquery.com/jquery-3.4.1.min.js' integrity='sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=' crossorigin='anonymous')
+script(src='scripts/monsters.min.js')
+script(src='scripts/global.min.js')

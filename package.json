@@ -1,0 +1,30 @@
+{
+  "scripts": {
+    "clean": "npx gulp clean",
+    "build": "npx gulp build",
+    "watch": "npx gulp watch",
+    "development": "NODE_ENV=development npx gulp rebuild",
+    "production": "NODE_ENV=production npx gulp rebuild"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.2.6",
+    "cssnano": "^5.0.5",
+    "gulp": "^4.0.2",
+    "gulp-better-rollup": "^4.0.1",
+    "gulp-environments": "^1.0.1",
+    "gulp-eol": "^0.2.0",
+    "gulp-html-beautify": "^1.0.1",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-load-plugins": "^2.0.7",
+    "gulp-postcss": "^9.0.0",
+    "gulp-pug": "^4.0.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^4.1.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "node-sass": "^6.0.0",
+    "postcss-combine-duplicated-selectors": "^10.0.3",
+    "postcss-import": "^14.0.2",
+    "promised-del": "^1.0.2",
+    "rollup-plugin-babel": "^4.4.0"
+  }
+}
