@@ -88,6 +88,7 @@ function calculateSelectedMonster() {
         $('#armor-class span').html(10 + derivedStats.abilityModifiers.dex);
     }
     $('#hit-points span').html(Math.floor(hitPointsPerHitDie(derivedStats)*derivedStats.hitDice)+' ('+derivedStats.hitDice+'d'+sizes[derivedStats.size].hitDie+'+'+(derivedStats.abilityModifiers.con*derivedStats.hitDice)+')');
+    $('#speed span').html(findNearestLowerBenchmark('speed', targetCR, selectedMonster) + ' ft.');
 
     for (let i = 0; i < abilityScores.length; i++) {
         let abilityScore = abilityScores[i];
