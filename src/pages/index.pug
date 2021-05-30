@@ -30,18 +30,31 @@ body
             p.property#speed Speed 
                 span
             include ../pug/tapered-rule.pug
-            p STR
-            p#monster-str
-            p DEX
-            p#monster-dex
-            p CON
-            p#monster-con
-            p INT
-            p#monster-int
-            p WIS
-            p#monster-wis
-            p CHA
-            p#monster-cha
+            #ability-scores
+                div
+                    p STR
+                    p#monster-str
+                div
+                    p DEX
+                    p#monster-dex
+                div
+                    p CON
+                    p#monster-con
+                div
+                    p INT
+                    p#monster-int
+                div
+                    p WIS
+                    p#monster-wis
+                div
+                    p CHA
+                    p#monster-cha
+            include ../pug/tapered-rule.pug
+            p.property#skills Skills 
+                span
+            p.property#senses Senses 
+                span
+            include ../pug/tapered-rule.pug
     #footer.container
         a(href="https://github.com/Renmauzuo/monster-scaler") Fork me
     script(src='https://code.jquery.com/jquery-3.4.1.min.js' integrity='sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=' crossorigin='anonymous')

@@ -71,6 +71,8 @@ const monsterList = {
 
 const averageStats = {
     0 : {
+        proficiency: 2,
+        xp: '0 or 10',
         ac: 12, 
         hp: 4,
         str: 5,
@@ -82,6 +84,8 @@ const averageStats = {
         size: sizeSmall - .5 //Low end of small
     },
     .125 : {
+        proficiency: 2,
+        xp: 25,
         ac: 13, 
         hp: 21,
         str: 9,
@@ -93,6 +97,7 @@ const averageStats = {
         size: sizeSmall
     },
     .25 : {
+        proficiency: 2,
         ac: 13, 
         hp: 43,
         str: 10,
@@ -104,6 +109,7 @@ const averageStats = {
         size: sizeMedium - .5 //Low end of medium
     },
     .5 : {
+        proficiency: 2,
         ac: 13, 
         hp: 60,
         str: 11,
@@ -115,6 +121,7 @@ const averageStats = {
         size: sizeMedium - .4
     },
     1 : {
+        proficiency: 2,
         ac: 13, 
         hp: 78,
         str: 13,
@@ -126,6 +133,7 @@ const averageStats = {
         size: sizeMedium - .25
     },
     2 : {
+        proficiency: 2,
         ac: 13, 
         hp: 93,
         str: 14,
@@ -137,6 +145,7 @@ const averageStats = {
         size: sizeMedium
     },
     3 : {
+        proficiency: 2,
         ac: 13, 
         hp: 108,
         str: 14,
@@ -148,6 +157,7 @@ const averageStats = {
         size: sizeMedium + .25
     },
     4 : {
+        proficiency: 2,
         ac: 14, 
         hp: 123,
         str: 15,
@@ -159,6 +169,7 @@ const averageStats = {
         size: sizeMedium + .4 //High end of medium
     },
     5 : {
+        proficiency: 3,
         ac: 15, 
         hp: 138,
         str: 16,
@@ -170,6 +181,7 @@ const averageStats = {
         size: sizeLarge - .5 //Low end of large
     },
     6 : {
+        proficiency: 3,
         ac: 15, 
         hp: 153,
         str: 16,
@@ -181,6 +193,7 @@ const averageStats = {
         size: sizeLarge - .4
     },
     7 : {
+        proficiency: 3,
         ac: 15, 
         hp: 168,
         str: 17,
@@ -192,6 +205,7 @@ const averageStats = {
         size: sizeLarge - .3
     },
     8 : {
+        proficiency: 3,
         ac: 16, 
         hp: 183,
         str: 17,
@@ -203,6 +217,7 @@ const averageStats = {
         size: sizeLarge - .25
     },
     9 : {
+        proficiency: 4,
         ac: 16, 
         hp: 198,
         str: 17,
@@ -214,6 +229,7 @@ const averageStats = {
         size: sizeLarge - .15
     },
     10 : {
+        proficiency: 4,
         ac: 17, 
         hp: 213,
         str: 18,
@@ -225,6 +241,7 @@ const averageStats = {
         size: sizeLarge
     },
     11 : {
+        proficiency: 4,
         ac: 17, 
         hp: 228,
         str: 18,
@@ -236,6 +253,7 @@ const averageStats = {
         size: sizeLarge + .1
     },
     12 : {
+        proficiency: 4,
         ac: 17, 
         hp: 243,
         str: 18,
@@ -247,6 +265,7 @@ const averageStats = {
         size: sizeLarge + .2
     },
     13 : {
+        proficiency: 5,
         ac: 18, 
         hp: 258,
         str: 19,
@@ -258,6 +277,7 @@ const averageStats = {
         size: sizeLarge + .3
     },
     14 : {
+        proficiency: 5,
         ac: 18, 
         hp: 273,
         str: 19,
@@ -269,6 +289,7 @@ const averageStats = {
         size: sizeHuge - .5
     },
     15 : {
+        proficiency: 5,
         ac: 18, 
         hp: 288,
         str: 20,
@@ -280,6 +301,7 @@ const averageStats = {
         size: sizeHuge - .4
     },
     16 : {
+        proficiency: 5,
         ac: 18, 
         hp: 303,
         str: 21,
@@ -291,6 +313,7 @@ const averageStats = {
         size: sizeHuge - .3
     },
     17 : {
+        proficiency: 6,
         ac: 19, 
         hp: 318,
         str: 21,
@@ -302,6 +325,7 @@ const averageStats = {
         size: sizeHuge - .2
     },
     18 : {
+        proficiency: 6,
         ac: 19, 
         hp: 333,
         str: 22,
@@ -313,6 +337,7 @@ const averageStats = {
         size: sizeHuge
     },
     19 : {
+        proficiency: 6,
         ac: 19, 
         hp: 348,
         str: 23,
@@ -324,6 +349,7 @@ const averageStats = {
         size: sizeHuge + .1
     },
     20 : {
+        proficiency: 6,
         ac: 19, 
         hp: 378,
         str: 24,
@@ -335,6 +361,7 @@ const averageStats = {
         size: sizeHuge + .2
     },
     21 : {
+        proficiency: 7,
         ac: 19, 
         hp: 423,
         str: 25,
@@ -346,6 +373,7 @@ const averageStats = {
         size: sizeHuge + .3
     },
     22 : {
+        proficiency: 7,
         ac: 19, 
         hp: 468,
         str: 26,
@@ -357,6 +385,7 @@ const averageStats = {
         size: sizeHuge + .4
     },
     23 : {
+        proficiency: 7,
         ac: 19,
         hp: 513,
         str: 27,
@@ -368,6 +397,7 @@ const averageStats = {
         size: sizeGargantuan - .2
     },
     24 : {
+        proficiency: 7,
         ac: 19,
         hp: 558,
         str: 27,
@@ -379,6 +409,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     25 : {
+        proficiency: 8,
         ac: 19,
         hp: 603,
         str: 28,
@@ -390,6 +421,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     26 : {
+        proficiency: 8,
         ac: 19,
         hp: 648,
         str: 28,
@@ -401,6 +433,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     27 : {
+        proficiency: 8,
         ac: 19, 
         hp: 693,
         str: 29,
@@ -412,6 +445,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     28 : {
+        proficiency: 8,
         ac: 19, 
         hp: 738,
         str: 29,
@@ -423,6 +457,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     29 : {
+        proficiency: 9,
         ac: 19, 
         hp: 783,
         str: 30,
@@ -434,6 +469,7 @@ const averageStats = {
         size: sizeGargantuan
     },
     30 : {
+        proficiency: 9,
         ac: 19,
         hp: 828,
         str: 30,
@@ -473,4 +509,10 @@ const sizes = [
         hitDie: 20
     }
     
-]
+];
+
+const skills = {
+    perception : 'wis',
+    stealth: 'dex'
+
+}
