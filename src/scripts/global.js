@@ -78,7 +78,7 @@ function calculateSelectedMonster() {
     //console.log(JSON.stringify(derivedStats));
 
     //Once we have all the stats populate the statblock:
-    $('#monster-name').html(selectedMonster.slug);
+    $('#monster-name').html(findNearestLowerBenchmark("name", targetCR, selectedMonster));
     $('#monster-type').html(sizes[derivedStats.size].name + ' ' + selectedMonster.type + ', ' + selectedMonster.alignment);
 
     //TODO: Pick the appropriate AC formula if a creature has options (ie, natural armor vs worn armor)
@@ -233,4 +233,35 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
  */
  function hitPointsPerHitDie(statblock) {
     return ((sizes[statblock.size].hitDie + 1) / 2) + abilityScoreModifier(statblock.con);
+}
+
+/**
+ * Finds the closest benchmark that is below the target CR. If there are none then it returns the lowest benchmark.
+ *
+ * @param {string} stat The stat to search for
+ * @param {string} targetCR The target challenge rating
+ * @param {Object} selectedMonster The monster to search 
+ * @return {number} The number of hit points
+ */
+ function findNearestLowerBenchmark(stat, targetCR, selectedMonster) {
+    let numTargetCR = parseFloat(targetCR);
+    let statList = selectedMonster.stats;
+    let lowestValue;
+    let lowestCR = 31;
+    let highestValue;
+    let highestCR = 0;
+    for (let cr in statList) {
+        let numCR = parseFloat(cr);
+        if (statList[cr][stat]) {
+            if (numCR < lowestCR) {
+                lowestCR = cr;
+                lowestValue = statList[cr][stat];
+            }
+            if (numCR > highestCR && numCR <= numTargetCR) {
+                highestValue = statList[cr][stat];
+                highestCR = cr;
+            }
+        }
+    }
+    return highestValue != null ? highestValue : lowestValue;
 }

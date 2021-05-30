@@ -26,7 +26,11 @@ const monsterList = {
             int: 3,
         },
         stats: {
+            0 : {
+                name: "Wolf Pup"
+            },
             .25: {
+                name: "Wolf",
                 naturalArmor: 1,
                 hitDice: 2,
                 speed: 40,
@@ -38,6 +42,7 @@ const monsterList = {
                 cha: 6
             },
             1 : {
+                name: "Dire Wolf",
                 naturalArmor: 2,
                 hitDice: 5,
                 speed: 50,
@@ -47,6 +52,9 @@ const monsterList = {
                 con: 15,
                 wis: 12,
                 cha: 7
+            },
+            20 : {
+                name: "Legendary Wolf"
             }
         }
     }
