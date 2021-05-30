@@ -28,6 +28,7 @@ const monsterList = {
         stats: {
             .25: {
                 naturalArmor: 1,
+                hitDice: 2,
                 speed: 40,
                 size: sizeMedium,
                 str: 12,
@@ -38,6 +39,7 @@ const monsterList = {
             },
             1 : {
                 naturalArmor: 2,
+                hitDice: 5,
                 speed: 50,
                 size: sizeLarge,
                 str: 17,
@@ -62,6 +64,7 @@ const monsterList = {
 const averageStats = {
     0 : {
         ac: 12, 
+        hp: 4,
         str: 5,
         dex: 12,
         con: 10,
@@ -72,6 +75,7 @@ const averageStats = {
     },
     .125 : {
         ac: 13, 
+        hp: 21,
         str: 9,
         dex: 12,
         con: 10,
@@ -82,6 +86,7 @@ const averageStats = {
     },
     .25 : {
         ac: 13, 
+        hp: 43,
         str: 10,
         dex: 12,
         con: 10,
@@ -92,6 +97,7 @@ const averageStats = {
     },
     .5 : {
         ac: 13, 
+        hp: 60,
         str: 11,
         dex: 12,
         con: 11,
@@ -102,6 +108,7 @@ const averageStats = {
     },
     1 : {
         ac: 13, 
+        hp: 78,
         str: 13,
         dex: 12,
         con: 13,
@@ -112,6 +119,7 @@ const averageStats = {
     },
     2 : {
         ac: 13, 
+        hp: 93,
         str: 14,
         dex: 12,
         con: 14,
@@ -122,6 +130,7 @@ const averageStats = {
     },
     3 : {
         ac: 13, 
+        hp: 108,
         str: 14,
         dex: 13,
         con: 14,
@@ -132,6 +141,7 @@ const averageStats = {
     },
     4 : {
         ac: 14, 
+        hp: 123,
         str: 15,
         dex: 13,
         con: 15,
@@ -142,6 +152,7 @@ const averageStats = {
     },
     5 : {
         ac: 15, 
+        hp: 138,
         str: 16,
         dex: 13,
         con: 16,
@@ -152,6 +163,7 @@ const averageStats = {
     },
     6 : {
         ac: 15, 
+        hp: 153,
         str: 16,
         dex: 13,
         con: 16,
@@ -162,6 +174,7 @@ const averageStats = {
     },
     7 : {
         ac: 15, 
+        hp: 168,
         str: 17,
         dex: 13,
         con: 16,
@@ -172,6 +185,7 @@ const averageStats = {
     },
     8 : {
         ac: 16, 
+        hp: 183,
         str: 17,
         dex: 13,
         con: 16,
@@ -182,6 +196,7 @@ const averageStats = {
     },
     9 : {
         ac: 16, 
+        hp: 198,
         str: 17,
         dex: 13,
         con: 17,
@@ -192,6 +207,7 @@ const averageStats = {
     },
     10 : {
         ac: 17, 
+        hp: 213,
         str: 18,
         dex: 14,
         con: 18,
@@ -202,6 +218,7 @@ const averageStats = {
     },
     11 : {
         ac: 17, 
+        hp: 228,
         str: 18,
         dex: 14,
         con: 18,
@@ -212,6 +229,7 @@ const averageStats = {
     },
     12 : {
         ac: 17, 
+        hp: 243,
         str: 18,
         dex: 14,
         con: 19,
@@ -222,6 +240,7 @@ const averageStats = {
     },
     13 : {
         ac: 18, 
+        hp: 258,
         str: 19,
         dex: 14,
         con: 19,
@@ -232,6 +251,7 @@ const averageStats = {
     },
     14 : {
         ac: 18, 
+        hp: 273,
         str: 19,
         dex: 14,
         con: 19,
@@ -242,6 +262,7 @@ const averageStats = {
     },
     15 : {
         ac: 18, 
+        hp: 288,
         str: 20,
         dex: 14,
         con: 19,
@@ -252,6 +273,7 @@ const averageStats = {
     },
     16 : {
         ac: 18, 
+        hp: 303,
         str: 21,
         dex: 14,
         con: 20,
@@ -262,6 +284,7 @@ const averageStats = {
     },
     17 : {
         ac: 19, 
+        hp: 318,
         str: 21,
         dex: 14,
         con: 20,
@@ -272,6 +295,7 @@ const averageStats = {
     },
     18 : {
         ac: 19, 
+        hp: 333,
         str: 22,
         dex: 14,
         con: 20,
@@ -282,6 +306,7 @@ const averageStats = {
     },
     19 : {
         ac: 19, 
+        hp: 348,
         str: 23,
         dex: 14,
         con: 21,
@@ -292,6 +317,7 @@ const averageStats = {
     },
     20 : {
         ac: 19, 
+        hp: 378,
         str: 24,
         dex: 15,
         con: 22,
@@ -302,6 +328,7 @@ const averageStats = {
     },
     21 : {
         ac: 19, 
+        hp: 423,
         str: 25,
         dex: 15,
         con: 23,
@@ -312,6 +339,7 @@ const averageStats = {
     },
     22 : {
         ac: 19, 
+        hp: 468,
         str: 26,
         dex: 15,
         con: 24,
@@ -322,6 +350,7 @@ const averageStats = {
     },
     23 : {
         ac: 19,
+        hp: 513,
         str: 27,
         dex: 15,
         con: 25,
@@ -332,6 +361,7 @@ const averageStats = {
     },
     24 : {
         ac: 19,
+        hp: 558,
         str: 27,
         dex: 15,
         con: 25,
@@ -342,6 +372,7 @@ const averageStats = {
     },
     25 : {
         ac: 19,
+        hp: 603,
         str: 28,
         dex: 15,
         con: 26,
@@ -352,6 +383,7 @@ const averageStats = {
     },
     26 : {
         ac: 19,
+        hp: 648,
         str: 28,
         dex: 15,
         con: 26,
@@ -362,6 +394,7 @@ const averageStats = {
     },
     27 : {
         ac: 19, 
+        hp: 693,
         str: 29,
         dex: 15,
         con: 27,
@@ -372,6 +405,7 @@ const averageStats = {
     },
     28 : {
         ac: 19, 
+        hp: 738,
         str: 29,
         dex: 15,
         con: 28,
@@ -382,6 +416,7 @@ const averageStats = {
     },
     29 : {
         ac: 19, 
+        hp: 783,
         str: 30,
         dex: 15,
         con: 29,
@@ -392,6 +427,7 @@ const averageStats = {
     },
     30 : {
         ac: 19,
+        hp: 828,
         str: 30,
         dex: 15,
         con: 30,

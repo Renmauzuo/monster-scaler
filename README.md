@@ -55,7 +55,7 @@ This will clean the dist folder and run a gulp production build. Run this before
 
 ### Gulp Tasks
 
-These are the underlying asks that are run by Visual Studio Code or npm.
+These are the underlying tasks that are run by Visual Studio Code or npm.
 
 #### npx gulp clean
 
@@ -76,14 +76,8 @@ Begins watching files for changes.
 #### npx gulp (default)
 
 Cleans, rebuilds, and watches.
+ 
 
-TODO:   
-Add remaining monsters  
-Add other stats/features like spellcasting, equipment, and legendary/lair abilities  
-Mobile support  
-Homebrew monsters  
-Style statblock to match DND styles  
-
-Credit:
-[This codepen](https://codepen.io/retractedhack/pen/gPLpWe) for some of the statblock CSS.
+Credit:  
+[This codepen](https://codepen.io/retractedhack/pen/gPLpWe) for some of the statblock CSS.  
 [This spreadsheet](https://docs.google.com/spreadsheets/d/1FIjaz6S0JXrXaCVhHEDeq-nH7xHzlqAx6inuRbDjhjU/edit#gid=1346812326) as a data source for determining some of the average monster stats
