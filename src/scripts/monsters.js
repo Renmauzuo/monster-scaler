@@ -8,10 +8,10 @@ const sizeGargantuan = 6;
 
 const monsterList = {
     wolf: {
-        slug: "Wolf",
+        slug: "wolf",
         traits: [
-            "keen-hearing-smell",
-            "pack-tactics",
+            "keenHearingSmell",
+            "packTactics",
         ],
         skills: [
             "perception",
@@ -72,7 +72,7 @@ const monsterList = {
 const averageStats = {
     0 : {
         proficiency: 2,
-        xp: '0 or 10',
+        xp: 10,
         ac: 12, 
         hp: 4,
         str: 5,
@@ -98,6 +98,7 @@ const averageStats = {
     },
     .25 : {
         proficiency: 2,
+        xp: 50,
         ac: 13, 
         hp: 43,
         str: 10,
@@ -110,6 +111,7 @@ const averageStats = {
     },
     .5 : {
         proficiency: 2,
+        xp: 100,
         ac: 13, 
         hp: 60,
         str: 11,
@@ -122,6 +124,7 @@ const averageStats = {
     },
     1 : {
         proficiency: 2,
+        xp: 200,
         ac: 13, 
         hp: 78,
         str: 13,
@@ -134,6 +137,7 @@ const averageStats = {
     },
     2 : {
         proficiency: 2,
+        xp: 450,
         ac: 13, 
         hp: 93,
         str: 14,
@@ -146,6 +150,7 @@ const averageStats = {
     },
     3 : {
         proficiency: 2,
+        xp: 700,
         ac: 13, 
         hp: 108,
         str: 14,
@@ -159,6 +164,7 @@ const averageStats = {
     4 : {
         proficiency: 2,
         ac: 14, 
+        xp: 1100,
         hp: 123,
         str: 15,
         dex: 13,
@@ -170,6 +176,7 @@ const averageStats = {
     },
     5 : {
         proficiency: 3,
+        xp: 1800,
         ac: 15, 
         hp: 138,
         str: 16,
@@ -182,6 +189,7 @@ const averageStats = {
     },
     6 : {
         proficiency: 3,
+        xp: 2300,
         ac: 15, 
         hp: 153,
         str: 16,
@@ -194,6 +202,7 @@ const averageStats = {
     },
     7 : {
         proficiency: 3,
+        xp: 2900,
         ac: 15, 
         hp: 168,
         str: 17,
@@ -206,6 +215,7 @@ const averageStats = {
     },
     8 : {
         proficiency: 3,
+        xp: 3900,
         ac: 16, 
         hp: 183,
         str: 17,
@@ -218,6 +228,7 @@ const averageStats = {
     },
     9 : {
         proficiency: 4,
+        xp: 5000,
         ac: 16, 
         hp: 198,
         str: 17,
@@ -230,6 +241,7 @@ const averageStats = {
     },
     10 : {
         proficiency: 4,
+        xp: 5900,
         ac: 17, 
         hp: 213,
         str: 18,
@@ -242,6 +254,7 @@ const averageStats = {
     },
     11 : {
         proficiency: 4,
+        xp: 7200,
         ac: 17, 
         hp: 228,
         str: 18,
@@ -254,6 +267,7 @@ const averageStats = {
     },
     12 : {
         proficiency: 4,
+        xp: 8400,
         ac: 17, 
         hp: 243,
         str: 18,
@@ -266,6 +280,7 @@ const averageStats = {
     },
     13 : {
         proficiency: 5,
+        xp: 10000,
         ac: 18, 
         hp: 258,
         str: 19,
@@ -278,6 +293,7 @@ const averageStats = {
     },
     14 : {
         proficiency: 5,
+        xp: 11500,
         ac: 18, 
         hp: 273,
         str: 19,
@@ -290,6 +306,7 @@ const averageStats = {
     },
     15 : {
         proficiency: 5,
+        xp: 13000,
         ac: 18, 
         hp: 288,
         str: 20,
@@ -302,6 +319,7 @@ const averageStats = {
     },
     16 : {
         proficiency: 5,
+        xp: 15000,
         ac: 18, 
         hp: 303,
         str: 21,
@@ -314,6 +332,7 @@ const averageStats = {
     },
     17 : {
         proficiency: 6,
+        xp: 18000,
         ac: 19, 
         hp: 318,
         str: 21,
@@ -326,6 +345,7 @@ const averageStats = {
     },
     18 : {
         proficiency: 6,
+        xp: 20000,
         ac: 19, 
         hp: 333,
         str: 22,
@@ -338,6 +358,7 @@ const averageStats = {
     },
     19 : {
         proficiency: 6,
+        xp: 22000,
         ac: 19, 
         hp: 348,
         str: 23,
@@ -350,6 +371,7 @@ const averageStats = {
     },
     20 : {
         proficiency: 6,
+        xp: 25000,
         ac: 19, 
         hp: 378,
         str: 24,
@@ -362,6 +384,7 @@ const averageStats = {
     },
     21 : {
         proficiency: 7,
+        xp: 33000,
         ac: 19, 
         hp: 423,
         str: 25,
@@ -374,6 +397,7 @@ const averageStats = {
     },
     22 : {
         proficiency: 7,
+        xp: 41000,
         ac: 19, 
         hp: 468,
         str: 26,
@@ -386,6 +410,7 @@ const averageStats = {
     },
     23 : {
         proficiency: 7,
+        xp: 50000,
         ac: 19,
         hp: 513,
         str: 27,
@@ -398,6 +423,7 @@ const averageStats = {
     },
     24 : {
         proficiency: 7,
+        xp: 62000,
         ac: 19,
         hp: 558,
         str: 27,
@@ -410,6 +436,7 @@ const averageStats = {
     },
     25 : {
         proficiency: 8,
+        xp: 75000,
         ac: 19,
         hp: 603,
         str: 28,
@@ -422,6 +449,7 @@ const averageStats = {
     },
     26 : {
         proficiency: 8,
+        xp: 90000,
         ac: 19,
         hp: 648,
         str: 28,
@@ -434,6 +462,7 @@ const averageStats = {
     },
     27 : {
         proficiency: 8,
+        xp: 105000,
         ac: 19, 
         hp: 693,
         str: 29,
@@ -446,6 +475,7 @@ const averageStats = {
     },
     28 : {
         proficiency: 8,
+        xp: 120000,
         ac: 19, 
         hp: 738,
         str: 29,
@@ -458,6 +488,7 @@ const averageStats = {
     },
     29 : {
         proficiency: 9,
+        xp: 135000,
         ac: 19, 
         hp: 783,
         str: 30,
@@ -470,6 +501,7 @@ const averageStats = {
     },
     30 : {
         proficiency: 9,
+        xp: 155000,
         ac: 19,
         hp: 828,
         str: 30,
@@ -515,4 +547,15 @@ const skills = {
     perception : 'wis',
     stealth: 'dex'
 
+}
+
+const traits = {
+    keenHearingSmell : {
+        name: "Keen Hearing and Smell",
+        description: "The {{slug}} has advantage on Wisdom (Perception) checks that rely on hearing or smell." 
+    },
+    packTactics: {
+        name: "Pack Tactics",
+        description: "The {{slug}} has advantage on an attack roll against a creature if at least one of the {{slug}}'s allies is within 5 ft. of the creature and the ally isn't incapacitated."
+    }
 }
