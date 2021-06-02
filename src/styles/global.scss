@@ -30,7 +30,7 @@
         font-family: sans-serif;
         font-size: 16px;
         line-height: 1.2;
-        max-width: 400px;
+        max-width: 420px;
 
         &:before,
         &:after {
@@ -63,6 +63,14 @@
             letter-spacing: 1px;
             font-variant: small-caps;
             font-weight: bold;
+        }
+
+        h3 {
+            color: $redColor;
+            font-variant: small-caps;
+            border-bottom: 1px solid $redColor;
+            font-size: 20px;
+            font-weight: normal;
         }
 
         p {

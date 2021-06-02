@@ -22,10 +22,11 @@ function calculateSelectedMonster() {
     let targetCR = $('#cr-select').val();
 
     //Start with locked stats and presets for this CR, if any
-    let derivedStats = selectedMonster.lockedStats ? Object.assign({}, selectedMonster.lockedStats, selectedMonster.stats[targetCR]) : {};
+    let derivedStats = Object.assign({}, selectedMonster.lockedStats, selectedMonster.stats[targetCR]);
     derivedStats.slug = selectedMonster.slug;
     derivedStats.skills = selectedMonster.skills;
     derivedStats.traits = selectedMonster.traits;
+    derivedStats.proficiency = averageStats[targetCR].proficiency;
     //Once we have our locked stats, go through the rest of the states to interpolate or extrapolate based on existing values.
     //All of the preset monster statblocks should be complete, but if we ever add "keyframes" for individual stats it may be possible to have CRs without all stats for a template
     //For this reason we do the interpolation for EACH stat individually, rather than finding the closest statblock to draw from
@@ -77,6 +78,41 @@ function calculateSelectedMonster() {
         derivedStats.hitDice = Math.max(1, Math.round(targetHP / hpPerHD));
     }
 
+    derivedStats.attacks = {};
+    //TODO: Account for creatures that may gain attacks as they go up in CR
+    for (let attack in selectedMonster.attacks) {
+        //For each action aggregate base, locked, and CR specific properties
+        derivedStats.attacks[attack] = Object.assign({}, selectedMonster.attacks[attack]);
+        if (selectedMonster.lockedStats && selectedMonster.lockedStats.attacks && selectedMonster.lockedStats.attacks[attack]) {
+            derivedStats.attacks[attack] = Object.assign({}, derivedStats.attacks[attack], selectedMonster.lockedStats.attacks[attack]);
+        }
+        if (selectedMonster.stats[targetCR] && selectedMonster.stats[targetCR].attacks && selectedMonster.stats[targetCR].attacks[attack]) {
+            derivedStats.attacks[attack] = Object.assign({}, derivedStats.attacks[attack], selectedMonster.stats[targetCR].attacks[attack]);
+        }
+
+        //Fill in the gaps by extrapolating any missing attributes (such as attack damage)
+        if (!derivedStats.attacks[attack].damageDice) {
+            let damageDiceString = 'attacks__'+attack+'__damageDice';
+            let damageDieString =  'attacks__'+attack+'__damageDieSize';
+            let attributes = ['str', damageDiceString, damageDieString];
+            if (derivedStats.attacks[attack].finesse) {
+                attributes.push('dex');
+            }
+            let damageBenchmarks = findBenchmarksForStat(attributes, targetCR, selectedMonster);
+            for (let benchmark in damageBenchmarks) {
+                let currentBenchmark = damageBenchmarks[benchmark];
+                currentBenchmark.damagePerRound = averageRoll(currentBenchmark[damageDiceString], currentBenchmark[damageDieString]);
+                currentBenchmark.damagePerRound +=  abilityScoreModifier(derivedStats.attacks[attack].finesse ? Math.max(currentBenchmark.str, currentBenchmark.dex) : currentBenchmark.str);
+            }
+            let estimatedDamage = extrapolateFromBenchmark('damagePerRound', targetCR, damageBenchmarks, false);
+            let targetDamage = estimatedDamage - (derivedStats.attacks[attack].finesse ? Math.max(derivedStats.abilityModifiers.str, derivedStats.abilityModifiers.dex) : derivedStats.abilityModifiers.str);
+            //console.log(targetDamage);
+            let estimatedDice = findDamageDice(targetDamage);
+            derivedStats.attacks[attack].damageDice = estimatedDice[0];
+            derivedStats.attacks[attack].damageDieSize = estimatedDice[1];
+        }
+    }
+
     //console.log(JSON.stringify(derivedStats));
 
     //Once we have all the stats populate the statblock:
@@ -120,13 +156,29 @@ function calculateSelectedMonster() {
     let passivePerceptionString = 'passive Perception ' + (10 + derivedStats.abilityModifiers.wis + (derivedStats.skills && derivedStats.skills.includes('perception') ? averageStats[targetCR].proficiency : 0));
     $('#senses span').html(passivePerceptionString);
 
-    $('#challenge-rating span').html(stringForCR(targetCR) + ' (' + averageStats[targetCR].xp.toLocaleString() + ')');
+    $('#challenge-rating span').html(stringForCR(targetCR) + ' (' + averageStats[targetCR].xp.toLocaleString() + ' XP)');
 
     $('#traits').empty();
     if (derivedStats.traits) {
         for (let i = 0; i < derivedStats.traits.length; i++) {
             let currentTrait = traits[derivedStats.traits[i]];
             $('<p><strong><em>'+currentTrait.name+'.</em></strong> '+replaceTokensInString(currentTrait.description, derivedStats)+'</p>').appendTo('#traits');
+        }
+    }
+
+    $('#attacks').empty();
+    if (derivedStats.attacks) {
+        for (let attack in derivedStats.attacks) {
+            let currentAttack = derivedStats.attacks[attack];
+            let attackString = '<strong>'+currentAttack.name+'.</strong> ';
+            attackString += '<em>' + (currentAttack.ranged ? 'Ranged' : 'Melee') + ' Weapon Attack:</em> ';
+            let abilityModifier = currentAttack.finesse ? Math.max(derivedStats.abilityModifiers.str, derivedStats.abilityModifiers.dex) : derivedStats.abilityModifiers.str;
+            attackString += '+' + (derivedStats.proficiency + abilityModifier) + ' to hit, reach ' + currentAttack.reach + ' ft., one target. ';
+            attackString += '<em>Hit:</em> ' + (averageRoll(currentAttack.damageDice, currentAttack.damageDieSize) + abilityModifier) + ' (' + currentAttack.damageDice + 'd' + currentAttack.damageDieSize + ' + ' + abilityModifier + ') ' + currentAttack.damageType + ' damage.';
+            if (currentAttack.proc) {
+                attackString+= ' ' + replaceTokensInString(procs[currentAttack.proc], derivedStats);
+            }
+            $('<p>'+attackString+'</p>').appendTo('#attacks');
         }
     }
 
@@ -187,10 +239,13 @@ function findBenchmarksForStat(stats, targetCR, selectedMonster) {
     let statList = Array.isArray(stats) ? stats : [stats];
     let benchmarks = null;
     for (let cr in selectedMonster.stats) {
-        let statBlock = selectedMonster.stats[cr];
+        let statBlock = flattenObject(selectedMonster.stats[cr]);
         let allStatsFound = true;
         for (let i = 0; i < statList.length; i++) {
             allStatsFound = allStatsFound && statBlock[statList[i]];
+            if (!allStatsFound) {
+                break;
+            }
         }
         if (allStatsFound) {
             if (!benchmarks) {
@@ -349,9 +404,77 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
 
         if (statBlock[token]) {
             tokenValue = statBlock[token];
+        } else {
+            let tokenArray = token.split(':');
+            if (tokenArray[0] == 'DC') {
+                tokenValue = 8 + statBlock.proficiency + statBlock.abilityModifiers[tokenArray[1]];
+            }
         }
 
         outputString = outputString.replace(fullToken, tokenValue);
     } 
     return outputString;
  }
+
+ /**
+ * Recursively flattens and object. ie, {x: {y:5}, z: 10} would become {x__y : 5, z : 10}
+ *
+ * @param {Object} targetObject The object to flatten
+ * @return {Object} The flattened object
+ */
+  function flattenObject(targetObject) {
+    let outputObject = {};
+    for (let property in targetObject) {
+        let value = targetObject[property];
+        if (typeof(value) == 'object') {
+            let flattenedChild = flattenObject(value);
+            for (let childProperty in flattenedChild) {
+                outputObject[property+'__'+childProperty] = flattenedChild[childProperty];
+            }
+        } else {
+            outputObject[property] = value;
+        }
+    }
+    return outputObject;
+}
+
+ /**
+ * Returns the average roll for a number of dice
+ *
+ * @param {Number} diceCount The number of dice to roll
+ * @param {Number} dieSize The size of the dice being rolled
+ * @return {Number} The average roll, rounded down
+ */
+  function averageRoll(diceCount, dieSize) {
+      let averagePerDie = (1 + dieSize) / 2;
+      return Math.floor(diceCount * averagePerDie);
+  }
+
+/**
+ * Returns an appropriate damage die size and count to reach an estiamted average damage number
+ *
+ * @param {Number} targetDamage The target average damage
+ * @return {Array} An array containing number of dice at index 0 and die size at index 1
+ */
+function findDamageDice(targetDamage) {
+    //TODO: This algorithm could probably use some work. We want to find the right balance between getting close to the desired average damage and not having tons of dice
+    //We may want to cap damage dice for specific attacks and split high damage attacks into multiattacks
+    //This method tries to find the damage die that would yield the best average damage, but favors larger dice so mosnters don't all end up using loads of d4s.
+    let dice = [12, 10, 8, 6, 4];
+    let dieAverages = [6.5, 5.5, 4.5, 3.5, 2.5];
+    let smallestDifference = 7;
+    let optimalDieSize;
+    let optimalDieCount = -1;
+    for (let i = 0; i < dieAverages.length; i++) {
+        //Find the approximate number of dice to reach the target average, and measure how close it actually gets us
+        let dieCount = Math.max(1, Math.round(targetDamage/dieAverages[i]));
+        let closestAverage = dieAverages[i] * dieCount;
+        let difference = Math.abs(targetDamage - closestAverage);
+        if (difference < smallestDifference && (dieCount < 5 || (dieCount / optimalDieCount) < 1.5)) {
+            smallestDifference = difference;
+            optimalDieSize = dice[i];
+            optimalDieCount = dieCount;
+        }
+    }
+    return [optimalDieCount, optimalDieSize];
+}

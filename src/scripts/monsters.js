@@ -6,6 +6,8 @@ const sizeLarge = 4;
 const sizeHuge = 5;
 const sizeGargantuan = 6;
 
+const actionTypeAttack = "attack";
+
 const monsterList = {
     wolf: {
         slug: "wolf",
@@ -17,9 +19,16 @@ const monsterList = {
             "perception",
             "stealth",
         ],
-        actions: [
-            "bite"
-        ],
+        attacks: {
+            bite: {
+                type: actionTypeAttack,
+                reach: 5,
+                proc: 'takeDown',
+                damageType: 'piercing',
+                name: 'Bite',
+                finesse: true
+            }
+        },
         type: "beast",
         alignment: "unaligned",
         lockedStats: {
@@ -27,7 +36,7 @@ const monsterList = {
         },
         stats: {
             0 : {
-                name: "Wolf Pup"
+                name: "Wolf Pup",
             },
             .25: {
                 name: "Wolf",
@@ -39,7 +48,13 @@ const monsterList = {
                 dex: 15,
                 con: 12,
                 wis: 12,
-                cha: 6
+                cha: 6,
+                attacks: {
+                    bite: {
+                        damageDice: 2,
+                        damageDieSize: 4
+                    }
+                }
             },
             1 : {
                 name: "Dire Wolf",
@@ -51,7 +66,13 @@ const monsterList = {
                 dex: 15,
                 con: 15,
                 wis: 12,
-                cha: 7
+                cha: 7,
+                attacks: {
+                    bite: {
+                        damageDice: 2,
+                        damageDieSize: 6
+                    }
+                }
             },
             20 : {
                 name: "Legendary Wolf"
@@ -72,6 +93,7 @@ const monsterList = {
 const averageStats = {
     0 : {
         proficiency: 2,
+        damagePerRound: .5,
         xp: 10,
         ac: 12, 
         hp: 4,
@@ -85,6 +107,7 @@ const averageStats = {
     },
     .125 : {
         proficiency: 2,
+        damagePerRound: 2.5,
         xp: 25,
         ac: 13, 
         hp: 21,
@@ -98,6 +121,7 @@ const averageStats = {
     },
     .25 : {
         proficiency: 2,
+        damagePerRound: 4.5,
         xp: 50,
         ac: 13, 
         hp: 43,
@@ -111,6 +135,7 @@ const averageStats = {
     },
     .5 : {
         proficiency: 2,
+        damagePerRound: 7,
         xp: 100,
         ac: 13, 
         hp: 60,
@@ -124,6 +149,7 @@ const averageStats = {
     },
     1 : {
         proficiency: 2,
+        damagePerRound: 11.5,
         xp: 200,
         ac: 13, 
         hp: 78,
@@ -137,6 +163,7 @@ const averageStats = {
     },
     2 : {
         proficiency: 2,
+        damagePerRound: 17.5,
         xp: 450,
         ac: 13, 
         hp: 93,
@@ -150,6 +177,7 @@ const averageStats = {
     },
     3 : {
         proficiency: 2,
+        damagePerRound: 23.5,
         xp: 700,
         ac: 13, 
         hp: 108,
@@ -163,6 +191,7 @@ const averageStats = {
     },
     4 : {
         proficiency: 2,
+        damagePerRound: 29.5,
         ac: 14, 
         xp: 1100,
         hp: 123,
@@ -176,6 +205,7 @@ const averageStats = {
     },
     5 : {
         proficiency: 3,
+        damagePerRound: 35.5,
         xp: 1800,
         ac: 15, 
         hp: 138,
@@ -189,6 +219,7 @@ const averageStats = {
     },
     6 : {
         proficiency: 3,
+        damagePerRound: 41.5,
         xp: 2300,
         ac: 15, 
         hp: 153,
@@ -202,6 +233,7 @@ const averageStats = {
     },
     7 : {
         proficiency: 3,
+        damagePerRound: 47.5,
         xp: 2900,
         ac: 15, 
         hp: 168,
@@ -215,6 +247,7 @@ const averageStats = {
     },
     8 : {
         proficiency: 3,
+        damagePerRound: 53.5,
         xp: 3900,
         ac: 16, 
         hp: 183,
@@ -228,6 +261,7 @@ const averageStats = {
     },
     9 : {
         proficiency: 4,
+        damagePerRound: 59.5,
         xp: 5000,
         ac: 16, 
         hp: 198,
@@ -241,6 +275,7 @@ const averageStats = {
     },
     10 : {
         proficiency: 4,
+        damagePerRound: 65.5,
         xp: 5900,
         ac: 17, 
         hp: 213,
@@ -254,6 +289,7 @@ const averageStats = {
     },
     11 : {
         proficiency: 4,
+        damagePerRound: 71.5,
         xp: 7200,
         ac: 17, 
         hp: 228,
@@ -267,6 +303,7 @@ const averageStats = {
     },
     12 : {
         proficiency: 4,
+        damagePerRound: 77.5,
         xp: 8400,
         ac: 17, 
         hp: 243,
@@ -280,6 +317,7 @@ const averageStats = {
     },
     13 : {
         proficiency: 5,
+        damagePerRound: 83.5,
         xp: 10000,
         ac: 18, 
         hp: 258,
@@ -293,6 +331,7 @@ const averageStats = {
     },
     14 : {
         proficiency: 5,
+        damagePerRound: 89.5,
         xp: 11500,
         ac: 18, 
         hp: 273,
@@ -306,6 +345,7 @@ const averageStats = {
     },
     15 : {
         proficiency: 5,
+        damagePerRound: 95.5,
         xp: 13000,
         ac: 18, 
         hp: 288,
@@ -319,6 +359,7 @@ const averageStats = {
     },
     16 : {
         proficiency: 5,
+        damagePerRound: 101.5,
         xp: 15000,
         ac: 18, 
         hp: 303,
@@ -332,6 +373,7 @@ const averageStats = {
     },
     17 : {
         proficiency: 6,
+        damagePerRound: 107.5,
         xp: 18000,
         ac: 19, 
         hp: 318,
@@ -345,6 +387,7 @@ const averageStats = {
     },
     18 : {
         proficiency: 6,
+        damagePerRound: 113.5,
         xp: 20000,
         ac: 19, 
         hp: 333,
@@ -358,6 +401,7 @@ const averageStats = {
     },
     19 : {
         proficiency: 6,
+        damagePerRound: 119.5,
         xp: 22000,
         ac: 19, 
         hp: 348,
@@ -371,6 +415,7 @@ const averageStats = {
     },
     20 : {
         proficiency: 6,
+        damagePerRound: 131.5,
         xp: 25000,
         ac: 19, 
         hp: 378,
@@ -384,6 +429,7 @@ const averageStats = {
     },
     21 : {
         proficiency: 7,
+        damagePerRound: 149.5,
         xp: 33000,
         ac: 19, 
         hp: 423,
@@ -397,6 +443,7 @@ const averageStats = {
     },
     22 : {
         proficiency: 7,
+        damagePerRound: 167.5,
         xp: 41000,
         ac: 19, 
         hp: 468,
@@ -410,6 +457,7 @@ const averageStats = {
     },
     23 : {
         proficiency: 7,
+        damagePerRound: 185.5,
         xp: 50000,
         ac: 19,
         hp: 513,
@@ -423,6 +471,7 @@ const averageStats = {
     },
     24 : {
         proficiency: 7,
+        damagePerRound: 203.5,
         xp: 62000,
         ac: 19,
         hp: 558,
@@ -436,6 +485,7 @@ const averageStats = {
     },
     25 : {
         proficiency: 8,
+        damagePerRound: 221,
         xp: 75000,
         ac: 19,
         hp: 603,
@@ -449,6 +499,7 @@ const averageStats = {
     },
     26 : {
         proficiency: 8,
+        damagePerRound: 240,
         xp: 90000,
         ac: 19,
         hp: 648,
@@ -462,6 +513,7 @@ const averageStats = {
     },
     27 : {
         proficiency: 8,
+        damagePerRound: 258,
         xp: 105000,
         ac: 19, 
         hp: 693,
@@ -475,6 +527,7 @@ const averageStats = {
     },
     28 : {
         proficiency: 8,
+        damagePerRound: 276,
         xp: 120000,
         ac: 19, 
         hp: 738,
@@ -488,6 +541,7 @@ const averageStats = {
     },
     29 : {
         proficiency: 9,
+        damagePerRound: 294,
         xp: 135000,
         ac: 19, 
         hp: 783,
@@ -501,6 +555,7 @@ const averageStats = {
     },
     30 : {
         proficiency: 9,
+        damagePerRound: 312,
         xp: 155000,
         ac: 19,
         hp: 828,
@@ -558,4 +613,9 @@ const traits = {
         name: "Pack Tactics",
         description: "The {{slug}} has advantage on an attack roll against a creature if at least one of the {{slug}}'s allies is within 5 ft. of the creature and the ally isn't incapacitated."
     }
+}
+
+const procs = {
+    takeDown : "If the target is a creature, it must succeed on a DC {{DC:str}} Strength saving throw or be knocked prone"
+
 }
