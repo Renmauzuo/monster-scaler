@@ -83,10 +83,10 @@ function calculateSelectedMonster() {
         //For each action aggregate base, locked, and CR specific properties
         derivedStats.attacks[attack] = Object.assign({}, selectedMonster.attacks[attack]);
         if (selectedMonster.lockedStats && selectedMonster.lockedStats.attacks && selectedMonster.lockedStats.attacks[attack]) {
-            derivedStats.attacks[attack] = Object.assign({}, derivedStats.attacks[attack], selectedMonster.lockedStats.attacks[attack]);
+            derivedStats.attacks[attack] = Object.assign(derivedStats.attacks[attack], selectedMonster.lockedStats.attacks[attack]);
         }
         if (selectedMonster.stats[targetCR] && selectedMonster.stats[targetCR].attacks && selectedMonster.stats[targetCR].attacks[attack]) {
-            derivedStats.attacks[attack] = Object.assign({}, derivedStats.attacks[attack], selectedMonster.stats[targetCR].attacks[attack]);
+            derivedStats.attacks[attack] = Object.assign(derivedStats.attacks[attack], selectedMonster.stats[targetCR].attacks[attack]);
         }
 
         //Fill in the gaps by extrapolating any missing attributes (such as attack damage)
@@ -106,7 +106,8 @@ function calculateSelectedMonster() {
             let estimatedDamage = extrapolateFromBenchmark('damagePerRound', targetCR, damageBenchmarks, false);
             let targetDamage = estimatedDamage - (derivedStats.attacks[attack].finesse ? Math.max(derivedStats.abilityModifiers.str, derivedStats.abilityModifiers.dex) : derivedStats.abilityModifiers.str);
             //console.log(targetDamage);
-            let estimatedDice = findDamageDice(targetDamage);
+            let preferredDieSize = findNearestLowerBenchmark(damageDieString, targetCR, selectedMonster);
+            let estimatedDice = findDamageDice(targetDamage, preferredDieSize);
             derivedStats.attacks[attack].damageDice = estimatedDice[0];
             derivedStats.attacks[attack].damageDieSize = estimatedDice[1];
         }
@@ -384,13 +385,14 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
     let highestCR = 0;
     for (let cr in statList) {
         let numCR = parseFloat(cr);
-        if (statList[cr][stat]) {
+        let statBlock = flattenObject(statList[cr]);
+        if (statBlock[stat]) {
             if (numCR < lowestCR) {
                 lowestCR = cr;
-                lowestValue = statList[cr][stat];
+                lowestValue = statBlock[stat];
             }
             if (numCR > highestCR && numCR <= numTargetCR) {
-                highestValue = statList[cr][stat];
+                highestValue = statBlock[stat];
                 highestCR = cr;
             }
         }
@@ -483,27 +485,30 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
  * Returns an appropriate damage die size and count to reach an estiamted average damage number
  *
  * @param {Number} targetDamage The target average damage
+ * @param {Number} preferredDieSize The preferred die size to return, usually the monster's original damage die. This will be used unless the target number so low a single die is too much, or so high that this would result in an excessive number of dice
  * @return {Array} An array containing number of dice at index 0 and die size at index 1
  */
-function findDamageDice(targetDamage) {
-    //TODO: This algorithm could probably use some work. We want to find the right balance between getting close to the desired average damage and not having tons of dice
-    //We may want to cap damage dice for specific attacks and split high damage attacks into multiattacks
+function findDamageDice(targetDamage, preferredDieSize) {
+    //TODO: Consider capping damage dice for specific attacks and split high damage attacks into multiattacks
     //This method tries to find the damage die that would yield the best average damage, but favors larger dice so mosnters don't all end up using loads of d4s.
+    let maximumDice = 15; //If the number of dice exceeds this the next step up will be used, unless the die size is already d12.
     let dice = [12, 10, 8, 6, 4];
     let dieAverages = [6.5, 5.5, 4.5, 3.5, 2.5];
-    let smallestDifference = 7;
-    let optimalDieSize;
-    let optimalDieCount = -1;
-    for (let i = 0; i < dieAverages.length; i++) {
-        //Find the approximate number of dice to reach the target average, and measure how close it actually gets us
-        let dieCount = Math.max(1, Math.round(targetDamage/dieAverages[i]));
-        let closestAverage = dieAverages[i] * dieCount;
-        let difference = Math.abs(targetDamage - closestAverage);
-        if (difference < smallestDifference && (dieCount < 5 || (dieCount / optimalDieCount) < 1.5)) {
-            smallestDifference = difference;
-            optimalDieSize = dice[i];
-            optimalDieCount = dieCount;
-        }
+    //If the preferred die is a larger one make sure that a single die is not too much.
+    //For example, if a creature with d12 attacks is scaled down to CR 0 even 1d12 may be too much average damage
+    if (targetDamage < dieAverages[dice.indexOf(preferredDieSize)] - .5) {
+        //If target damage is closer to a lower average then the preferred die size is too high
+        let desiredAverage = Math.floor(targetDamage) + .5; //Round and add .5 to make it match a die average
+        desiredAverage = Math.max(desiredAverage, 2.5); //Make sure it's at least the average for a d4 in case it's a very low number
+        return [1, dice[dieAverages.indexOf(desiredAverage)]];        
+
     }
-    return [optimalDieCount, optimalDieSize];
+
+    let dieCount = Math.round(targetDamage/dieAverages[dice.indexOf(preferredDieSize)]);
+    let dieSize = preferredDieSize;
+    while (dieCount > maximumDice && dieSize < 12) {
+        dieSize = dice[dice.indexOf(dieSize)-1];
+        dieCount = Math.round(targetDamage/dieAverages[dice.indexOf(dieSize)]);
+    }
+    return [dieCount, dieSize];
 }
