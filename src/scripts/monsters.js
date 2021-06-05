@@ -9,19 +9,69 @@ const sizeGargantuan = 6;
 const actionTypeAttack = "attack";
 
 const monsterList = {
+    trex: {
+        slug: "tyrannosaurus",
+        attacks: {
+            bite: {
+                reach: 10,
+                proc: 'grappleBite',
+                damageType: 'piercing',
+                name: 'Bite'
+            },
+            tail: {
+                reach: 10,
+                damageType: 'bludgeoning',
+                name: 'Tail'
+            }
+        },
+        type: 'beast',
+        alignment: 'unaligned',
+        lockedStats: {
+            int: 2,
+            skills: [
+                "perception"
+            ],
+            multiattack: {
+                attacks: {
+                    bite : 1,
+                    tail: 1
+                },
+                requireDifferentTargets: true
+            },
+        },
+        stats: {
+            8 : {
+                name: "Tyrannosaurus Rex",
+                naturalArmor: 3,
+                hitDice: 13,
+                speed: 50,
+                size: sizeHuge,
+                str: 25,
+                dex: 10,
+                con: 19,
+                wis: 12,
+                cha: 9,
+                attacks: {
+                    bite: {
+                        damageDice: 4,
+                        damageDieSize: 12
+                    },
+                    tail: {
+                        damageDice: 3,
+                        damageDieSize: 8
+                    }
+                }
+            }
+        }
+    },
     wolf: {
         slug: "wolf",
         traits: [
             "keenHearingSmell",
             "packTactics",
         ],
-        skills: [
-            "perception",
-            "stealth",
-        ],
         attacks: {
             bite: {
-                type: actionTypeAttack,
                 reach: 5,
                 proc: 'takeDown',
                 damageType: 'piercing',
@@ -33,6 +83,10 @@ const monsterList = {
         alignment: "unaligned",
         lockedStats: {
             int: 3,
+            skills: [
+                "perception",
+                "stealth",
+            ],
         },
         stats: {
             0 : {
@@ -616,6 +670,7 @@ const traits = {
 }
 
 const procs = {
-    takeDown : "If the target is a creature, it must succeed on a DC {{DC:str}} Strength saving throw or be knocked prone"
+    takeDown : "If the target is a creature, it must succeed on a DC {{DC:str}} Strength saving throw or be knocked prone",
+    grappleBite: "If the target is a {{size:-2}} or smaller creature, it is grappled (escape DC {{DC:str:-1}}). Until this grapple ends, the target is restrained, and the {{slug}} can't bite another target"
 
 }

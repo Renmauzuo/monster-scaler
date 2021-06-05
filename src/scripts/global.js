@@ -1,4 +1,4 @@
-
+var numberStrings = ['zero', 'one', 'two', 'three', 'four', 'five'];
 
 $(function () {
 
@@ -22,9 +22,8 @@ function calculateSelectedMonster() {
     let targetCR = $('#cr-select').val();
 
     //Start with locked stats and presets for this CR, if any
-    let derivedStats = Object.assign({}, selectedMonster.lockedStats, selectedMonster.stats[targetCR]);
+    let derivedStats = Object.assign({}, selectedMonster, selectedMonster.lockedStats, selectedMonster.stats[targetCR]);
     derivedStats.slug = selectedMonster.slug;
-    derivedStats.skills = selectedMonster.skills;
     derivedStats.traits = selectedMonster.traits;
     derivedStats.proficiency = averageStats[targetCR].proficiency;
     //Once we have our locked stats, go through the rest of the states to interpolate or extrapolate based on existing values.
@@ -167,6 +166,28 @@ function calculateSelectedMonster() {
     }
 
     $('#attacks').empty();
+    if (derivedStats.multiattack) {
+        let attackCount = 0;
+        let multiattackString = "";
+        let attacks = Object.keys(derivedStats.multiattack.attacks);
+        for (let i = 0; i < attacks.length; i++) {
+            attackCount += derivedStats.multiattack.attacks[attacks[i]];
+            multiattackString += numberStrings[derivedStats.multiattack.attacks[attacks[i]]] + ' with its ' + derivedStats.attacks[attacks[i]].name.toLowerCase();
+            if (i < attacks.length - 2) {
+                //Separate attacks with commas
+                multiattackString += ', ';
+            } else if (i == attacks.length - 2) {
+                //Add "and" before last attack. Add an oxford comma, but only if there are more than two types of attacks.
+                multiattackString += (attacks.length > 2 ? ',' : '') + ' and ';
+            }
+        }
+        multiattackString = '<strong>Multiattack:</strong> The ' + derivedStats.slug + ' makes ' + numberStrings[attackCount] + ' attacks:' + multiattackString + '.';
+        if (derivedStats.multiattack.requireDifferentTargets) {
+            //This may need to change if a creature with more than two attacks ever gets this attribute, but for now it's fine as is as only the t rex has this restriction
+            multiattackString+= ' It can&rsquo;t make both attacks against the same target.';
+        }
+        $('<p>'+multiattackString+'</p>').appendTo('#attacks');
+    }
     if (derivedStats.attacks) {
         for (let attack in derivedStats.attacks) {
             let currentAttack = derivedStats.attacks[attack];
@@ -407,7 +428,14 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
         } else {
             let tokenArray = token.split(':');
             if (tokenArray[0] == 'DC') {
-                tokenValue = 8 + statBlock.proficiency + statBlock.abilityModifiers[tokenArray[1]];
+                let dc =  8 + statBlock.proficiency + statBlock.abilityModifiers[tokenArray[1]];
+                if (tokenArray.length > 2) {
+                    dc += parseInt(tokenArray[2]);
+                }
+                tokenValue = dc;
+            } else if (tokenArray[0] == 'size') {
+                let targetSize = statBlock.size + parseInt(tokenArray[1]);
+                tokenValue = sizes[targetSize].name;
             }
         }
 
