@@ -6,6 +6,20 @@ $(function () {
         $('<option value='+monster+'>'+toSentenceCase(monsterList[monster].slug)+'</option>').appendTo('#monster-select');
     }
 
+    if (location.search.length) {
+        let params = new URLSearchParams(location.search);
+        let paramMonster = params.get('monster');
+        let paramsCR = params.get('cr');
+        //Ensure it's a valid monster before selecting
+        if ($('#monster-select option[value="'+paramMonster+'"]').length) {
+            $('#monster-select').val(paramMonster);
+        }
+         //Ensure it's a valid cr before selecting
+         if ($('#cr-select option[value="'+paramsCR+'"]').length) {
+            $('#cr-select').val(paramsCR);
+        }
+    }
+
     $('#monster-select, #cr-select').on('change', function () {
         calculateSelectedMonster();
     });
@@ -18,8 +32,13 @@ $(function () {
  * Scales mosnter stats based on the selected template and challenge rating.
  */
 function calculateSelectedMonster() {
-    let selectedMonster = monsterList[$('#monster-select').val()];
+    let monsterID = $('#monster-select').val();
+    let selectedMonster = monsterList[monsterID];
     let targetCR = $('#cr-select').val();
+
+    let directLink = location.toString().replace(location.search, "");
+    directLink += '?monster='+monsterID+'&cr='+targetCR;
+    $('#direct-link').attr('href', directLink);
 
     //Start with locked stats and presets for this CR, if any
     let derivedStats = Object.assign({}, selectedMonster, selectedMonster.lockedStats, selectedMonster.stats[targetCR]);
