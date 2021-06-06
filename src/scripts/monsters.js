@@ -6,6 +6,12 @@ const sizeLarge = 4;
 const sizeHuge = 5;
 const sizeGargantuan = 6;
 
+const reachVeryShort = 0;
+const reachShort = 1;
+const reachMedium = 2;
+const reachLong = 3;
+const reachVeryLong = 4;
+
 const actionTypeAttack = "attack";
 
 const monsterList = {
@@ -16,13 +22,13 @@ const monsterList = {
         lockedStats: {
             attacks: {
                 bite: {
-                    reach: 10,
+                    reach: reachMedium,
                     proc: 'grappleBite',
                     damageType: 'piercing',
                     name: 'Bite'
                 },
                 tail: {
-                    reach: 10,
+                    reach: reachMedium,
                     damageType: 'bludgeoning',
                     name: 'Tail'
                 }
@@ -75,7 +81,7 @@ const monsterList = {
         lockedStats: {
             attacks: {
                 bite: {
-                    reach: 5,
+                    reach: reachShort,
                     proc: 'takeDown',
                     damageType: 'piercing',
                     name: 'Bite',
@@ -627,27 +633,33 @@ const sizes = [
     {}, //Placeholder for 0, as implicit boolean checks may fail if tiny is 0
     {
         name: 'Tiny',
-        hitDie: 4
+        hitDie: 4,
+        reach: [5,5,5,5,5]
     },
     {
         name: 'Small',
-        hitDie: 6
+        hitDie: 6,
+        reach: [5,5,5,5,10]
     },
     {
         name: 'Medium',
-        hitDie: 8
+        hitDie: 8,
+        reach: [5,5,5,10,15]
     },
     {
         name: 'Large',
-        hitDie: 10
+        hitDie: 10,
+        reach: [5,5,10,15,20]
     },
     {
         name: 'Huge',
-        hitDie: 12
+        hitDie: 12,
+        reach: [5,5,10,15,30]
     },
     {
         name: 'Gargantuan',
-        hitDie: 20
+        hitDie: 20,
+        reach: [5,10,15,20,30]
     }
     
 ];
