@@ -11,22 +11,22 @@ const actionTypeAttack = "attack";
 const monsterList = {
     trex: {
         slug: "tyrannosaurus",
-        attacks: {
-            bite: {
-                reach: 10,
-                proc: 'grappleBite',
-                damageType: 'piercing',
-                name: 'Bite'
-            },
-            tail: {
-                reach: 10,
-                damageType: 'bludgeoning',
-                name: 'Tail'
-            }
-        },
         type: 'beast',
         alignment: 'unaligned',
         lockedStats: {
+            attacks: {
+                bite: {
+                    reach: 10,
+                    proc: 'grappleBite',
+                    damageType: 'piercing',
+                    name: 'Bite'
+                },
+                tail: {
+                    reach: 10,
+                    damageType: 'bludgeoning',
+                    name: 'Tail'
+                }
+            },
             int: 2,
             skills: [
                 "perception"
@@ -70,18 +70,18 @@ const monsterList = {
             "keenHearingSmell",
             "packTactics",
         ],
-        attacks: {
-            bite: {
-                reach: 5,
-                proc: 'takeDown',
-                damageType: 'piercing',
-                name: 'Bite',
-                finesse: true
-            }
-        },
         type: "beast",
         alignment: "unaligned",
         lockedStats: {
+            attacks: {
+                bite: {
+                    reach: 5,
+                    proc: 'takeDown',
+                    damageType: 'piercing',
+                    name: 'Bite',
+                    finesse: true
+                }
+            },
             int: 3,
             skills: [
                 "perception",
