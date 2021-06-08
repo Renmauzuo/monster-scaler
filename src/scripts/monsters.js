@@ -1,4 +1,5 @@
 //Sizes
+//Sizes start at 1 so that tiny doesn't implicitly evaluate to false.
 const sizeTiny = 1;
 const sizeSmall = 2;
 const sizeMedium = 3;
@@ -8,11 +9,11 @@ const sizeGargantuan = 6;
 
 const reachVeryShort = 0;
 const reachShort = 1;
-const reachMedium = 2;
-const reachLong = 3;
-const reachVeryLong = 4;
-
-const actionTypeAttack = "attack";
+const reachMediumShort = 2;
+const reachMedium = 3;
+const reachMediumLong = 4;
+const reachLong = 4;
+const reachVeryLong = 5;
 
 const monsterList = {
     trex: {
@@ -20,6 +21,7 @@ const monsterList = {
         type: 'beast',
         alignment: 'unaligned',
         lockedStats: {
+            armorDescription: "Natural Armor",
             attacks: {
                 bite: {
                     reach: reachMedium,
@@ -48,7 +50,7 @@ const monsterList = {
         stats: {
             8 : {
                 name: "Tyrannosaurus Rex",
-                naturalArmor: 3,
+                bonusArmor: 3,
                 hitDice: 13,
                 speed: 50,
                 size: sizeHuge,
@@ -79,6 +81,7 @@ const monsterList = {
         type: "beast",
         alignment: "unaligned",
         lockedStats: {
+            armorDescription: "Natural Armor",
             attacks: {
                 bite: {
                     reach: reachShort,
@@ -100,7 +103,7 @@ const monsterList = {
             },
             .25: {
                 name: "Wolf",
-                naturalArmor: 1,
+                bonusArmor: 1,
                 hitDice: 2,
                 speed: 40,
                 size: sizeMedium,
@@ -118,7 +121,7 @@ const monsterList = {
             },
             1 : {
                 name: "Dire Wolf",
-                naturalArmor: 2,
+                bonusArmor: 2,
                 hitDice: 5,
                 speed: 50,
                 size: sizeLarge,
@@ -141,14 +144,15 @@ const monsterList = {
     }
 }
 
-//These are rough averages of different stats per CR
-//These are not used to populate monster stats directly, but are used to compare stats to maintain relative values at different CRs
-//For example, a creature with above average strength for its CR will continue to have above average strength at other CRs
-
-//TODO: Consider adding different averages by type.
-//Most of these stats were determined by average size of monsters in various rulebooks by CR. However, outliers sometimes skewed results for certain CRs, especially at high levels when there are very few monsters at each CR, so many of these vlaues have been "fudged" to create a smoother upward transition.
-//Decimal values are to ease the curve a bit, even though all final values will be rounded.
-//Beasts were excluded from average INT calculates, as their INT tends to be capped at 3, regardless of CR.
+/*
+ * These are rough averages of different stats per CR
+ * These are not used to populate monster stats directly, but are used to compare stats to maintain relative values at different CRs
+ * For example, a creature with above average strength for its CR will continue to have above average strength at other CRs
+ * Most of these stats were determined by average stats of monsters in various rulebooks by CR.
+ * However, outliers sometimes skewed results for certain CRs, especially at high levels when there are very few monsters at each CR, so many of these vlaues have been "fudged" to create a smoother upward transition.
+ * Decimal values are to ease the curve a bit, even though all final values will be rounded.
+ * Beasts were excluded from average INT calculates, as their INT tends to be capped at 3, regardless of CR.
+ */
 
 const averageStats = {
     0 : {
@@ -634,32 +638,32 @@ const sizes = [
     {
         name: 'Tiny',
         hitDie: 4,
-        reach: [5,5,5,5,5]
+        reach: [5,5,5,5,5,5,5]
     },
     {
         name: 'Small',
         hitDie: 6,
-        reach: [5,5,5,5,10]
+        reach: [5,5,5,5,10,10,10]
     },
     {
         name: 'Medium',
         hitDie: 8,
-        reach: [5,5,5,10,15]
+        reach: [5,5,5,5,10,15,20]
     },
     {
         name: 'Large',
         hitDie: 10,
-        reach: [5,5,10,15,20]
+        reach: [5,5,5,10,15,20,25]
     },
     {
         name: 'Huge',
         hitDie: 12,
-        reach: [5,5,10,15,30]
+        reach: [5,5,10,15,20,25,30]
     },
     {
         name: 'Gargantuan',
         hitDie: 20,
-        reach: [5,10,15,20,30]
+        reach: [5,10,15,20,25,30,35]
     }
     
 ];

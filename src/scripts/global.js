@@ -65,22 +65,22 @@ function calculateSelectedMonster() {
         derivedStats.abilityModifiers[abilityScores[i]] = abilityScoreModifier(derivedStats[abilityScores[i]]);
     }
 
-    if (!derivedStats.naturalArmor) {
+    if (!derivedStats.bonusArmor) {
         /* 
-         * CR is more concerned with dervid stats like total AC than source stats like natural armor bonus
-         * So instead of extrapolating natural armor on its own we extrapolate total AC then reverse engineer natural armor based on other AC mods
+         * CR is more concerned with derived stats like total AC than source stats like armor bonus
+         * So instead of extrapolating the armor bonus on its own we extrapolate total AC then reverse engineer armor bonus based on other AC mods
          * This also solves the problem of average natural armor by CR being hard to calcualte, since many creatures don't have natural armor.
          */
-        let acBenchmarks = findBenchmarksForStat(["naturalArmor", "dex"], targetCR, selectedMonster);
-        //Creature may not have natural armor at all, in which case we skip this step
+        let acBenchmarks = findBenchmarksForStat(["bonusArmor", "dex"], targetCR, selectedMonster);
+        //Creature may not have bonus armor at all, in which case we skip this step
         if (acBenchmarks) {
             for (let benchmark in acBenchmarks) {
-                //5e is sometimes vague about monster stat calculations, so for simplicity we assume all natural armor allows the full dex modifier
-                acBenchmarks[benchmark].ac = 10 + acBenchmarks[benchmark].naturalArmor + abilityScoreModifier(acBenchmarks[benchmark].dex);
+                //5e is sometimes vague about monster stat calculations, so for simplicity we assume all bonus armor allows the full dex modifier
+                acBenchmarks[benchmark].ac = 10 + acBenchmarks[benchmark].bonusArmor + abilityScoreModifier(acBenchmarks[benchmark].dex);
             }
             let targetAC = extrapolateFromBenchmark('ac', targetCR, acBenchmarks, false);
-            //The max check shouldn't really be necessary, but we don't want to risk a creature with abnormally high dex resulting in a negative natural armor rating
-            derivedStats.naturalArmor = Math.max(0, targetAC - 10 - derivedStats.abilityModifiers.dex);
+            //The max check shouldn't really be necessary, but we don't want to risk a creature with abnormally high dex resulting in a negative bonus armor rating
+            derivedStats.bonusArmor = Math.max(0, targetAC - 10 - derivedStats.abilityModifiers.dex);
         }
     }
 
@@ -152,9 +152,8 @@ function calculateSelectedMonster() {
     $('#monster-name').html(findNearestLowerBenchmark("name", targetCR, selectedMonster));
     $('#monster-type').html(sizes[derivedStats.size].name + ' ' + selectedMonster.type + ', ' + selectedMonster.alignment);
 
-    //TODO: Pick the appropriate AC formula if a creature has options (ie, natural armor vs worn armor)
-    if (derivedStats.naturalArmor) {
-        $('#armor-class span').html((10 + derivedStats.naturalArmor + derivedStats.abilityModifiers.dex) + ' (Natural Armor)');
+    if (derivedStats.bonusArmor) {
+        $('#armor-class span').html((10 + derivedStats.bonusArmor + derivedStats.abilityModifiers.dex) + ' ('+derivedStats.armorDescription+')');
     } else {
         $('#armor-class span').html(10 + derivedStats.abilityModifiers.dex);
     }

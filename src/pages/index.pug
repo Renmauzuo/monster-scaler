@@ -1,74 +1,82 @@
 doctype html
-head
-    meta(charset='UTF-8')
-    title Monster Scaler
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    link(rel='stylesheet' type='text/css' href='styles/global.min.css')
-body
-    #monster-selector.container
-        h2 Pick a monster
-        label(for='monster-select') Monster Template:
-        select#monster-select(name='monster-select')
-        label(for='cr-select') Challenge Rating:
-        select#cr-select(name='cr-select')
-            option(value='0') 0
-            option(value='0.125') 1/8
-            option(value='0.25') 1/4
-            option(value='0.5') 1/2
-            - var i = 0;
-            while i < 30
-                option(value=++i)= i
-        p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
-    #monster-stats.container
-        #stat-block
-            h2#monster-name
-            p#monster-type
-            include ../pug/tapered-rule.pug
-            p.property#armor-class Armor Class 
-                span
-            p.property#hit-points Hit Points 
-                span
-            p.property#speed Speed 
-                span
-            include ../pug/tapered-rule.pug
-            #ability-scores
-                div
-                    p STR
-                    p#monster-str
-                div
-                    p DEX
-                    p#monster-dex
-                div
-                    p CON
-                    p#monster-con
-                div
-                    p INT
-                    p#monster-int
-                div
-                    p WIS
-                    p#monster-wis
-                div
-                    p CHA
-                    p#monster-cha
-            include ../pug/tapered-rule.pug
-            p.property#skills Skills 
-                span
-            p.property#senses Senses 
-                span
-            p.property#challenge-rating Challenge 
-                span
-            include ../pug/tapered-rule.pug
-            #traits
-            h3 Actions
-            #attacks
-    #footer.container
-        p 
-            a(id="direct-link" href="/") Direct link
-        p Creature statistics from the SRD are property of Wizards of the Coast and are used here in accordance with the 
-            a(href="https://media.wizards.com/2016/downloads/SRD-OGL_V1.1.pdf") OPEN GAME LICENSE
-            | .
-        p
-            a(href="https://github.com/Renmauzuo/monster-scaler") Fork me
-    script(src='https://code.jquery.com/jquery-3.4.1.min.js' integrity='sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=' crossorigin='anonymous')
-    script(src='scripts/monsters.min.js')
-    script(src='scripts/global.min.js')
+html(lang="en")
+    head
+        meta(charset='UTF-8')
+        title Monster Scaler
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        meta(name="description" content="Tool for scaling monsters up or down in Dungeons and Dragons 5th edition.")
+        link(rel='stylesheet' type='text/css' href='styles/global.min.css')
+    body
+        #monster-selector.container
+            h2 Pick a monster
+            label(for='monster-select') Monster Template:
+            select#monster-select(name='monster-select')
+            label(for='cr-select') Challenge Rating:
+            select#cr-select(name='cr-select')
+                option(value='0') 0
+                option(value='0.125') 1/8
+                option(value='0.25') 1/4
+                option(value='0.5') 1/2
+                - var i = 0;
+                while i < 30
+                    option(value=++i)= i
+            p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
+        #monster-stats.container
+            #stat-block
+                h2#monster-name
+                p#monster-type
+                include ../pug/tapered-rule.pug
+                p.property#armor-class Armor Class 
+                    span
+                p.property#hit-points Hit Points 
+                    span
+                p.property#speed Speed 
+                    span
+                include ../pug/tapered-rule.pug
+                #ability-scores
+                    div
+                        p STR
+                        p#monster-str
+                    div
+                        p DEX
+                        p#monster-dex
+                    div
+                        p CON
+                        p#monster-con
+                    div
+                        p INT
+                        p#monster-int
+                    div
+                        p WIS
+                        p#monster-wis
+                    div
+                        p CHA
+                        p#monster-cha
+                include ../pug/tapered-rule.pug
+                p.property#skills Skills 
+                    span
+                p.property#senses Senses 
+                    span
+                p.property#challenge-rating Challenge 
+                    span
+                include ../pug/tapered-rule.pug
+                #traits
+                h3 Actions
+                #attacks
+        #footer.container
+            p 
+                a(id="direct-link" href="/") Direct link
+            details
+                summary Using this tool
+                p This tool was created to scale certain mosnters up or down a few levels to make them useable as summons or wild shape forms for a wider range of levels. Feel free to use this calculator however you like, though caution is advised when scaling low CR monsters up to very high levels, or vice versa. While stats like hp, damage, and ability scores are scaled up and down the tool currently does not adjust things like resistances, immunities, or legendary abilities. Scaling a high CR monster down to low levels may not be appropriate for a low level party as its abilities would still make it very powerful, while a low CR creature scaled up to very high levels may have appropriate stats but would lack the resistances and immunities commonly found at the higher CR.
+            details
+                summary How it works 
+                p This tool works by comparing a creature's stats to a list of averages for its original CR, then applying that to averages for its new CR. For example, if a creature has 150% of the average strength for its original CR then it will have roughly 150% (rounded) of average strength at its scaled CR. Some of the averages were taken from the "Monster Statistics by Challenge Rating" table in the Dungeon Masters Guide; others were calculated by averaging the stats of many existing creatures.
+            p Creature statistics from the SRD are property of Wizards of the Coast and are used here in accordance with the 
+                a(href="https://media.wizards.com/2016/downloads/SRD-OGL_V1.1.pdf") OPEN GAME LICENSE
+                | .
+            p
+                a(href="https://github.com/Renmauzuo/monster-scaler") Fork me
+        script(src='https://code.jquery.com/jquery-3.4.1.min.js' integrity='sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=' crossorigin='anonymous')
+        script(src='scripts/monsters.min.js')
+        script(src='scripts/global.min.js')
