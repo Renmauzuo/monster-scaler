@@ -310,9 +310,11 @@ function stepForCR(cr) {
  * @return {Object} Benchmarks for the selected stat at the nearest CRs above and below it that had values for that stat.
  */
 function findBenchmarksForStat(stats, targetCR, selectedMonster) {
+    let numTargetCR = Number(targetCR);
     let statList = Array.isArray(stats) ? stats : [stats];
     let benchmarks = null;
     for (let cr in selectedMonster.stats) {
+        let numCR = Number(cr);
         let statBlock = flattenObject(selectedMonster.stats[cr]);
         let allStatsFound = true;
         for (let i = 0; i < statList.length; i++) {
@@ -325,19 +327,19 @@ function findBenchmarksForStat(stats, targetCR, selectedMonster) {
             if (!benchmarks) {
                 benchmarks = {};
             }
-            if (cr > targetCR) {
-                if (!benchmarks.upper || benchmarks.upper.cr > cr) {
+            if (numCR > numTargetCR) {
+                if (!benchmarks.upper || benchmarks.upper.cr > numCR) {
                     benchmarks.upper = {
-                        cr: cr,
+                        cr: numCR,
                     }
                     for (let i = 0; i < statList.length; i++) {
                         benchmarks.upper[statList[i]] = statBlock[statList[i]];
                     }
                 }
             } else {
-                if (!benchmarks.lower || benchmarks.lower.cr < cr) {
+                if (!benchmarks.lower || benchmarks.lower.cr < numCR) {
                     benchmarks.lower = {
-                        cr: cr,
+                        cr: numCR,
                     }
                     for (let i = 0; i < statList.length; i++) {
                         benchmarks.lower[statList[i]] = statBlock[statList[i]];
