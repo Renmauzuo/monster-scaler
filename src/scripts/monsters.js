@@ -16,6 +16,86 @@ const reachLong = 4;
 const reachVeryLong = 5;
 
 const monsterList = {
+    ape: {
+        slug: "ape",
+        type: 'beast',
+        alignment: 'unaligned',
+        lockedStats: {
+            attacks: {
+                fist: {
+                    reach: reachMedium,
+                    damageType: 'bludgeoning',
+                    name: 'Fist'
+                },
+                rock: {
+                    damageType: 'bludgeoning',
+                    name: 'Rock',
+                    ranged: true
+                }
+            },
+            skills: [
+                "athletics",
+                "perception"
+            ],
+            multiattack: {
+                attacks: {
+                    fist : 2
+                }
+            },
+        },
+        stats: {
+            .5 : {
+                name: "Ape",
+                hitDice: 3,
+                speed: 30,
+                climb: 30,
+                size: sizeMedium,
+                str: 16,
+                dex: 14,
+                con: 14,
+                int: 6,
+                wis: 12,
+                cha: 7,
+                attacks: {
+                    fist: {
+                        damageDice: 1,
+                        damageDieSize: 6
+                    },
+                    rock: {
+                        range: 25,
+                        longRange: 50,
+                        damageDice: 1,
+                        damageDieSize: 6
+                    }
+                }
+            },
+            7 : {
+                name: "Giant Ape",
+                hitDice: 15,
+                speed: 40,
+                climb: 40,
+                size: sizeHuge,
+                str: 23,
+                dex: 14,
+                con: 18,
+                int: 7,
+                wis: 12,
+                cha: 7,
+                attacks: {
+                    fist: {
+                        damageDice: 3,
+                        damageDieSize: 10
+                    },
+                    rock: {
+                        range: 50,
+                        longRange: 100,
+                        damageDice: 7,
+                        damageDieSize: 6
+                    }
+                }
+            }
+        }
+    },
     trex: {
         slug: "tyrannosaurus",
         type: 'beast',
@@ -669,7 +749,8 @@ const sizes = [
 ];
 
 const skills = {
-    perception : 'wis',
+    athletics: 'str',
+    perception: 'wis',
     stealth: 'dex'
 
 }

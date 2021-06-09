@@ -117,32 +117,38 @@ function calculateSelectedMonster() {
         }
     }
     for (let attack in derivedStats.attacks) {
+        let currentAttack = derivedStats.attacks[attack];
         //Ensure we are using appropriate stats for the target CR, if they are present
         if (selectedMonster.stats[targetCR] && selectedMonster.stats[targetCR].attacks && selectedMonster.stats[targetCR].attacks[attack]) {
             derivedStats.attacks[attack] = Object.assign(derivedStats.attacks[attack], selectedMonster.stats[targetCR].attacks[attack]);
         }
 
         //Fill in the gaps by extrapolating any missing attributes (such as attack damage)
-        if (!derivedStats.attacks[attack].damageDice) {
+        if (!currentAttack.damageDice) {
             let damageDiceString = 'attacks__'+attack+'__damageDice';
             let damageDieString =  'attacks__'+attack+'__damageDieSize';
             let attributes = ['str', damageDiceString, damageDieString];
-            if (derivedStats.attacks[attack].finesse) {
+            if (currentAttack.finesse) {
                 attributes.push('dex');
             }
             let damageBenchmarks = findBenchmarksForStat(attributes, targetCR, selectedMonster);
             for (let benchmark in damageBenchmarks) {
                 let currentBenchmark = damageBenchmarks[benchmark];
                 currentBenchmark.damagePerRound = averageRoll(currentBenchmark[damageDiceString], currentBenchmark[damageDieString]);
-                currentBenchmark.damagePerRound +=  abilityScoreModifier(derivedStats.attacks[attack].finesse ? Math.max(currentBenchmark.str, currentBenchmark.dex) : currentBenchmark.str);
+                currentBenchmark.damagePerRound +=  abilityScoreModifier(currentAttack.finesse ? Math.max(currentBenchmark.str, currentBenchmark.dex) : currentBenchmark.str);
             }
             let estimatedDamage = extrapolateFromBenchmark('damagePerRound', targetCR, damageBenchmarks, false);
-            let targetDamage = estimatedDamage - (derivedStats.attacks[attack].finesse ? Math.max(derivedStats.abilityModifiers.str, derivedStats.abilityModifiers.dex) : derivedStats.abilityModifiers.str);
+            let targetDamage = estimatedDamage - (currentAttack.finesse ? Math.max(derivedStats.abilityModifiers.str, derivedStats.abilityModifiers.dex) : derivedStats.abilityModifiers.str);
             //console.log(targetDamage);
             let preferredDieSize = findNearestLowerBenchmark(damageDieString, targetCR, selectedMonster);
             let estimatedDice = findDamageDice(targetDamage, preferredDieSize);
-            derivedStats.attacks[attack].damageDice = estimatedDice[0];
-            derivedStats.attacks[attack].damageDieSize = estimatedDice[1];
+            currentAttack.damageDice = estimatedDice[0];
+            currentAttack.damageDieSize = estimatedDice[1];
+        }
+
+        if (currentAttack.ranged && !currentAttack.range) {
+            currentAttack.range = findNearestLowerBenchmark('attacks__'+attack+'__range', targetCR, selectedMonster);
+            currentAttack.longRange = findNearestLowerBenchmark('attacks__'+attack+'__longRange', targetCR, selectedMonster);
         }
     }
 
@@ -200,26 +206,34 @@ function calculateSelectedMonster() {
 
     $('#attacks').empty();
     if (derivedStats.multiattack) {
-        let attackCount = 0;
-        let multiattackString = "";
-        let attacks = Object.keys(derivedStats.multiattack.attacks);
-        for (let i = 0; i < attacks.length; i++) {
-            attackCount += derivedStats.multiattack.attacks[attacks[i]];
-            multiattackString += numberStrings[derivedStats.multiattack.attacks[attacks[i]]] + ' with its ' + derivedStats.attacks[attacks[i]].name.toLowerCase();
-            if (i < attacks.length - 2) {
-                //Separate attacks with commas
-                multiattackString += ', ';
-            } else if (i == attacks.length - 2) {
-                //Add "and" before last attack. Add an oxford comma, but only if there are more than two types of attacks.
-                multiattackString += (attacks.length > 2 ? ',' : '') + ' and ';
+        if (Object.keys(derivedStats.multiattack.attacks).length > 1) {
+            //Text reads differently if there are multiple different attack types
+            let attackCount = 0;
+            let multiattackString = "";
+            let attacks = Object.keys(derivedStats.multiattack.attacks);
+            for (let i = 0; i < attacks.length; i++) {
+                attackCount += derivedStats.multiattack.attacks[attacks[i]];
+                multiattackString += numberStrings[derivedStats.multiattack.attacks[attacks[i]]] + ' with its ' + derivedStats.attacks[attacks[i]].name.toLowerCase();
+                if (i < attacks.length - 2) {
+                    //Separate attacks with commas
+                    multiattackString += ', ';
+                } else if (i == attacks.length - 2) {
+                    //Add "and" before last attack. Add an oxford comma, but only if there are more than two types of attacks.
+                    multiattackString += (attacks.length > 2 ? ',' : '') + ' and ';
+                }
             }
+            multiattackString = '<strong>Multiattack:</strong> The ' + derivedStats.slug + ' makes ' + numberStrings[attackCount] + ' attacks:' + multiattackString + '.';
+            if (derivedStats.multiattack.requireDifferentTargets) {
+                //This may need to change if a creature with more than two attacks ever gets this attribute, but for now it's fine as is as only the t rex has this restriction
+                multiattackString+= ' It can&rsquo;t make both attacks against the same target.';
+            }
+            $('<p>'+multiattackString+'</p>').appendTo('#attacks');
+        } else {
+            let attack = Object.keys(derivedStats.multiattack.attacks)[0];
+            let multiattackString = '<strong>Multiattack:</strong> The ' + derivedStats.slug + ' makes ' + numberStrings[derivedStats.multiattack.attacks[attack]] + ' ' + derivedStats.attacks[attack].name.toLowerCase() + ' attacks.';
+            $('<p>'+multiattackString+'</p>').appendTo('#attacks');
         }
-        multiattackString = '<strong>Multiattack:</strong> The ' + derivedStats.slug + ' makes ' + numberStrings[attackCount] + ' attacks:' + multiattackString + '.';
-        if (derivedStats.multiattack.requireDifferentTargets) {
-            //This may need to change if a creature with more than two attacks ever gets this attribute, but for now it's fine as is as only the t rex has this restriction
-            multiattackString+= ' It can&rsquo;t make both attacks against the same target.';
-        }
-        $('<p>'+multiattackString+'</p>').appendTo('#attacks');
+        
     }
     if (derivedStats.attacks) {
         for (let attack in derivedStats.attacks) {
@@ -227,7 +241,13 @@ function calculateSelectedMonster() {
             let attackString = '<strong>'+currentAttack.name+'.</strong> ';
             attackString += '<em>' + (currentAttack.ranged ? 'Ranged' : 'Melee') + ' Weapon Attack:</em> ';
             let abilityModifier = currentAttack.finesse ? Math.max(derivedStats.abilityModifiers.str, derivedStats.abilityModifiers.dex) : derivedStats.abilityModifiers.str;
-            attackString += '+' + (derivedStats.proficiency + abilityModifier) + ' to hit, reach ' + sizes[derivedStats.size].reach[currentAttack.reach] + ' ft., one target. ';
+            let rangeString;
+            if (currentAttack.ranged) {
+                rangeString = 'range ' + currentAttack.range + (currentAttack.longRange ? '/' + currentAttack.longRange : '');
+            } else {
+                rangeString = 'reach ' + sizes[derivedStats.size].reach[currentAttack.reach];
+            }
+            attackString += '+' + (derivedStats.proficiency + abilityModifier) + ' to hit, '+rangeString+ ' ft., one target. ';
             attackString += '<em>Hit:</em> ' + Math.max(1, (averageRoll(currentAttack.damageDice, currentAttack.damageDieSize) + abilityModifier));
             attackString += ' (' + currentAttack.damageDice + 'd' + currentAttack.damageDieSize + (abilityModifier >= 0 ? ' + ' : ' - ' ) + Math.abs(abilityModifier) + ') ' + currentAttack.damageType + ' damage.';
             if (currentAttack.proc) {
@@ -236,7 +256,6 @@ function calculateSelectedMonster() {
             $('<p>'+attackString+'</p>').appendTo('#attacks');
         }
     }
-
 }
 
 /**

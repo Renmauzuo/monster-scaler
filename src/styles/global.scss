@@ -30,7 +30,7 @@
         font-family: sans-serif;
         font-size: 16px;
         line-height: 1.2;
-        max-width: 420px;
+        max-width: 440px;
 
         &:before,
         &:after {
@@ -100,7 +100,7 @@
         #ability-scores {
             display: flex;
             margin-bottom: 10px;
-            justify-content: center;
+            justify-content: space-around;
             p {
                 text-align: center;
                 margin: 0 8px;
