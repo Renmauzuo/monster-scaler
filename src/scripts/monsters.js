@@ -103,7 +103,7 @@ const monsterList = {
             armorDescription: "Natural Armor",
             attacks: {
                 gore: {
-                    reach: reachMedium,
+                    reach: reachShort,
                     damageType: 'piercing',
                     name: 'Gore'
                 },
@@ -147,6 +147,34 @@ const monsterList = {
                     }
                 }
             },
+            5 : {
+                slug: "triceratops",
+                name: "Triceratops",
+                bonusArmor: 4,
+                hitDice: 10,
+                speed: 50,
+                size: sizeHuge,
+                str: 22,
+                dex: 9,
+                con: 17,
+                wis: 11,
+                cha: 5,
+                traits: {
+                    tramplingCharge: {
+                        dcAdjustment: -4
+                    }
+                },
+                attacks: {
+                    gore: {
+                        damageDice: 4,
+                        damageDieSize: 8
+                    },
+                    stomp: {
+                        damageDice: 3,
+                        damageDieSize: 10
+                    }
+                }
+            },
             6 : {
                 slug: "mammoth",
                 name: "Mammoth",
@@ -167,7 +195,8 @@ const monsterList = {
                 attacks: {
                     gore: {
                         damageDice: 4,
-                        damageDieSize: 8
+                        damageDieSize: 8,
+                        reach: reachMediumShort
                     },
                     stomp: {
                         damageDice: 4,
