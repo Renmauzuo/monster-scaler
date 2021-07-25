@@ -17,7 +17,6 @@ const reachVeryLong = 5;
 
 const monsterList = {
     ape: {
-        slug: "ape",
         type: 'beast',
         alignment: 'unaligned',
         lockedStats: {
@@ -37,6 +36,7 @@ const monsterList = {
                 "athletics",
                 "perception"
             ],
+            slug: "ape",
             multiattack: {
                 attacks: {
                     fist : 2
@@ -96,8 +96,88 @@ const monsterList = {
             }
         }
     },
+    elephant: {
+        type: 'beast',
+        alignment: 'unaligned',
+        lockedStats: {
+            armorDescription: "Natural Armor",
+            attacks: {
+                gore: {
+                    reach: reachMedium,
+                    damageType: 'piercing',
+                    name: 'Gore'
+                },
+                stomp: {
+                    reach: reachShort,
+                    damageType: 'bludgeoning',
+                    name: 'Stomp'
+                }
+            },
+            int: 3,
+        },
+        traits: [
+            "tramplingCharge"
+        ],
+        stats: {
+            4 : {
+                slug: "elephant",
+                name: "Elephant",
+                bonusArmor: 3,
+                hitDice: 8,
+                speed: 40,
+                size: sizeHuge,
+                str: 22,
+                dex: 9,
+                con: 17,
+                wis: 11,
+                cha: 6,
+                traits: {
+                    tramplingCharge: {
+                        dcAdjustment: -4
+                    }
+                },
+                attacks: {
+                    gore: {
+                        damageDice: 3,
+                        damageDieSize: 8
+                    },
+                    stomp: {
+                        damageDice: 3,
+                        damageDieSize: 10
+                    }
+                }
+            },
+            6 : {
+                slug: "mammoth",
+                name: "Mammoth",
+                bonusArmor: 4,
+                hitDice: 11,
+                speed: 40,
+                size: sizeHuge,
+                str: 24,
+                dex: 9,
+                con: 21,
+                wis: 11,
+                cha: 6,
+                traits: {
+                    tramplingCharge: {
+                        dcAdjustment: 0
+                    }
+                },
+                attacks: {
+                    gore: {
+                        damageDice: 4,
+                        damageDieSize: 8
+                    },
+                    stomp: {
+                        damageDice: 4,
+                        damageDieSize: 10
+                    }
+                }
+            }
+        }
+    },
     trex: {
-        slug: "tyrannosaurus",
         type: 'beast',
         alignment: 'unaligned',
         lockedStats: {
@@ -119,6 +199,7 @@ const monsterList = {
             skills: [
                 "perception"
             ],
+            slug: "tyrannosaurus",
             multiattack: {
                 attacks: {
                     bite : 1,
@@ -153,7 +234,6 @@ const monsterList = {
         }
     },
     wolf: {
-        slug: "wolf",
         traits: [
             "keenHearingSmell",
             "packTactics",
@@ -176,6 +256,7 @@ const monsterList = {
                 "perception",
                 "stealth",
             ],
+            slug: "wolf",
         },
         stats: {
             0 : {
@@ -763,6 +844,12 @@ const traits = {
     packTactics: {
         name: "Pack Tactics",
         description: "The {{slug}} has advantage on an attack roll against a creature if at least one of the {{slug}}'s allies is within 5 ft. of the creature and the ally isn't incapacitated."
+    },
+    tramplingCharge: {
+        name: "Trampling Charge",
+        description: "If the {{slug}} moves at least 20 ft. straight toward a creature and then hits it with a gore attack on the same turn, that target must succeed on a DC {{trait:DC}} Strength saving throw or be knocked prone. If the target is prone, the {{slug}} can make one stomp attack against it as a bonus action.",
+        allowsSave: true,
+        dcStat: "str"
     }
 }
 
