@@ -3,7 +3,7 @@ var numberStrings = ['zero', 'one', 'two', 'three', 'four', 'five'];
 $(function () {
 
     for (let monster in monsterList) {
-        $('<option value='+monster+'>'+toSentenceCase(monster)+'</option>').appendTo('#monster-select');
+        $('<option value='+monster+'>'+(monsterList[monster].menuName || toSentenceCase(monster))+'</option>').appendTo('#monster-select');
     }
 
     if (location.search.length) {
@@ -190,7 +190,9 @@ function calculateSelectedMonster() {
         }
     }
 
-    //console.log(JSON.stringify(derivedStats));
+    //Calculate movement speeds. These won't scale with CR, we just take the stat the stat from the closest lower CR.
+    derivedStats.speed = findNearestLowerBenchmark('speed', targetCR, selectedMonster);
+    derivedStats.swim = findNearestLowerBenchmark('swim', targetCR, selectedMonster);
 
     //Once we have all the stats populate the statblock:
     $('#monster-name').html(findNearestLowerBenchmark("name", targetCR, selectedMonster));
@@ -202,7 +204,14 @@ function calculateSelectedMonster() {
         $('#armor-class span').html(10 + derivedStats.abilityModifiers.dex);
     }
     $('#hit-points span').html(Math.floor(hitPointsPerHitDie(derivedStats)*derivedStats.hitDice)+' ('+derivedStats.hitDice+'d'+sizes[derivedStats.size].hitDie+'+'+(derivedStats.abilityModifiers.con*derivedStats.hitDice)+')');
-    $('#speed span').html(findNearestLowerBenchmark('speed', targetCR, selectedMonster) + ' ft.');
+    let speedString = "";
+    if (derivedStats.speed) {
+        speedString = derivedStats.speed + ' ft.';
+    }
+    if (derivedStats.swim) {
+        speedString += (speedString.length ? ', ' : '') + "Swim " + derivedStats.swim + ' ft.';
+    }
+    $('#speed span').html(speedString);
 
     for (let i = 0; i < abilityScores.length; i++) {
         let abilityScore = abilityScores[i];
