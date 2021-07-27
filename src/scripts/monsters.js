@@ -206,10 +206,41 @@ const monsterList = {
             }
         }
     },
+    //TODO: Merge the two types of sharks into one creature with two variants once the variant feature is added
     shark: {
-        menuName: 'Shark (Frenzy)',
+        menuName: 'Shark',
         type: 'beast',
         alignment: 'unaligned',
+        variants: {
+            frenzy : {
+                name: "Bloody Frenzy",
+                traits: [
+                    "bloodyFrenzy"
+                ],
+                stats: {
+                    .5 : {
+                        name: "Small Hunter Shark",
+                    },
+                    2 : {
+                        name: "Hunter Shark",
+                    }
+                }
+            },
+            packHunter: {
+                name: "Pack Hunter",
+                traits: [
+                    "packTactics"
+                ],
+                stats: {
+                    .5 : {
+                        name: "Reef Shark",
+                    },
+                    2 : {
+                        name: "Large Reef Shark",
+                    }
+                }
+            }
+        },
         lockedStats: {
             armorDescription: "Natural Armor",
             attacks: {
@@ -226,12 +257,27 @@ const monsterList = {
             slug: "shark",
         },
         traits: [
-            "bloodyFrenzy",
             "waterBreathing"
         ],
         stats: {
+            .5 : {
+                bonusArmor: 1,
+                hitDice: 4,
+                swim: 40,
+                size: sizeMedium,
+                str: 14,
+                dex: 13,
+                con: 13,
+                wis: 10,
+                cha: 4,
+                attacks: {
+                    bite: {
+                        damageDice: 1,
+                        damageDieSize: 8
+                    }
+                }
+            },
             2 : {
-                name: "Hunter Shark",
                 bonusArmor: 1,
                 hitDice: 6,
                 swim: 40,
@@ -263,50 +309,6 @@ const monsterList = {
                     bite: {
                         damageDice: 3,
                         damageDieSize: 10
-                    }
-                }
-            }
-        }
-    },
-    shark2: {
-        type: 'beast',
-        menuName: "Shark (Pack Hunter)",
-        alignment: 'unaligned',
-        lockedStats: {
-            armorDescription: "Natural Armor",
-            attacks: {
-                bite: {
-                    reach: reachShort,
-                    damageType: 'piercing',
-                    name: 'Bite'
-                },
-            },
-            int: 1,
-            skills: [
-                "perception"
-            ],
-            slug: "shark",
-        },
-        traits: [
-            "packTactics",
-            "waterBreathing"
-        ],
-        stats: {
-            .5 : {
-                name: "Reef Shark",
-                bonusArmor: 1,
-                hitDice: 4,
-                swim: 40,
-                size: sizeMedium,
-                str: 14,
-                dex: 13,
-                con: 13,
-                wis: 10,
-                cha: 4,
-                attacks: {
-                    bite: {
-                        damageDice: 1,
-                        damageDieSize: 8
                     }
                 }
             }

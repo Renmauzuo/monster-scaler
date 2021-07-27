@@ -10,17 +10,29 @@ $(function () {
         let params = new URLSearchParams(location.search);
         let paramMonster = params.get('monster');
         let paramsCR = params.get('cr');
+        let paramsVariant = params.get('variant');
         //Ensure it's a valid monster before selecting
         if ($('#monster-select option[value="'+paramMonster+'"]').length) {
             $('#monster-select').val(paramMonster);
         }
-         //Ensure it's a valid cr before selecting
-         if ($('#cr-select option[value="'+paramsCR+'"]').length) {
+        //Ensure it's a valid cr before selecting
+        if ($('#cr-select option[value="'+paramsCR+'"]').length) {
             $('#cr-select').val(paramsCR);
+        }
+
+        //Need to do this after mosnter is selected, but before variant is selected
+        setupVariantSelect(false);
+
+        //Select the variant if it has one
+        if ($('#variant-select option[value="'+paramsVariant+'"]').length) {
+            $('#variant-select').val(paramsVariant);
         }
     }
 
-    $('#monster-select, #cr-select').on('change', function () {
+    $('#monster-select, #cr-select, #variant-select').on('change', function () {
+        if ($(this).attr('id') === "monster-select") {
+           setupVariantSelect(true);
+        }
         calculateSelectedMonster();
     });
 
@@ -29,48 +41,94 @@ $(function () {
 });
 
 /**
- * Scales mosnter stats based on the selected template and challenge rating.
+ * Shows or hides the variant dropdown based on the current monster, and populates it with any variant options.
+ *
+ * @param {boolean} animated Whether or not to animate the show/hide
+ * @return {string} The sentence case string
+ */
+function setupVariantSelect(animated) {
+    let animationDuration = animated ? 400 : 0;
+    let monsterID = $('#monster-select').val();
+    let selectedMonster = monsterList[monsterID];
+    if (selectedMonster.variants) {
+        $('#variant-select').empty();
+        for (let variant in selectedMonster.variants) {
+            $('<option value='+variant+'>'+selectedMonster.variants[variant].name+'</option>').appendTo('#variant-select');
+        }
+        $('#variant-wrapper').slideDown(animationDuration);
+    } else {
+        $('#variant-wrapper').slideUp(animationDuration);
+    }
+}
+
+/**
+ * Scales monster stats based on the selected template and challenge rating.
  */
 function calculateSelectedMonster() {
     let monsterID = $('#monster-select').val();
     let selectedMonster = monsterList[monsterID];
     let targetCR = $('#cr-select').val();
+    let selectedVariant;
+    if (selectedMonster.variants) {
+        selectedVariant = selectedMonster.variants[$('#variant-select').val()];
+    }
 
     let directLink = location.toString().replace(location.search, "");
     directLink += '?monster='+monsterID+'&cr='+targetCR;
+    if (selectedVariant) {
+        directLink += '&variant='+$('#variant-select').val();
+    }
     $('#direct-link').attr('href', directLink);
 
+    //Need to combine variant stats with base stats, if applicable
+    let sourceStats = Object.assign({}, selectedMonster.stats);
+    if (selectedVariant && selectedVariant.stats) {
+        for (let cr in selectedVariant.stats) {
+            if (sourceStats[cr]) {
+                sourceStats[cr] = Object.assign({}, sourceStats[cr], selectedVariant.stats[cr]);
+            } else {
+                sourceStats[cr] = selectedVariant.stats[cr];
+            }
+        }
+    }
+
     //Start with locked stats and presets for this CR, if any
-    let derivedStats = Object.assign({}, selectedMonster.lockedStats, selectedMonster.stats[targetCR]);
+    let derivedStats = Object.assign({}, selectedMonster.lockedStats, sourceStats[targetCR]);
     derivedStats.proficiency = averageStats[targetCR].proficiency;
     //Once we have our locked stats, go through the rest of the states to interpolate or extrapolate based on existing values.
     //All of the preset monster statblocks should be complete, but if we ever add "keyframes" for individual stats it may be possible to have CRs without all stats for a template
     //For this reason we do the interpolation for EACH stat individually, rather than finding the closest statblock to draw from
 
     if(!derivedStats.slug) {
-        derivedStats.slug = findNearestLowerBenchmark("slug", targetCR, selectedMonster);
+        derivedStats.slug = findNearestLowerBenchmark("slug", targetCR, sourceStats);
     }
 
     //Traits require a different approach from some other stats as we take a base from the trait library, but potentially apply modifiers to it based on creature stats.
     //TODO: Adjust for creatures that gain additional traits as they level up
     if (selectedMonster.traits) {
         derivedStats.traits = {};
-        for (let i = 0; i < selectedMonster.traits.length; i++) {
-            const traitName = selectedMonster.traits[i];
+        let traitList;
+        if (selectedVariant && selectedVariant.traits) {
+            traitList = selectedMonster.traits.concat(selectedVariant.traits); 
+        } else {
+            traitList = selectedMonster.traits;
+        }
+        for (let i = 0; i < traitList.length; i++) {
+            const traitName =traitList[i];
             const baseTrait = traits[traitName];
             let newTrait;
             derivedStats.traits[traitName] = newTrait = {};
             newTrait.name = baseTrait.name;
             newTrait.description = baseTrait.description;
-            if (selectedMonster.stats[targetCR] && selectedMonster.stats[targetCR].traits && selectedMonster.stats[targetCR].traits[traitName]) {
-                newTrait = Object.assign(newTrait, selectedMonster.stats[targetCR].traits[traitName]);
+            if (sourceStats[targetCR] && sourceStats[targetCR].traits && sourceStats[targetCR].traits[traitName]) {
+                newTrait = Object.assign(newTrait, sourceStats[targetCR].traits[traitName]);
             }
 
             if (baseTrait.allowsSave) {
                 newTrait.dcStat = baseTrait.dcStat;
                 if (!newTrait.hasOwnProperty("dcAdjustment")) {
                     let dcAdjustmentString = "traits__"+traitName+"__dcAdjustment";
-                    let dcAdjustmentBenchmarks = findBenchmarksForStat(dcAdjustmentString, targetCR, selectedMonster);
+                    let dcAdjustmentBenchmarks = findBenchmarksForStat(dcAdjustmentString, targetCR, sourceStats);
                     if (dcAdjustmentBenchmarks.upper) {
                         if (dcAdjustmentBenchmarks.lower) {
                             newTrait.dcAdjustment = calculateWeightedAverage(dcAdjustmentString, dcAdjustmentBenchmarks, targetCR);
@@ -88,7 +146,7 @@ function calculateSelectedMonster() {
     }
 
     if(!derivedStats.size) {
-        let sizeBenchmarks = findBenchmarksForStat("size", targetCR, selectedMonster);
+        let sizeBenchmarks = findBenchmarksForStat("size", targetCR, sourceStats);
         derivedStats.size = extrapolateFromBenchmark("size", targetCR, sizeBenchmarks, true);
         derivedStats.size = Math.min(6, derivedStats.size);
     }
@@ -97,7 +155,7 @@ function calculateSelectedMonster() {
     derivedStats.abilityModifiers = {};
     for (let i = 0; i < abilityScores.length; i++) {
         if (!derivedStats[abilityScores[i]]) {
-            let abilityBenchmarks = findBenchmarksForStat(abilityScores[i], targetCR, selectedMonster);
+            let abilityBenchmarks = findBenchmarksForStat(abilityScores[i], targetCR, sourceStats);
             derivedStats[abilityScores[i]] = extrapolateFromBenchmark(abilityScores[i], targetCR, abilityBenchmarks, false);
         }
         derivedStats.abilityModifiers[abilityScores[i]] = abilityScoreModifier(derivedStats[abilityScores[i]]);
@@ -109,7 +167,7 @@ function calculateSelectedMonster() {
          * So instead of extrapolating the armor bonus on its own we extrapolate total AC then reverse engineer armor bonus based on other AC mods
          * This also solves the problem of average natural armor by CR being hard to calculate, since many creatures don't have natural armor.
          */
-        let acBenchmarks = findBenchmarksForStat(["bonusArmor", "dex"], targetCR, selectedMonster);
+        let acBenchmarks = findBenchmarksForStat(["bonusArmor", "dex"], targetCR, sourceStats);
         //Creature may not have bonus armor at all, in which case we skip this step
         if (acBenchmarks) {
             for (let benchmark in acBenchmarks) {
@@ -124,7 +182,7 @@ function calculateSelectedMonster() {
 
     if (!derivedStats.hitDice) {
         //Like AC bonuses, we calculate hit dice by extrapolating a target HP number and working backwards rather than extrapolating hit dice directly
-        let hpBenchmarks = findBenchmarksForStat(["size", "con", "hitDice"], targetCR, selectedMonster);
+        let hpBenchmarks = findBenchmarksForStat(["size", "con", "hitDice"], targetCR, sourceStats);
         for (let benchmark in hpBenchmarks) {
             let currentBenchmark = hpBenchmarks[benchmark];
             currentBenchmark.hp = Math.floor(hitPointsPerHitDie(currentBenchmark) * currentBenchmark.hitDice);
@@ -141,12 +199,12 @@ function calculateSelectedMonster() {
             derivedStats.attacks[attack] = Object.assign({}, selectedMonster.lockedStats.attacks[attack]);
         }
     }
-    for (let cr in selectedMonster.stats) {
-        if (parseFloat(cr) <= parseFloat(targetCR) && selectedMonster.stats[cr].attacks) {
-            for (let attack in selectedMonster.stats[cr].attacks) {
+    for (let cr in sourceStats) {
+        if (parseFloat(cr) <= parseFloat(targetCR) && sourceStats[cr].attacks) {
+            for (let attack in sourceStats[cr].attacks) {
                 if (!derivedStats.attacks[attack]) {
                     //We want to copy the attack except for its damage, as that may need to be adjusted based on CR
-                    let attackCopy = Object.assign({}, selectedMonster.stats[cr].attacks[attack]);
+                    let attackCopy = Object.assign({}, sourceStats[cr].attacks[attack]);
                     delete attackCopy.damageDice;
                     delete attackCopy.damageDieSize;
                     derivedStats.attacks[attack] = attackCopy;
@@ -157,8 +215,8 @@ function calculateSelectedMonster() {
     for (let attack in derivedStats.attacks) {
         let currentAttack = derivedStats.attacks[attack];
         //Ensure we are using appropriate stats for the target CR, if they are present
-        if (selectedMonster.stats[targetCR] && selectedMonster.stats[targetCR].attacks && selectedMonster.stats[targetCR].attacks[attack]) {
-            derivedStats.attacks[attack] = Object.assign(derivedStats.attacks[attack], selectedMonster.stats[targetCR].attacks[attack]);
+        if (sourceStats[targetCR] && sourceStats[targetCR].attacks && sourceStats[targetCR].attacks[attack]) {
+            derivedStats.attacks[attack] = Object.assign(derivedStats.attacks[attack], sourceStats[targetCR].attacks[attack]);
         }
 
         //Fill in the gaps by extrapolating any missing attributes (such as attack damage)
@@ -169,7 +227,7 @@ function calculateSelectedMonster() {
             if (currentAttack.finesse) {
                 attributes.push('dex');
             }
-            let damageBenchmarks = findBenchmarksForStat(attributes, targetCR, selectedMonster);
+            let damageBenchmarks = findBenchmarksForStat(attributes, targetCR, sourceStats);
             for (let benchmark in damageBenchmarks) {
                 let currentBenchmark = damageBenchmarks[benchmark];
                 currentBenchmark.damagePerRound = averageRoll(currentBenchmark[damageDiceString], currentBenchmark[damageDieString]);
@@ -178,24 +236,24 @@ function calculateSelectedMonster() {
             let estimatedDamage = extrapolateFromBenchmark('damagePerRound', targetCR, damageBenchmarks, false);
             let targetDamage = estimatedDamage - (currentAttack.finesse ? Math.max(derivedStats.abilityModifiers.str, derivedStats.abilityModifiers.dex) : derivedStats.abilityModifiers.str);
             //console.log(targetDamage);
-            let preferredDieSize = findNearestLowerBenchmark(damageDieString, targetCR, selectedMonster);
+            let preferredDieSize = findNearestLowerBenchmark(damageDieString, targetCR, sourceStats);
             let estimatedDice = findDamageDice(targetDamage, preferredDieSize);
             currentAttack.damageDice = estimatedDice[0];
             currentAttack.damageDieSize = estimatedDice[1];
         }
 
         if (currentAttack.ranged && !currentAttack.range) {
-            currentAttack.range = findNearestLowerBenchmark('attacks__'+attack+'__range', targetCR, selectedMonster);
-            currentAttack.longRange = findNearestLowerBenchmark('attacks__'+attack+'__longRange', targetCR, selectedMonster);
+            currentAttack.range = findNearestLowerBenchmark('attacks__'+attack+'__range', targetCR, sourceStats);
+            currentAttack.longRange = findNearestLowerBenchmark('attacks__'+attack+'__longRange', targetCR, sourceStats);
         }
     }
 
     //Calculate movement speeds. These won't scale with CR, we just take the stat the stat from the closest lower CR.
-    derivedStats.speed = findNearestLowerBenchmark('speed', targetCR, selectedMonster);
-    derivedStats.swim = findNearestLowerBenchmark('swim', targetCR, selectedMonster);
+    derivedStats.speed = findNearestLowerBenchmark('speed', targetCR, sourceStats);
+    derivedStats.swim = findNearestLowerBenchmark('swim', targetCR, sourceStats);
 
     //Once we have all the stats populate the statblock:
-    $('#monster-name').html(findNearestLowerBenchmark("name", targetCR, selectedMonster));
+    $('#monster-name').html(findNearestLowerBenchmark("name", targetCR, sourceStats));
     $('#monster-type').html(sizes[derivedStats.size].name + ' ' + selectedMonster.type + ', ' + selectedMonster.alignment);
 
     if (derivedStats.bonusArmor) {
@@ -353,16 +411,16 @@ function stepForCR(cr) {
  *
  * @param {Array} stats The stats to search for
  * @param {string} targetCR The challenge rating to find benchmarks for
- * @param {Object} selectedMonster The monster template for which to find stat benchmarks
+ * @param {Object} sourceStats The stat block for which to find stat benchmarks
  * @return {Object} Benchmarks for the selected stat at the nearest CRs above and below it that had values for that stat.
  */
-function findBenchmarksForStat(stats, targetCR, selectedMonster) {
+function findBenchmarksForStat(stats, targetCR, sourceStats) {
     let numTargetCR = Number(targetCR); //CRs must be compared as ints or the equality checks sometimes return the wrong result
     let statList = Array.isArray(stats) ? stats : [stats];
     let benchmarks = null;
-    for (let cr in selectedMonster.stats) {
+    for (let cr in sourceStats) {
         let numCR = Number(cr);
-        let statBlock = flattenObject(selectedMonster.stats[cr]);
+        let statBlock = flattenObject(sourceStats[cr]);
         let allStatsFound = true;
         for (let i = 0; i < statList.length; i++) {
             allStatsFound = allStatsFound && statBlock.hasOwnProperty(statList[i]);
@@ -491,12 +549,11 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
  *
  * @param {string} stat The stat to search for
  * @param {string} targetCR The target challenge rating
- * @param {Object} selectedMonster The monster to search 
+ * @param {Object} statList The stat list to search 
  * @return {number} The number of hit points
  */
- function findNearestLowerBenchmark(stat, targetCR, selectedMonster) {
+ function findNearestLowerBenchmark(stat, targetCR, statList) {
     let numTargetCR = parseFloat(targetCR);
-    let statList = selectedMonster.stats;
     let lowestValue;
     let lowestCR = 31;
     let highestValue;
