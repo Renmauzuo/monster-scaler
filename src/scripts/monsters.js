@@ -15,19 +15,28 @@ const reachMediumLong = 4;
 const reachLong = 4;
 const reachVeryLong = 5;
 
+const typeBeast = 'beast';
+
+const alignmentUnaligned = 'unaligned';
+
+const armorNatural = "Natural Armor";
+
+const damageTypePiercing = 'piercing';
+const damageTypeBludgeoning = 'bludgeoning';
+
 const monsterList = {
     ape: {
-        type: 'beast',
-        alignment: 'unaligned',
+        type: typeBeast,
+        alignment: alignmentUnaligned,
         lockedStats: {
             attacks: {
                 fist: {
                     reach: reachMedium,
-                    damageType: 'bludgeoning',
+                    damageType: damageTypeBludgeoning,
                     name: 'Fist'
                 },
                 rock: {
-                    damageType: 'bludgeoning',
+                    damageType: damageTypeBludgeoning,
                     name: 'Rock',
                     ranged: true
                 }
@@ -97,16 +106,16 @@ const monsterList = {
         }
     },
     crocodile: {
-        type: 'beast',
-        alignment: 'unaligned',
+        type: typeBeast,
+        alignment: alignmentUnaligned,
         lockedStats: {
-            armorDescription: "Natural Armor",
+            armorDescription: armorNatural,
             int: 2,
             slug: "crocodile",
             attacks: {
                 bite: {
                     reach: reachShort,
-                    damageType: 'piercing',
+                    damageType: damageTypePiercing,
                     name: 'Bite',
                     proc: 'grappleBite'
                 }
@@ -162,7 +171,7 @@ const monsterList = {
                     },
                     tail: {
                         reach: reachMediumShort,
-                        damageType: "bludgeoning",
+                        damageType: damageTypeBludgeoning,
                         name: "Tail",
                         proc: "takeDown",
                         damageDice: 2,
@@ -185,19 +194,19 @@ const monsterList = {
         }
     },
     elephant: {
-        type: 'beast',
-        alignment: 'unaligned',
+        type: typeBeast,
+        alignment: alignmentUnaligned,
         lockedStats: {
-            armorDescription: "Natural Armor",
+            armorDescription: armorNatural,
             attacks: {
                 gore: {
                     reach: reachShort,
-                    damageType: 'piercing',
+                    damageType: damageTypePiercing,
                     name: 'Gore'
                 },
                 stomp: {
                     reach: reachShort,
-                    damageType: 'bludgeoning',
+                    damageType: damageTypeBludgeoning,
                     name: 'Stomp',
                     proneOnly: true
                 }
@@ -320,14 +329,14 @@ const monsterList = {
     },
     killerWhale: {
         menuName: "Killer Whale",
-        type: 'beast',
-        alignment: 'unaligned',
+        type: typeBeast,
+        alignment: alignmentUnaligned,
         lockedStats: {
-            armorDescription: "Natural Armor",
+            armorDescription: armorNatural,
             attacks: {
                 bite: {
                     reach: reachShort,
-                    damageType: 'piercing',
+                    damageType: damageTypePiercing,
                     name: 'Bite'
                 }
             },
@@ -372,8 +381,8 @@ const monsterList = {
     },
     shark: {
         menuName: 'Shark',
-        type: 'beast',
-        alignment: 'unaligned',
+        type: typeBeast,
+        alignment: alignmentUnaligned,
         variants: {
             frenzy : {
                 name: "Bloody Frenzy",
@@ -405,11 +414,11 @@ const monsterList = {
             }
         },
         lockedStats: {
-            armorDescription: "Natural Armor",
+            armorDescription: armorNatural,
             attacks: {
                 bite: {
                     reach: reachShort,
-                    damageType: 'piercing',
+                    damageType: damageTypePiercing,
                     name: 'Bite'
                 },
             },
@@ -478,20 +487,20 @@ const monsterList = {
         }
     },
     trex: {
-        type: 'beast',
-        alignment: 'unaligned',
+        type: typeBeast,
+        alignment: alignmentUnaligned,
         lockedStats: {
-            armorDescription: "Natural Armor",
+            armorDescription: armorNatural,
             attacks: {
                 bite: {
                     reach: reachMedium,
                     proc: 'grappleBiteSizeRestricted',
-                    damageType: 'piercing',
+                    damageType: damageTypePiercing,
                     name: 'Bite'
                 },
                 tail: {
                     reach: reachMedium,
-                    damageType: 'bludgeoning',
+                    damageType: damageTypeBludgeoning,
                     name: 'Tail'
                 }
             },
@@ -541,12 +550,12 @@ const monsterList = {
         type: "beast",
         alignment: "unaligned",
         lockedStats: {
-            armorDescription: "Natural Armor",
+            armorDescription: armorNatural,
             attacks: {
                 bite: {
                     reach: reachShort,
                     proc: 'takeDown',
-                    damageType: 'piercing',
+                    damageType: damageTypePiercing,
                     name: 'Bite',
                     finesse: true
                 }
