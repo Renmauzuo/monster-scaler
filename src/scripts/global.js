@@ -145,6 +145,13 @@ function calculateSelectedMonster() {
                     }
                 }
             }
+
+            if (baseTrait.hasDuration) {
+                if (!newTrait.hasOwnProperty("duration")) {
+                    let durationString = "traits__"+traitName+"__duration";
+                    newTrait.duration = findNearestLowerBenchmark(durationString, targetCR, sourceStats);
+                }
+            }
         }
     }
 
@@ -355,7 +362,8 @@ function calculateSelectedMonster() {
             } else {
                 rangeString = 'reach ' + sizes[derivedStats.size].reach[currentAttack.reach];
             }
-            attackString += '+' + (derivedStats.proficiency + abilityModifier) + ' to hit, '+rangeString+ ' ft., one target. ';
+            attackString += '+' + (derivedStats.proficiency + abilityModifier) + ' to hit, '+rangeString+ ' ft.,';
+            attackString += ' one target' + (currentAttack.notGrappled ? ' not grappled by the ' + derivedStats.slug : '') + '. '
             attackString += '<em>Hit:</em> ' + Math.max(1, (averageRoll(currentAttack.damageDice, currentAttack.damageDieSize) + abilityModifier));
             attackString += ' (' + currentAttack.damageDice + 'd' + currentAttack.damageDieSize + (abilityModifier >= 0 ? ' + ' : ' - ' ) + Math.abs(abilityModifier) + ') ' + currentAttack.damageType + ' damage.';
             if (currentAttack.proc) {
@@ -619,7 +627,9 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
                 let targetSize = statBlock.size + parseInt(tokenArray[1]);
                 tokenValue = sizes[targetSize].name;
             } else if (tokenArray[0] == 'trait') {
-                if (tokenArray[1] == 'DC') {
+                if (trait[tokenArray[1]]) {
+                    tokenValue = trait[tokenArray[1]];
+                } else if (tokenArray[1] == 'DC') {
                     let dc =  8 + statBlock.proficiency + statBlock.abilityModifiers[trait.dcStat];
                     if (trait.dcAdjustment) {
                         dc += parseInt(trait.dcAdjustment);
