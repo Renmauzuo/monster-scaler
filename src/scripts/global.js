@@ -94,6 +94,9 @@ function calculateSelectedMonster() {
 
     //Start with locked stats and presets for this CR, if any
     let derivedStats = Object.assign({}, selectedMonster.lockedStats, sourceStats[targetCR]);
+    if (selectedVariant && selectedVariant.lockedStats) {
+        Object.assign(derivedStats, selectedVariant.lockedStats);
+    }
     derivedStats.proficiency = averageStats[targetCR].proficiency;
     //Once we have our locked stats, go through the rest of the states to interpolate or extrapolate based on existing values.
     //All of the preset monster statblocks should be complete, but if we ever add "keyframes" for individual stats it may be possible to have CRs without all stats for a template

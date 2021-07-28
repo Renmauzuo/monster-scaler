@@ -118,19 +118,50 @@ const monsterList = {
         traits: [
             "tramplingCharge"
         ],
+        variants: {
+            elephant: {
+                name: "Elephant",
+                lockedStats: {
+                    int: 3,
+                },
+                stats: {
+                    4: {
+                        slug: "elephant",
+                        name: "Elephant",
+                        speed: 40,
+                        cha: 6,
+                    },
+                    6: {
+                        slug: "mammoth",
+                        name: "Mammoth",
+                        cha: 6,
+                    }
+                }
+            },
+            triceratops: {
+                name: "Triceratops",
+                lockedStats: {
+                    int: 2,
+                },
+                stats: {
+                    5: {
+                        slug: "triceratops",
+                        name: "Triceratops",
+                        speed: 50,
+                        cha: 5
+                    }
+                }
+            }
+        },
         stats: {
             4 : {
-                slug: "elephant",
-                name: "Elephant",
                 bonusArmor: 3,
                 hitDice: 8,
-                speed: 40,
                 size: sizeHuge,
                 str: 22,
                 dex: 9,
                 con: 17,
                 wis: 11,
-                cha: 6,
                 traits: {
                     tramplingCharge: {
                         dcAdjustment: -4
@@ -148,17 +179,13 @@ const monsterList = {
                 }
             },
             5 : {
-                slug: "triceratops",
-                name: "Triceratops",
                 bonusArmor: 4,
                 hitDice: 10,
-                speed: 50,
                 size: sizeHuge,
                 str: 22,
                 dex: 9,
                 con: 17,
                 wis: 11,
-                cha: 5,
                 traits: {
                     tramplingCharge: {
                         dcAdjustment: -4
@@ -176,17 +203,13 @@ const monsterList = {
                 }
             },
             6 : {
-                slug: "mammoth",
-                name: "Mammoth",
                 bonusArmor: 4,
                 hitDice: 11,
-                speed: 40,
                 size: sizeHuge,
                 str: 24,
                 dex: 9,
                 con: 21,
                 wis: 11,
-                cha: 6,
                 traits: {
                     tramplingCharge: {
                         dcAdjustment: 0
@@ -206,7 +229,6 @@ const monsterList = {
             }
         }
     },
-    //TODO: Merge the two types of sharks into one creature with two variants once the variant feature is added
     shark: {
         menuName: 'Shark',
         type: 'beast',
