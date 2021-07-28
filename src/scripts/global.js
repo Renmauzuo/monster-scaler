@@ -68,6 +68,7 @@ function calculateSelectedMonster() {
     let monsterID = $('#monster-select').val();
     let selectedMonster = monsterList[monsterID];
     let targetCR = $('#cr-select').val();
+    let numTargetCR = Number(targetCR); //Certain comparisons require a numeric version of the CR
     let selectedVariant;
     if (selectedMonster.variants) {
         selectedVariant = selectedMonster.variants[$('#variant-select').val()];
@@ -255,6 +256,18 @@ function calculateSelectedMonster() {
         if (currentAttack.ranged && !currentAttack.range) {
             currentAttack.range = findNearestLowerBenchmark('attacks__'+attack+'__range', targetCR, sourceStats);
             currentAttack.longRange = findNearestLowerBenchmark('attacks__'+attack+'__longRange', targetCR, sourceStats);
+        }
+    }
+
+    if (!derivedStats.multiattack) {
+        //See if the creature gains multiattack as it goes up in CR
+        for (let cr in sourceStats) {
+            let numCR = Number(cr);
+            let highestCR = 0;
+            if (numCR <= numTargetCR && numCR > highestCR && sourceStats[cr].multiattack) {
+                highestCR = numCR;
+                derivedStats.multiattack = sourceStats[cr].multiattack;
+            }
         }
     }
 
@@ -561,7 +574,7 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
  * @param {string} stat The stat to search for
  * @param {string} targetCR The target challenge rating
  * @param {Object} statList The stat list to search 
- * @return {number} The number of hit points
+ * @return {number} The benchmark found
  */
  function findNearestLowerBenchmark(stat, targetCR, statList) {
     let numTargetCR = parseFloat(targetCR);
