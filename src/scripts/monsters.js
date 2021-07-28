@@ -317,6 +317,58 @@ const monsterList = {
             }
         }
     },
+    killerWhale: {
+        menuName: "Killer Whale",
+        type: 'beast',
+        alignment: 'unaligned',
+        lockedStats: {
+            armorDescription: "Natural Armor",
+            attacks: {
+                bite: {
+                    reach: reachShort,
+                    damageType: 'piercing',
+                    name: 'Bite'
+                }
+            },
+            int: 3,
+            skills: [
+                "perception"
+            ],
+            slug: "whale",
+        },
+        stats: {
+            3 : {
+                name: "Killer Whale",
+                bonusArmor: 2,
+                blindsight: 120,
+                hitDice: 12,
+                speed: 0,
+                swim: 60,
+                size: sizeHuge,
+                str: 19,
+                dex: 10,
+                con: 13,
+                wis: 12,
+                cha: 7,
+                attacks: {
+                    bite: {
+                        damageDice: 5,
+                        damageDieSize: 6
+                    }
+                },
+                traits: {
+                    holdBreath: {
+                        duration: 30
+                    }
+                }
+            }
+        },
+        traits: [
+            "echolocation",
+            "holdBreath",
+            "keenHearing"
+        ]
+    },
     shark: {
         menuName: 'Shark',
         type: 'beast',
@@ -1088,10 +1140,18 @@ const traits = {
         name: "Bloody Frenzy",
         description: "The {{slug}} has advantage on melee attack rolls against any creature that doesn't have all its hit points." 
     },
+    echolocation: {
+        name: "Echolocation",
+        description: "The {{slug}} can't use its blindsight while deafened."
+    },
     holdBreath: {
         name: "Hold Breath",
         description: "The {{slug}} can hold its breath for {{trait:duration}} minutes.",
         hasDuration: true
+    },
+    keenHearing : {
+        name: "Keen Hearing",
+        description: "The {{slug}} has advantage on Wisdom (Perception) checks that rely on hearing." 
     },
     keenHearingSmell : {
         name: "Keen Hearing and Smell",
