@@ -198,7 +198,8 @@ const monsterList = {
                 stomp: {
                     reach: reachShort,
                     damageType: 'bludgeoning',
-                    name: 'Stomp'
+                    name: 'Stomp',
+                    proneOnly: true
                 }
             },
             int: 3,

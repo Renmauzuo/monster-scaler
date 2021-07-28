@@ -384,8 +384,15 @@ function calculateSelectedMonster() {
             } else {
                 rangeString = 'reach ' + sizes[derivedStats.size].reach[currentAttack.reach];
             }
-            attackString += '+' + (derivedStats.proficiency + abilityModifier) + ' to hit, '+rangeString+ ' ft.,';
-            attackString += ' one target' + (currentAttack.notGrappled ? ' not grappled by the ' + derivedStats.slug : '') + '. '
+            attackString += '+' + (derivedStats.proficiency + abilityModifier) + ' to hit, '+rangeString+ ' ft., ';
+            if (currentAttack.proneOnly) {
+                attackString += 'one prone creature';
+            } else if (currentAttack.creatureOnly) {
+                attackString += 'one creature;'
+            } else {
+                attackString += 'one target';
+            }
+            attackString += (currentAttack.notGrappled ? ' not grappled by the ' + derivedStats.slug : '') + '. '
             attackString += '<em>Hit:</em> ' + Math.max(1, (averageRoll(currentAttack.damageDice, currentAttack.damageDieSize) + abilityModifier));
             attackString += ' (' + currentAttack.damageDice + 'd' + currentAttack.damageDieSize + (abilityModifier >= 0 ? ' + ' : ' - ' ) + Math.abs(abilityModifier) + ') ' + currentAttack.damageType + ' damage.';
             if (currentAttack.proc) {
