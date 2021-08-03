@@ -389,6 +389,7 @@ const monsterList = {
         type: typeBeast,
         alignment: alignmentUnaligned,
         lockedStats: {
+            slug: 'tiger',
             speed: 40,
             int: 3,
             skills: {
