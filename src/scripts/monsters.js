@@ -23,6 +23,11 @@ const armorNatural = "Natural Armor";
 
 const damageTypePiercing = 'piercing';
 const damageTypeBludgeoning = 'bludgeoning';
+const damageTypeSlashing = 'slashing';
+
+const skillRankUnproficient = 0;
+const skillRankProficient = 1;
+const skillRankExpert = 2;
 
 const monsterList = {
     ape: {
@@ -41,10 +46,10 @@ const monsterList = {
                     ranged: true
                 }
             },
-            skills: [
-                "athletics",
-                "perception"
-            ],
+            skills: {
+                athletics : skillRankProficient,
+                perception : skillRankProficient
+            },
             slug: "ape",
             multiattack: {
                 attacks: {
@@ -120,9 +125,9 @@ const monsterList = {
                     proc: 'grappleBite'
                 }
             },
-            skills: [
-                "stealth"
-            ],
+            skills: {
+                stealth: skillRankExpert
+            },
         },
         traits: [
             "holdBreath"
@@ -341,9 +346,9 @@ const monsterList = {
                 }
             },
             int: 3,
-            skills: [
-                "perception"
-            ],
+            skills: {
+                perception: skillRankProficient
+            },
             slug: "whale",
         },
         stats: {
@@ -378,6 +383,57 @@ const monsterList = {
             "holdBreath",
             "keenHearing"
         ]
+    },
+    saberToothedTiger: {
+        menuName: 'Saber-Toothed Tiger',
+        type: typeBeast,
+        alignment: alignmentUnaligned,
+        lockedStats: {
+            speed: 40,
+            int: 3,
+            skills: {
+                perception: skillRankProficient,
+                stealth: skillRankExpert
+            },
+            attacks: {
+                bite: {
+                    reach: reachShort,
+                    damageType: damageTypePiercing,
+                    name: 'Bite'
+                },
+                claw: {
+                    reach: reachShort,
+                    damageType: damageTypeSlashing,
+                    name: 'Claw'
+                },
+            },
+        },
+        traits: [
+            "keenSmell",
+            "pounce"
+        ],
+        stats: {
+            2: {
+                name: 'Saber-Toothed Tiger',
+                size: sizeLarge,
+                hitDice: 7,
+                str: 18,
+                dex: 14,
+                con: 15,
+                wis: 12,
+                cha: 8,
+                attacks: {
+                    bite: {
+                        damageDice: 1,
+                        damageDieSize: 10
+                    }, 
+                    claw: {
+                        damageDice: 2,
+                        damageDieSize: 6
+                    }
+                }
+            }
+        }
     },
     shark: {
         menuName: 'Shark',
@@ -423,9 +479,9 @@ const monsterList = {
                 },
             },
             int: 1,
-            skills: [
-                "perception"
-            ],
+            skills: {
+                perception : skillRankProficient
+            },
             slug: "shark",
         },
         traits: [
@@ -505,9 +561,9 @@ const monsterList = {
                 }
             },
             int: 2,
-            skills: [
-                "perception"
-            ],
+            skills: {
+                perception : skillRankProficient
+            },
             slug: "tyrannosaurus",
             multiattack: {
                 attacks: {
@@ -561,10 +617,10 @@ const monsterList = {
                 }
             },
             int: 3,
-            skills: [
-                "perception",
-                "stealth",
-            ],
+            skills: {
+                perception : skillRankProficient,
+                stealth: skillRankProficient
+            },
             slug: "wolf",
         },
         stats: {
@@ -1167,9 +1223,19 @@ const traits = {
         name: "Keen Hearing and Smell",
         description: "The {{slug}} has advantage on Wisdom (Perception) checks that rely on hearing or smell." 
     },
+    keenSmell : {
+        name: "Keen Smell",
+        description: "The {{slug}} has advantage on Wisdom (Perception) checks that rely on smell."
+    },
     packTactics: {
         name: "Pack Tactics",
         description: "The {{slug}} has advantage on an attack roll against a creature if at least one of the {{slug}}'s allies is within 5 ft. of the creature and the ally isn't incapacitated."
+    },
+    pounce: {
+        name: "Pounce",
+        description: "If the {{slug}} moves at least 20 feet straight toward a creature and then hits it with a claw attack on the same turn, that target must succeed on a DC {{trait:DC}} Strength saving throw or be knocked prone. If the target is prone, the {{slug}} can make one bite attack against it as a bonus action.",
+        allowsSave: true,
+        dcStat: "str"
     },
     tramplingCharge: {
         name: "Trampling Charge",
