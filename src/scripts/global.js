@@ -86,7 +86,7 @@ function calculateSelectedMonster() {
     if (selectedVariant && selectedVariant.stats) {
         for (let cr in selectedVariant.stats) {
             if (sourceStats[cr]) {
-                sourceStats[cr] = Object.assign({}, sourceStats[cr], selectedVariant.stats[cr]);
+                sourceStats[cr] = mergeObjects(sourceStats[cr], selectedVariant.stats[cr]);
             } else {
                 sourceStats[cr] = selectedVariant.stats[cr];
             }
@@ -94,11 +94,17 @@ function calculateSelectedMonster() {
     }
 
     //Start with locked stats and presets for this CR, if any
-    let derivedStats = Object.assign({}, selectedMonster.lockedStats, sourceStats[targetCR]);
-    if (selectedVariant && selectedVariant.lockedStats) {
-        Object.assign(derivedStats, selectedVariant.lockedStats);
+    let derivedStats = {};
+    if (sourceStats[targetCR]) {
+        derivedStats = mergeObjects(derivedStats, sourceStats[targetCR]);
     }
+    derivedStats = mergeObjects(derivedStats, selectedMonster.lockedStats);
+    if (selectedVariant && selectedVariant.lockedStats) {
+        derivedStats = mergeObjects(derivedStats, selectedVariant.lockedStats);
+    }
+    console.log(derivedStats);
     derivedStats.proficiency = averageStats[targetCR].proficiency;
+    
     //Once we have our locked stats, go through the rest of the states to interpolate or extrapolate based on existing values.
     //All of the preset monster statblocks should be complete, but if we ever add "keyframes" for individual stats it may be possible to have CRs without all stats for a template
     //For this reason we do the interpolation for EACH stat individually, rather than finding the closest statblock to draw from
@@ -174,7 +180,8 @@ function calculateSelectedMonster() {
         derivedStats.abilityModifiers[abilityScores[i]] = abilityScoreModifier(derivedStats[abilityScores[i]]);
     }
 
-    if (!derivedStats.bonusArmor) {
+    //Need to check vs undefined rather than do implicit cast to acocunt for cases where bonus armor is already derived as 0
+    if (derivedStats.bonusArmor == undefined) {
         /* 
          * CR is more concerned with derived stats like total AC than source stats like armor bonus
          * So instead of extrapolating the armor bonus on its own we extrapolate total AC then reverse engineer armor bonus based on other AC mods
@@ -205,13 +212,7 @@ function calculateSelectedMonster() {
         derivedStats.hitDice = Math.max(1, Math.round(targetHP / hpPerHD));
     }
 
-    //Find all attacks the creature should have at the target CR by adding locked attacks to attacks for all CRs equal to or below target
-    derivedStats.attacks = {};
-    if (selectedMonster.lockedStats && selectedMonster.lockedStats.attacks) {
-        for (let attack in selectedMonster.lockedStats.attacks) {
-            derivedStats.attacks[attack] = Object.assign({}, selectedMonster.lockedStats.attacks[attack]);
-        }
-    }
+    //Find all attacks the creature should have at the target CR by adding attacks for all CRs equal to or below target
     for (let cr in sourceStats) {
         if (parseFloat(cr) <= parseFloat(targetCR) && sourceStats[cr].attacks) {
             for (let attack in sourceStats[cr].attacks) {
@@ -325,6 +326,32 @@ function calculateSelectedMonster() {
         $('#skills').hide();
     }
 
+    if (derivedStats.vulnerabilities) {
+        let vulnerabilitiesString = "";
+        for (let i = 0; i < derivedStats.vulnerabilities.length; i++) {
+            if (i) {
+                vulnerabilitiesString += ', ';
+            }
+            vulnerabilitiesString += toSentenceCase(derivedStats.vulnerabilities[i]);
+        }
+        $('#vulnerabilities span').html(vulnerabilitiesString);
+    } else {
+        $('#vulnerabilities').hide();
+    }
+
+    if (derivedStats.resistances) {
+        let resistancesString = "";
+        for (let i = 0; i < derivedStats.resistances.length; i++) {
+            if (i) {
+                resistancesString += ', ';
+            }
+            resistancesString += toSentenceCase(derivedStats.resistances[i]);
+        }
+        $('#resistances span').html(resistancesString);
+    } else {
+        $('#resistances').hide();
+    }
+
     //TODO: Add additional senses
     let sensesString = "";
     if (derivedStats.blindsight) {
@@ -341,6 +368,19 @@ function calculateSelectedMonster() {
             let currentTrait = derivedStats.traits[traitName];
             $('<p><strong><em>'+currentTrait.name+'.</em></strong> '+replaceTokensInString(currentTrait.description, derivedStats, currentTrait)+'</p>').appendTo('#traits');
         }
+    }
+
+    if (derivedStats.languages) {
+        let languagesString = "";
+        for (let i = 0; i < derivedStats.languages.length; i++) {
+            if (i) {
+                languagesString += ', ';
+            }
+            languagesString += derivedStats.languages[i];
+        }
+        $('#languages span').html(languagesString);
+    } else {
+        $('#languages').hide();
     }
 
     $('#attacks').empty();
@@ -386,7 +426,8 @@ function calculateSelectedMonster() {
             } else {
                 rangeString = 'reach ' + sizes[derivedStats.size].reach[currentAttack.reach];
             }
-            attackString += '+' + (derivedStats.proficiency + abilityModifier) + ' to hit, '+rangeString+ ' ft., ';
+            let attackBonus = derivedStats.proficiency + abilityModifier;
+            attackString += (attackBonus >= 0 ? '+' : '-' ) + Math.abs(attackBonus) + ' to hit, '+rangeString+ ' ft., ';
             if (currentAttack.proneOnly) {
                 attackString += 'one prone creature';
             } else if (currentAttack.creatureOnly) {
@@ -539,8 +580,8 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
             let lowerStep = stepForCR(benchmarks.lower.cr);
             let stepRange = upperStep - lowerStep;
             let targetStep = stepForCR(targetCR);
-            let upperWeight = (upperStep - targetStep) / stepRange;
-            let lowerWeight = (targetStep - lowerStep) / stepRange;
+            let lowerWeight = (upperStep - targetStep) / stepRange;
+            let upperWeight = (targetStep - lowerStep) / stepRange;
             return Math.round(upperWeight * upperValue + lowerWeight * lowerValue);
         }
         return Math.round(lowerValue);
@@ -739,4 +780,51 @@ function findDamageDice(targetDamage, preferredDieSize) {
         dieCount = Math.round(targetDamage/dieAverages[dice.indexOf(dieSize)]);
     }
     return [dieCount, dieSize];
+}
+
+/**
+ * Merges two arrays, creating a new array with the combined values excepting any duplicates
+ *
+ * @param {Array} array1 The first array to merge
+ * @param {Array} array2 The second array to merge
+ * @return {Array} An array containing the combined values of arrays 1 and 2 without any duplicates
+ */
+ function mergeArrays(array1, array2) {
+    let output = array1.slice();
+    for (let i = 0; i < array2.length; i++) {
+        if (!output.includes(array2[i])) {
+            output.push(array2[i]);
+        }
+    }
+    return output;
+}
+
+/**
+ * Recursively merges two objects. This differs from object assign in that it recursively merges child objects of the two params.
+ * 
+ * The output object will have all fields from both input objects. If both input objects contain a value for a given key the following will occur based on the value's type:
+ * Array: The two arrays will be merged using the mergeArrays function.
+ * Object: This function will be recursively called on the child objects.
+ * All other types: The value of object2 will be used (as with Object.assign)
+ *
+ * @param {Object} object1 The first object to merge
+ * @param {Object} object2 The second object to merge
+ * @return {Object} Object containing the merged values of the two input objects
+ */
+ function mergeObjects(object1, object2) {
+    let output = Object.assign({}, object1);
+    for (const [key, value] of Object.entries(object2)) {
+        if (output.hasOwnProperty(key)) {
+            if (Array.isArray(value)) {
+                output[key] = mergeArrays(output[key], value);
+            } else if (typeof(value) == 'object') {
+                output[key] = mergeObjects(output[key], value);
+            } else {
+                output[key] = value;
+            }
+        } else {
+            output[key] = value;
+        }
+    }
+    return output;
 }

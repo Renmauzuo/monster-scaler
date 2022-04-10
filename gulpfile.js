@@ -13,7 +13,7 @@ const $ = gulpLoadPlugins();
 const development = $.environments.development;
 const production = $.environments.production;
 
-const clean = () => promisedDel('docs');
+const clean = () => promisedDel('docs/');
 const cleanCSS = () => promisedDel('docs/**/*.css');
 const cleanHTML = () => promisedDel('docs/**/*.html');
 const cleanJS = () => promisedDel('docs/**/*.js');

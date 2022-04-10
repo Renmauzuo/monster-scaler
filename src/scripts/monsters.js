@@ -16,6 +16,7 @@ const reachLong = 4;
 const reachVeryLong = 5;
 
 const typeBeast = 'beast';
+const typePlant = 'plant';
 
 const alignmentUnaligned = 'unaligned';
 
@@ -24,6 +25,9 @@ const armorNatural = "Natural Armor";
 const damageTypePiercing = 'piercing';
 const damageTypeBludgeoning = 'bludgeoning';
 const damageTypeSlashing = 'slashing';
+const damageTypeFire = 'fire';
+
+const languageCreator = 'One Language Known By Its Creator';
 
 const skillRankUnproficient = 0;
 const skillRankProficient = 1;
@@ -107,6 +111,95 @@ const monsterList = {
                         damageDieSize: 6
                     }
                 }
+            }
+        }
+    },
+    awakenedPlant: {
+        menuName: 'Awakened Plant',
+        type: typePlant,
+        alignment: alignmentUnaligned,
+        variants: {
+            shrub : {
+                name: "Awakened Shrub",
+                stats: {
+                    0 : {
+                        name: "Awakened Shrub",
+                        attacks: {
+                            rake: {
+                                damageDieSize: 4,
+                                damageDice: 1
+                            },
+                        },
+                    },
+                },
+                lockedStats: {
+                    slug: "shrub",
+                    resistances: [damageTypePiercing],
+                    attacks: {
+                        rake: {
+                            reach: reachMediumShort,
+                            damageType: damageTypeSlashing,
+                            name: 'Rake',
+                            finesse: true
+                        },
+                    },
+                }
+            },
+            tree: {
+                name: "Awakened Tree",
+                stats: {
+                    2 : {
+                        name: "Awakened Tree",
+                        attacks: {
+                            slam: {
+                                damageDieSize: 6,
+                                damageDice: 3
+                            },
+                        },
+                    },
+                },
+                lockedStats: {
+                    slug: "tree",
+                    resistances: [damageTypeBludgeoning, damageTypePiercing],
+                    attacks: {
+                        slam: {
+                            reach: reachMediumShort,
+                            damageType: damageTypeBludgeoning,
+                            name: 'Slam',
+                        },
+                    },
+                }
+            }
+        },
+        lockedStats: {
+            armorDescription: armorNatural,
+            int: 10,
+            wis: 10,
+            vulnerabilities: [damageTypeFire],
+            languages: [languageCreator]
+        },
+        traits: [
+            "falseAppearance"
+        ],
+        stats: {
+            0 : {
+                bonusArmor: 0,
+                speed: 20,
+                hitDice: 3,
+                size: sizeSmall,
+                str: 3,
+                dex: 8,
+                con: 11,
+                cha: 6,
+            },
+            2 : {
+                bonusArmor: 5,
+                hitDice: 7,
+                size: sizeHuge,
+                str: 19,
+                dex: 6,
+                con: 15,
+                cha: 7,
             }
         }
     },
@@ -390,7 +483,6 @@ const monsterList = {
         alignment: alignmentUnaligned,
         lockedStats: {
             slug: 'tiger',
-            speed: 40,
             int: 3,
             skills: {
                 perception: skillRankProficient,
@@ -423,6 +515,7 @@ const monsterList = {
                 con: 15,
                 wis: 12,
                 cha: 8,
+                speed: 40,
                 attacks: {
                     bite: {
                         damageDice: 1,
@@ -1210,6 +1303,10 @@ const traits = {
     echolocation: {
         name: "Echolocation",
         description: "The {{slug}} can't use its blindsight while deafened."
+    },
+    falseAppearance: {
+        name: "False Appearance",
+        description: "While the {{slug}} remains motionless, it is indistinguishable from a normal {{slug}}."
     },
     holdBreath: {
         name: "Hold Breath",
