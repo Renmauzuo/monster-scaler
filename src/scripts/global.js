@@ -277,6 +277,7 @@ function calculateSelectedMonster() {
     //Calculate movement speeds. These won't scale with CR, we just take the stat the stat from the closest lower CR.
     derivedStats.speed = findNearestLowerBenchmark('speed', targetCR, sourceStats);
     derivedStats.swim = findNearestLowerBenchmark('swim', targetCR, sourceStats);
+    derivedStats.climb = findNearestLowerBenchmark('climb', targetCR, sourceStats);
 
     //Determine what senses the creature should have
     if (!derivedStats.blindsight) {
@@ -299,6 +300,9 @@ function calculateSelectedMonster() {
     }
     if (derivedStats.swim) {
         speedString += (speedString.length ? ', ' : '') + "Swim " + derivedStats.swim + ' ft.';
+    }
+    if (derivedStats.climb) {
+        speedString += (speedString.length ? ', ' : '') + "Climb " + derivedStats.climb + ' ft.';
     }
     $('#speed span').html(speedString);
 

@@ -203,6 +203,44 @@ const monsterList = {
             }
         }
     },
+    baboon: {
+        type: typeBeast,
+        alignment: alignmentUnaligned,
+        lockedStats: {
+            attacks: {
+                bite: {
+                    reach: reachMedium,
+                    damageType: damageTypePiercing,
+                    name: 'Bite'
+                }
+            },
+            slug: "baboon",
+        },
+        traits: [
+            "packTactics"
+        ],
+        stats: {
+            0 : {
+                name: "Baboon",
+                hitDice:13,
+                speed: 30,
+                climb: 30,
+                size: sizeMedium,
+                str: 8,
+                dex: 14,
+                con: 13,
+                int: 5,
+                wis: 12,
+                cha: 5,
+                attacks: {
+                    bite: {
+                        damageDice: 1,
+                        damageDieSize: 4
+                    },
+                }
+            },
+        }
+    },
     crocodile: {
         type: typeBeast,
         alignment: alignmentUnaligned,
