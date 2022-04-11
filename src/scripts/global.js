@@ -278,6 +278,7 @@ function calculateSelectedMonster() {
     derivedStats.swim = findNearestLowerBenchmark('swim', targetCR, sourceStats);
     derivedStats.climb = findNearestLowerBenchmark('climb', targetCR, sourceStats);
     derivedStats.burrow = findNearestLowerBenchmark('burrow', targetCR, sourceStats);
+    derivedStats.fly = findNearestLowerBenchmark('fly', targetCR, sourceStats);
 
     //Determine what senses the creature should have
     if (!derivedStats.blindsight) {
@@ -306,6 +307,9 @@ function calculateSelectedMonster() {
     }
     if (derivedStats.burrow) {
         speedString += (speedString.length ? ', ' : '') + "Burrow " + derivedStats.burrow + ' ft.';
+    }
+    if (derivedStats.fly) {
+        speedString += (speedString.length ? ', ' : '') + "Fly " + derivedStats.fly + ' ft.';
     }
     $('#speed span').html(speedString);
 
@@ -434,7 +438,8 @@ function calculateSelectedMonster() {
                 rangeString = 'reach ' + sizes[derivedStats.size].reach[currentAttack.reach];
             }
             let attackBonus = derivedStats.proficiency + abilityModifier;
-            attackString += (attackBonus >= 0 ? '+' : '-' ) + Math.abs(attackBonus) + ' to hit, '+rangeString+ ' ft., ';
+            //Monster stat blocks never have negative to hit, so we set 0 as the minimum
+            attackString += '+' + Math.max(attackBonus, 0) + ' to hit, '+rangeString+ ' ft., ';
             if (currentAttack.proneOnly) {
                 attackString += 'one prone creature';
             } else if (currentAttack.creatureOnly) {
@@ -444,11 +449,17 @@ function calculateSelectedMonster() {
             }
             attackString += (currentAttack.notGrappled ? ' not grappled by the ' + derivedStats.slug : '') + '. '
             attackString += '<em>Hit:</em> ' + Math.max(1, (averageRoll(currentAttack.damageDice, currentAttack.damageDieSize) + abilityModifier));
-            attackString += ' (' + currentAttack.damageDice + 'd' + currentAttack.damageDieSize;
-            if (abilityModifier) {
-                attackString += (abilityModifier >= 0 ? ' + ' : ' - ' ) + Math.abs(abilityModifier);
+            let maxDamage = currentAttack.damageDice * currentAttack.damageDieSize + abilityModifier;
+            //If the attack can't do more than one damage total omit the roll and just show 1 flat damage
+            if (maxDamage > 1) {
+                attackString += ' (' + currentAttack.damageDice + 'd' + currentAttack.damageDieSize;
+                if (abilityModifier) {
+                    attackString += (abilityModifier >= 0 ? ' + ' : ' - ' ) + Math.abs(abilityModifier);
+                }
+                attackString += ')';
             }
-            attackString += ') ' + currentAttack.damageType + ' damage.';
+
+            attackString += ' ' +  currentAttack.damageType + ' damage.';
             if (currentAttack.proc) {
                 attackString+= ' ' + replaceTokensInString(procs[currentAttack.proc], derivedStats);
             }

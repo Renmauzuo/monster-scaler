@@ -311,6 +311,64 @@ const monsterList = {
             },
         }
     },
+    bat: {
+        type: typeBeast,
+        alignment: alignmentUnaligned,
+        lockedStats: {
+            attacks: {
+                bite: {
+                    reach: reachMedium,
+                    damageType: damageTypePiercing,
+                    name: 'Bite',
+                }
+            },
+            int: 2,
+            blindsight: 60,
+            slug: "bat",
+        },
+        traits: [
+            "keenHearing",
+            "echolocation"
+        ],
+        stats: {
+            0 : {
+                name: "Bat",
+                hitDice: 1,
+                speed: 5,
+                fly: 30,
+                size: sizeTiny,
+                str: 2,
+                dex: 15,
+                con: 8,
+                wis: 12,
+                cha: 4,
+                attacks: {
+                    bite: {
+                        damageDice: 1,
+                        damageDieSize: 1
+                    },
+                }
+            },
+            .25 : {
+                name: "Giant Bat",
+                hitDice: 12,
+                speed: 30,
+                fly: 30,
+                size: sizeMedium,
+                str: 15,
+                dex: 16,
+                con: 11,
+                wis: 12,
+                cha: 6,
+                attacks: {
+                    bite: {
+                        damageDice: 1,
+                        damageDieSize: 6
+                    },
+                }
+            },
+        }
+    },
     crocodile: {
         type: typeBeast,
         alignment: alignmentUnaligned,
