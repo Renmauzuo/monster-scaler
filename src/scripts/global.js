@@ -147,54 +147,53 @@ function calculateSelectedMonster() {
 
     //Traits require a different approach from some other stats as we take a base from the trait library, but potentially apply modifiers to it based on creature stats.
     //TODO: Adjust for creatures that gain additional traits as they level up
+    derivedStats.traits = {};
+    let traitList = [];
     if (selectedMonster.traits) {
-        derivedStats.traits = {};
-        let traitList;
-        if (selectedVariant && selectedVariant.traits) {
-            traitList = selectedMonster.traits.concat(selectedVariant.traits); 
-        } else {
-            traitList = selectedMonster.traits;
+        traitList = traitList.concat(selectedMonster.traits);
+    }
+    if (selectedVariant && selectedVariant.traits) {
+        traitList = traitList.concat(selectedVariant.traits); 
+    }
+    if (wildShape && $('#magic-attacks')[0].checked) {
+        traitList.push('magicAttacks');
+    }
+    for (let i = 0; i < traitList.length; i++) {
+        const traitName =traitList[i];
+        const baseTrait = traits[traitName];
+        let newTrait;
+        derivedStats.traits[traitName] = newTrait = {};
+        newTrait.name = baseTrait.name;
+        newTrait.description = baseTrait.description;
+        if (sourceStats[targetCR] && sourceStats[targetCR].traits && sourceStats[targetCR].traits[traitName]) {
+            newTrait = Object.assign(newTrait, sourceStats[targetCR].traits[traitName]);
         }
-        if (wildShape && $('#magic-attacks')[0].checked) {
-            traitList.push('magicAttacks');
-        }
-        for (let i = 0; i < traitList.length; i++) {
-            const traitName =traitList[i];
-            const baseTrait = traits[traitName];
-            let newTrait;
-            derivedStats.traits[traitName] = newTrait = {};
-            newTrait.name = baseTrait.name;
-            newTrait.description = baseTrait.description;
-            if (sourceStats[targetCR] && sourceStats[targetCR].traits && sourceStats[targetCR].traits[traitName]) {
-                newTrait = Object.assign(newTrait, sourceStats[targetCR].traits[traitName]);
-            }
 
-            if (baseTrait.allowsSave) {
-                newTrait.dcStat = baseTrait.dcStat;
-                if (!newTrait.hasOwnProperty("dcAdjustment")) {
-                    let dcAdjustmentString = "traits__"+traitName+"__dcAdjustment";
-                    let dcAdjustmentBenchmarks = findBenchmarksForStat(dcAdjustmentString, targetCR, sourceStats);
-                    if (dcAdjustmentBenchmarks) {
-                        if (dcAdjustmentBenchmarks.upper) {
-                            if (dcAdjustmentBenchmarks.lower) {
-                                newTrait.dcAdjustment = calculateWeightedAverage(dcAdjustmentString, dcAdjustmentBenchmarks, targetCR);
-                            } else {
-                                newTrait.dcAdjustment = dcAdjustmentBenchmarks.upper[dcAdjustmentString];
-                            }
-                        } else if (dcAdjustmentBenchmarks.lower) {
-                            newTrait.dcAdjustment = dcAdjustmentBenchmarks.lower[dcAdjustmentString];
+        if (baseTrait.allowsSave) {
+            newTrait.dcStat = baseTrait.dcStat;
+            if (!newTrait.hasOwnProperty("dcAdjustment")) {
+                let dcAdjustmentString = "traits__"+traitName+"__dcAdjustment";
+                let dcAdjustmentBenchmarks = findBenchmarksForStat(dcAdjustmentString, targetCR, sourceStats);
+                if (dcAdjustmentBenchmarks) {
+                    if (dcAdjustmentBenchmarks.upper) {
+                        if (dcAdjustmentBenchmarks.lower) {
+                            newTrait.dcAdjustment = calculateWeightedAverage(dcAdjustmentString, dcAdjustmentBenchmarks, targetCR);
+                        } else {
+                            newTrait.dcAdjustment = dcAdjustmentBenchmarks.upper[dcAdjustmentString];
                         }
-                    } else {
-                        newTrait.dcAdjustment = 0;
+                    } else if (dcAdjustmentBenchmarks.lower) {
+                        newTrait.dcAdjustment = dcAdjustmentBenchmarks.lower[dcAdjustmentString];
                     }
+                } else {
+                    newTrait.dcAdjustment = 0;
                 }
             }
+        }
 
-            if (baseTrait.hasDuration) {
-                if (!newTrait.hasOwnProperty("duration")) {
-                    let durationString = "traits__"+traitName+"__duration";
-                    newTrait.duration = findNearestLowerBenchmark(durationString, targetCR, sourceStats);
-                }
+        if (baseTrait.hasDuration) {
+            if (!newTrait.hasOwnProperty("duration")) {
+                let durationString = "traits__"+traitName+"__duration";
+                newTrait.duration = findNearestLowerBenchmark(durationString, targetCR, sourceStats);
             }
         }
     }
