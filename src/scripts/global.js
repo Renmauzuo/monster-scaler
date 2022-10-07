@@ -34,6 +34,7 @@ $(function () {
             $('#player-int').val(params.get('int'));
             $('#player-wis').val(params.get('wis'));
             $('#player-cha').val(params.get('cha'));
+            $('#magic-attacks')[0].checked = params.get('magicAttacks') !== null;
         }
     }
 
@@ -98,6 +99,9 @@ function calculateSelectedMonster() {
     }
     if (wildShape) {
         directLink += '&wildshape&int='+$('#player-int').val() + '&wis=' + $('#player-wis').val() + '&cha=' + $('#player-cha').val();
+        if ($('#magic-attacks')[0].checked) {
+            directLink += '&magicAttacks';
+        }
     }
     $('#direct-link').attr('href', directLink);
 
@@ -122,6 +126,15 @@ function calculateSelectedMonster() {
     if (selectedVariant && selectedVariant.lockedStats) {
         derivedStats = mergeObjects(derivedStats, selectedVariant.lockedStats);
     }
+    if (wildShape) {
+        //Override int, wis, and cha if this is a wild shape
+        let wildShapeStats = {
+            int: $('#player-int').val(),
+            wis: $('#player-wis').val(),
+            cha: $('#player-cha').val()
+        }
+        derivedStats = mergeObjects(derivedStats, wildShapeStats);
+    }
     derivedStats.proficiency = averageStats[targetCR].proficiency;
     
     //Once we have our locked stats, go through the rest of the states to interpolate or extrapolate based on existing values.
@@ -141,6 +154,9 @@ function calculateSelectedMonster() {
             traitList = selectedMonster.traits.concat(selectedVariant.traits); 
         } else {
             traitList = selectedMonster.traits;
+        }
+        if (wildShape && $('#magic-attacks')[0].checked) {
+            traitList.push('magicAttacks');
         }
         for (let i = 0; i < traitList.length; i++) {
             const traitName =traitList[i];
@@ -189,12 +205,6 @@ function calculateSelectedMonster() {
         derivedStats.size = Math.min(6, derivedStats.size);
     }
 
-    //Override int, wis, and cha if this is a wild shape
-    if(wildShape) {
-        derivedStats['int'] = $('#player-int').val();
-        derivedStats['wis'] = $('#player-wis').val();
-        derivedStats['cha'] = $('#player-cha').val();
-    }
     let abilityScores = ["str", "con", "dex", "int", "wis", "cha"];
     derivedStats.abilityModifiers = {};
     for (let i = 0; i < abilityScores.length; i++) {

@@ -937,7 +937,7 @@ const monsterList = {
  * Most of these stats were determined by average stats of monsters in various rulebooks by CR.
  * However, outliers sometimes skewed results for certain CRs, especially at high levels when there are very few monsters at each CR, so many of these vlaues have been "fudged" to create a smoother upward transition.
  * Decimal values are to ease the curve a bit, even though all final values will be rounded.
- * Beasts were excluded from average INT calculates, as their INT tends to be capped at 3, regardless of CR.
+ * Beasts were excluded from average INT calculations, as their INT tends to be capped at 3, regardless of CR.
  */
 
 const averageStats = {
@@ -1494,6 +1494,10 @@ const traits = {
     packTactics: {
         name: "Pack Tactics",
         description: "The {{slug}} has advantage on an attack roll against a creature if at least one of the {{slug}}'s allies is within 5 ft. of the creature and the ally isn't incapacitated."
+    },
+    magicAttacks: {
+        name: "Magic Weapons",
+        description: "The {{slug}}'s weapon attacks are magical."
     },
     pounce: {
         name: "Pounce",
