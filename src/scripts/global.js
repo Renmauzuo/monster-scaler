@@ -27,14 +27,30 @@ $(function () {
         if ($('#variant-select option[value="'+paramsVariant+'"]').length) {
             $('#variant-select').val(paramsVariant);
         }
+
+        if (params.get('wildshape') !== null) {
+            $('#wild-shape-wrapper').show();
+            $('#wild-shape')[0].checked = true;
+            $('#player-int').val(params.get('int'));
+            $('#player-wis').val(params.get('wis'));
+            $('#player-cha').val(params.get('cha'));
+        }
     }
 
-    $('#monster-select, #cr-select, #variant-select').on('change', function () {
-        if ($(this).attr('id') === "monster-select") {
-           setupVariantSelect(true);
-        }
-        calculateSelectedMonster();
+    $('#monster-select').on('change', function () {
+        setupVariantSelect(true);
     });
+
+    $('#wild-shape').on('change', function () {
+        if ($(this)[0].checked) {
+            $('#wild-shape-wrapper').slideDown();
+        } else {
+            $('#wild-shape-wrapper').slideUp();
+        }
+    });
+
+    //Pretty much any input change means a recalculation
+    $('input,select').on('change', calculateSelectedMonster);
 
     calculateSelectedMonster();
 
@@ -70,6 +86,7 @@ function calculateSelectedMonster() {
     let targetCR = $('#cr-select').val();
     let numTargetCR = Number(targetCR); //Certain comparisons require a numeric version of the CR
     let selectedVariant;
+    let wildShape = $('#wild-shape')[0].checked;
     if (selectedMonster.variants) {
         selectedVariant = selectedMonster.variants[$('#variant-select').val()];
     }
@@ -78,6 +95,9 @@ function calculateSelectedMonster() {
     directLink += '?monster='+monsterID+'&cr='+targetCR;
     if (selectedVariant) {
         directLink += '&variant='+$('#variant-select').val();
+    }
+    if (wildShape) {
+        directLink += '&wildshape&int='+$('#player-int').val() + '&wis=' + $('#player-wis').val() + '&cha=' + $('#player-cha').val();
     }
     $('#direct-link').attr('href', directLink);
 
@@ -169,6 +189,12 @@ function calculateSelectedMonster() {
         derivedStats.size = Math.min(6, derivedStats.size);
     }
 
+    //Override int, wis, and cha if this is a wild shape
+    if(wildShape) {
+        derivedStats['int'] = $('#player-int').val();
+        derivedStats['wis'] = $('#player-wis').val();
+        derivedStats['cha'] = $('#player-cha').val();
+    }
     let abilityScores = ["str", "con", "dex", "int", "wis", "cha"];
     derivedStats.abilityModifiers = {};
     for (let i = 0; i < abilityScores.length; i++) {
@@ -178,6 +204,8 @@ function calculateSelectedMonster() {
         }
         derivedStats.abilityModifiers[abilityScores[i]] = abilityScoreModifier(derivedStats[abilityScores[i]]);
     }
+
+    
 
     //Need to check vs undefined rather than do implicit cast to acocunt for cases where bonus armor is already derived as 0
     if (derivedStats.bonusArmor == undefined) {

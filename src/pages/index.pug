@@ -23,6 +23,15 @@ html(lang="en")
             #variant-wrapper 
                 label(for='variant-select') Variant:
                 select#variant-select(name='variant-select')
+            input#wild-shape(type="checkbox")
+            label(for="wild-shape") This is a wild shape/shapechange
+            #wild-shape-wrapper
+                label(for='player-int') Intelligence:
+                input#player-int(name='player-int' type='number' step="1" min="0" value="10")
+                label(for='player-wis') Wisdom:
+                input#player-wis(name='player-wis' type='number' step="1" min="0" value="10")
+                label(for='player-cha') Charisma:
+                input#player-cha(name='player-cha' type='number' step="1" min="0" value="10")
             p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
         #monster-stats.container
             #stat-block

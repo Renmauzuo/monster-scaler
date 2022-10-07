@@ -10,13 +10,26 @@
 		margin-bottom: .5em;
 	}
 	
-	select {
+	select,input {
 		margin-bottom: 1em;
 		min-width: 100px;
+        display: block;
 	}
 
     #variant-wrapper {
         display: none;
+    }
+
+    input {
+        &[type='checkbox'] {
+            display: inline-block;
+            margin-right: .5em;
+            min-width: unset;
+            
+            & + label {
+                display: inline-block;
+            }
+        }
     }
 }
 
@@ -118,3 +131,6 @@
     }
 }
 
+#wild-shape-wrapper {
+    display: none;
+}
