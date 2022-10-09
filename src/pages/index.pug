@@ -90,6 +90,7 @@ html(lang="en")
         #footer.container
             p 
                 a(id="direct-link" href="/") Direct link
+            button#fight-club(onclick="exportFightClub()") Export as XML for Fight Club
             details
                 summary Using this tool
                 p This tool was created to scale certain monsters up or down a few levels to make them useable as summons or wild shape forms for a wider range of levels. Feel free to use this calculator however you like, though caution is advised when scaling low CR monsters up to very high levels, or vice versa. While stats like hp, damage, and ability scores are scaled up and down the tool currently does not adjust things like resistances, immunities, or legendary abilities. Scaling a high CR monster down to low levels may not be appropriate for a low level party as its abilities would still make it very powerful, while a low CR creature scaled up to very high levels may have appropriate stats but would lack the resistances and immunities commonly found at the higher CR.
@@ -100,7 +101,8 @@ html(lang="en")
                 a(href="https://media.wizards.com/2016/downloads/SRD-OGL_V1.1.pdf") OPEN GAME LICENSE
                 | .
             p
-                a(href="https://github.com/Renmauzuo/monster-scaler") Fork me
+                a(href="https://github.com/Renmauzuo/monster-scaler") Fork me on Github
+            p Want a specific creature added? More creatures will be added over time, but you may open an issue on Github to request that a particular creature be a higher priority.
         script(src='https://code.jquery.com/jquery-3.4.1.min.js' integrity='sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=' crossorigin='anonymous')
         script(src='scripts/monsters.min.js')
         script(src='scripts/global.min.js')
