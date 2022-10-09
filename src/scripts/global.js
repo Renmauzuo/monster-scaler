@@ -383,10 +383,39 @@ function calculateSelectedMonster() {
         $('#resistances').hide();
     }
 
+    if (derivedStats.immunities) {
+        let immunitiesString = "";
+        for (let i = 0; i < derivedStats.immunities.length; i++) {
+            if (i) {
+                immunitiesString += ', ';
+            }
+            immunitiesString += toSentenceCase(derivedStats.immunities[i]);
+        }
+        $('#immunities span').html(immunitiesString);
+    } else {
+        $('#immunities').hide();
+    }
+
+    if (derivedStats.conditionImmunities) {
+        let conditionImmunitiesString = "";
+        for (let i = 0; i < derivedStats.conditionImmunities.length; i++) {
+            if (i) {
+                conditionImmunitiesString += ', ';
+            }
+            conditionImmunitiesString += toSentenceCase(derivedStats.conditionImmunities[i]);
+        }
+        $('#condition-immunities span').html(conditionImmunitiesString);
+    } else {
+        $('#condnition-immunities').hide();
+    }
+
     //TODO: Add additional senses
     let sensesString = "";
     if (derivedStats.blindsight) {
         sensesString += "blindsight " + derivedStats.blindsight + ' ft., '
+    }
+    if (derivedStats.darkvision) {
+        sensesString += "Darkvision " + derivedStats.darkvision + ' ft., '
     }
     derivedStats.sensesString = sensesString; //Need to store this without passive perception added as Fight Club tracks that separately
     derivedStats.passivePerception = (10 + derivedStats.abilityModifiers.wis + (derivedStats.skills && derivedStats.skills.hasOwnProperty('perception') ? averageStats[targetCR].proficiency : 0));
@@ -694,6 +723,23 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
         }
     }
 
+    if (baseTrait.dealsDamage) {
+        let damageDiceString = 'traits__'+traitName+'__damageDice';
+        let damageDieString =  'traits__'+traitName+'__damageDieSize';
+        let attributes = [damageDiceString, damageDieString];
+
+        let damageBenchmarks = findBenchmarksForStat(attributes, targetCR, sourceStats);
+        for (let benchmark in damageBenchmarks) {
+            let currentBenchmark = damageBenchmarks[benchmark];
+            currentBenchmark.damagePerRound = averageRoll(currentBenchmark[damageDiceString], currentBenchmark[damageDieString]);
+        }
+        let estimatedDamage = extrapolateFromBenchmark('damagePerRound', targetCR, damageBenchmarks, false);
+        let preferredDieSize = findNearestLowerBenchmark(damageDieString, targetCR, sourceStats);
+        let estimatedDice = findDamageDice(estimatedDamage, preferredDieSize);
+        newTrait.damageDice = estimatedDice[0];
+        newTrait.damageDieSize = estimatedDice[1];
+    }
+
     return newTrait;
  }
 
@@ -821,6 +867,14 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
                         targetSize += trait.sizeAdjustment;
                     }
                     tokenValue = sizes[targetSize].name;
+                } else if (tokenArray[1] == 'damage') {
+                    let damageDice = trait.damageDice;
+                    let damageDieSize = trait.damageDieSize;
+                    if (damageDieSize === 1) {
+                        tokenValue = damageDice;
+                    } else {
+                        tokenValue = averageRoll(damageDice, damageDieSize) + ' (' +  damageDice + 'd' + damageDieSize + ')';
+                    }
                 }
             }
         }
@@ -984,11 +1038,10 @@ function findDamageDice(targetDamage, preferredDieSize) {
     fightClubXML += xmlNode('passive', derivedStats.passivePerception);
     fightClubXML += xmlNode('languages', $('#languages span').html());
     fightClubXML += xmlNode('cr', cr);
-    //TODO: Resistances and immunities
     fightClubXML += xmlNode('resist', $('#resistances span').html().toLowerCase());
     fightClubXML += xmlNode('immune', $('#immunities span').html().toLowerCase());
     fightClubXML += xmlNode('vulnerable', $('#vulnerabilities span').html().toLowerCase());
-    fightClubXML += xmlNode('conditionImmune', '');
+    fightClubXML += xmlNode('conditionImmune', $('#condition-immunities span').html().toLowerCase());
     fightClubXML += xmlNode('senses', derivedStats.sensesString);
     for (let traitName in derivedStats.traits) {
         let traitXML = xmlNode('name', derivedStats.traits[traitName].name);
