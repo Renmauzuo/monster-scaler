@@ -36,6 +36,16 @@ html(lang="en")
                     div
                         label(for='player-cha') Charisma:
                         input#player-cha(name='player-cha' type='number' step="1" min="0" value="10")
+                .wild-shape-row
+                    div
+                        label(for='ws-ac-bonus') Extra AC:
+                        input#ws-ac-bonus(name='ws-ac-bonus' type='number' step="1" min="0" value="0")
+                    div
+                        label(for='ws-attack-bonus') Extra Attack:
+                        input#ws-attack-bonus(name='ws-attack-bonus' type='number' step="1" min="0" value="0")
+                    div
+                        label(for='ws-damage-bonus') Extra Damage:
+                        input#ws-damage-bonus(name='ws-damage-bonus' type='number' step="1" min="0" value="0")
                 input#magic-attacks(type="checkbox" name="magic-attacks")
                 label(for="magic-attacks") Magic Attacks
             p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.

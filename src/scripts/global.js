@@ -35,6 +35,9 @@ $(function () {
             $('#player-int').val(params.get('int'));
             $('#player-wis').val(params.get('wis'));
             $('#player-cha').val(params.get('cha'));
+            $('#ws-ac-bonus').val(params.get('ac'));
+            $('#ws-attack-bonus').val(params.get('hit'));
+            $('#ws-damage-bonus').val(params.get('dam'));
             $('#magic-attacks')[0].checked = params.get('magicAttacks') !== null;
         }
     }
@@ -100,6 +103,7 @@ function calculateSelectedMonster() {
     }
     if (wildShape) {
         directLink += '&wildshape&int='+$('#player-int').val() + '&wis=' + $('#player-wis').val() + '&cha=' + $('#player-cha').val();
+        directLink += '&ac='+$('#ws-ac-bonus').val() + '&hit=' + $('#ws-attack-bonus').val() + '&dam=' + $('#ws-damage-bonus').val();
         if ($('#magic-attacks')[0].checked) {
             directLink += '&magicAttacks';
         }
@@ -238,7 +242,12 @@ function calculateSelectedMonster() {
             let targetAC = extrapolateFromBenchmark('ac', targetCR, acBenchmarks, false);
             //The max check shouldn't really be necessary, but we don't want to risk a creature with abnormally high dex resulting in a negative bonus armor rating
             derivedStats.bonusArmor = Math.max(0, targetAC - 10 - derivedStats.abilityModifiers.dex);
+        } else {
+            derivedStats.bonusArmor = 0; //Need to define it to add wild shape bonus to it
         }
+    }
+    if (wildShape) {
+        derivedStats.bonusArmor += parseInt($('#ws-ac-bonus').val());
     }
 
     if (!derivedStats.hitDice) {
@@ -332,7 +341,7 @@ function calculateSelectedMonster() {
     $('#monster-type').html(sizes[derivedStats.size].name + ' ' + selectedMonster.type + ', ' + selectedMonster.alignment);
 
     if (derivedStats.bonusArmor) {
-        $('#armor-class span').html((10 + derivedStats.bonusArmor + derivedStats.abilityModifiers.dex) + ' ('+derivedStats.armorDescription+')');
+        $('#armor-class span').html((10 + derivedStats.bonusArmor + derivedStats.abilityModifiers.dex) + ' ('+(derivedStats.armorDescription||'Bonus Armor')+')');
     } else {
         $('#armor-class span').html(10 + derivedStats.abilityModifiers.dex);
     }
@@ -478,6 +487,10 @@ function calculateSelectedMonster() {
             //Save some things for Fight Club export
             currentAttack.attackBonus = derivedStats.proficiency + abilityModifier;
             currentAttack.damageBonus = abilityModifier;
+            if (wildShape) {
+                currentAttack.attackBonus += parseInt($('#ws-attack-bonus').val());
+                currentAttack.damageBonus += parseInt($('#ws-damage-bonus').val());
+            }
             
             let attackString = '<em>' + (currentAttack.ranged ? 'Ranged' : 'Melee') + ' Weapon Attack:</em> ';
             let rangeString;
