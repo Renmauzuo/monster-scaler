@@ -620,7 +620,7 @@ const monsterList = {
             conditionImmunities: [conditionExhaustion, conditionGrappled, conditionParalyzed, conditionPetrified, conditionPoisoned, conditionProne, conditionRestrainted, conditionUnconscious],
             attacks: {
                 touch: {
-                    reach: reachMedium,
+                    reach: reachMediumShort,
                     damageType: damageTypeFire,
                     name: 'Touch',
                     proc: 'ignite'
