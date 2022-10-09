@@ -168,43 +168,7 @@ function calculateSelectedMonster() {
         traitList.push('magicAttacks');
     }
     for (let i = 0; i < traitList.length; i++) {
-        const traitName =traitList[i];
-        const baseTrait = traits[traitName];
-        let newTrait;
-        derivedStats.traits[traitName] = newTrait = {};
-        newTrait.name = baseTrait.name;
-        newTrait.description = baseTrait.description;
-        if (sourceStats[targetCR] && sourceStats[targetCR].traits && sourceStats[targetCR].traits[traitName]) {
-            newTrait = Object.assign(newTrait, sourceStats[targetCR].traits[traitName]);
-        }
-
-        if (baseTrait.allowsSave) {
-            newTrait.dcStat = baseTrait.dcStat;
-            if (!newTrait.hasOwnProperty("dcAdjustment")) {
-                let dcAdjustmentString = "traits__"+traitName+"__dcAdjustment";
-                let dcAdjustmentBenchmarks = findBenchmarksForStat(dcAdjustmentString, targetCR, sourceStats);
-                if (dcAdjustmentBenchmarks) {
-                    if (dcAdjustmentBenchmarks.upper) {
-                        if (dcAdjustmentBenchmarks.lower) {
-                            newTrait.dcAdjustment = calculateWeightedAverage(dcAdjustmentString, dcAdjustmentBenchmarks, targetCR);
-                        } else {
-                            newTrait.dcAdjustment = dcAdjustmentBenchmarks.upper[dcAdjustmentString];
-                        }
-                    } else if (dcAdjustmentBenchmarks.lower) {
-                        newTrait.dcAdjustment = dcAdjustmentBenchmarks.lower[dcAdjustmentString];
-                    }
-                } else {
-                    newTrait.dcAdjustment = 0;
-                }
-            }
-        }
-
-        if (baseTrait.hasDuration) {
-            if (!newTrait.hasOwnProperty("duration")) {
-                let durationString = "traits__"+traitName+"__duration";
-                newTrait.duration = findNearestLowerBenchmark(durationString, targetCR, sourceStats);
-            }
-        }
+        derivedStats.traits[traitList[i]] = generateTrait(traitList[i], targetCR, sourceStats);
     }
 
     if(!derivedStats.size) {
@@ -310,6 +274,10 @@ function calculateSelectedMonster() {
             currentAttack.range = findNearestLowerBenchmark('attacks__'+attack+'__range', targetCR, sourceStats);
             currentAttack.longRange = findNearestLowerBenchmark('attacks__'+attack+'__longRange', targetCR, sourceStats);
         }
+
+        if (currentAttack.proc) {
+            currentAttack.generatedProc = generateTrait(currentAttack.proc, targetCR, sourceStats);
+        }
     }
 
     if (!derivedStats.multiattack) {
@@ -397,6 +365,7 @@ function calculateSelectedMonster() {
             vulnerabilitiesString += toSentenceCase(derivedStats.vulnerabilities[i]);
         }
         $('#vulnerabilities span').html(vulnerabilitiesString);
+        $('#vulnerabilities').show();
     } else {
         $('#vulnerabilities').hide();
     }
@@ -521,8 +490,8 @@ function calculateSelectedMonster() {
             }
 
             attackString += ' ' +  currentAttack.damageType + ' damage.';
-            if (currentAttack.proc) {
-                attackString+= ' ' + replaceTokensInString(procs[currentAttack.proc], derivedStats);
+            if (currentAttack.generatedProc) {
+                attackString+= ' ' + replaceTokensInString(currentAttack.generatedProc.description, derivedStats, currentAttack.generatedProc);
             }
             currentAttack.text = attackString; //Save text for Fight Club
             $('<p><strong>'+currentAttack.name+'</strong> '+attackString+'</p>').appendTo('#attacks');
@@ -674,6 +643,61 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
 }
 
 /**
+ * Generates a trait or proc description, calculating attributes such as damage and DC and then replacing tokens in the description string
+ *
+ * @param {string} traitName The id of the base trait (or proc) to use
+ * @param {string} targetCR The challenge rating to generate the trait for
+ * @param {Object} sourceStats The stat block to use for finding trait benchmarks
+ * @return {Object} A new trait or proc with a completed description and scaled attributes (DC, Damage, etc)
+ */
+ function generateTrait(traitName, targetCR, sourceStats) {
+    let baseTrait = traits[traitName] || procs[traitName];
+    let newTrait = {};
+    newTrait.name = baseTrait.name;
+    newTrait.description = baseTrait.description;
+    if (sourceStats[targetCR] && sourceStats[targetCR].traits && sourceStats[targetCR].traits[traitName]) {
+        newTrait = Object.assign(newTrait, sourceStats[targetCR].traits[traitName]);
+    }
+
+    if (baseTrait.allowsSave) {
+        newTrait.dcStat = baseTrait.dcStat;
+        if (!newTrait.hasOwnProperty("dcAdjustment")) {
+            let dcAdjustmentString = "traits__"+traitName+"__dcAdjustment";
+            let dcAdjustmentBenchmarks = findBenchmarksForStat(dcAdjustmentString, targetCR, sourceStats);
+            if (dcAdjustmentBenchmarks) {
+                if (dcAdjustmentBenchmarks.upper) {
+                    if (dcAdjustmentBenchmarks.lower) {
+                        newTrait.dcAdjustment = calculateWeightedAverage(dcAdjustmentString, dcAdjustmentBenchmarks, targetCR);
+                    } else {
+                        newTrait.dcAdjustment = dcAdjustmentBenchmarks.upper[dcAdjustmentString];
+                    }
+                } else if (dcAdjustmentBenchmarks.lower) {
+                    newTrait.dcAdjustment = dcAdjustmentBenchmarks.lower[dcAdjustmentString];
+                }
+            } else {
+                newTrait.dcAdjustment = 0;
+            }
+        }
+    }
+
+    if (baseTrait.hasDuration) {
+        if (!newTrait.hasOwnProperty("duration")) {
+            let durationString = "traits__"+traitName+"__duration";
+            newTrait.duration = findNearestLowerBenchmark(durationString, targetCR, sourceStats);
+        }
+    }
+
+    if (baseTrait.sizeRestricted) {
+        if (!newTrait.hasOwnProperty("sizeAdjustment")) {
+            let sizeAdjustmentString = "traits__"+traitName+"__sizeAdjustment";
+            newTrait.sizeAdjustment = findNearestLowerBenchmark(sizeAdjustmentString, targetCR, sourceStats);
+        }
+    }
+
+    return newTrait;
+ }
+
+/**
  * Calculates the modifier for an ability score
  *
  * @param {string} ability The ability score value
@@ -791,6 +815,12 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
                         dc += parseInt(trait.dcAdjustment);
                     }
                     tokenValue = dc;
+                } else if (tokenArray[1] == 'size') {
+                    let targetSize = statBlock.size;
+                    if (trait.sizeAdjustment) {
+                        targetSize += trait.sizeAdjustment;
+                    }
+                    tokenValue = sizes[targetSize].name;
                 }
             }
         }
@@ -955,9 +985,9 @@ function findDamageDice(targetDamage, preferredDieSize) {
     fightClubXML += xmlNode('languages', $('#languages span').html());
     fightClubXML += xmlNode('cr', cr);
     //TODO: Resistances and immunities
-    fightClubXML += xmlNode('resist', '');
-    fightClubXML += xmlNode('immune', '');
-    fightClubXML += xmlNode('vulnerable', '');
+    fightClubXML += xmlNode('resist', $('#resistances span').html().toLowerCase());
+    fightClubXML += xmlNode('immune', $('#immunities span').html().toLowerCase());
+    fightClubXML += xmlNode('vulnerable', $('#vulnerabilities span').html().toLowerCase());
     fightClubXML += xmlNode('conditionImmune', '');
     fightClubXML += xmlNode('senses', derivedStats.sensesString);
     for (let traitName in derivedStats.traits) {
