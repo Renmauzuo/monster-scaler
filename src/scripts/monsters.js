@@ -16,11 +16,30 @@ const reachLong = 4;
 const reachVeryLong = 5;
 
 const typeBeast = 'beast';
-const typePlant = 'plant';
 const typeElemental = 'elemental';
+const typeHumanoid = 'humanoid';
+const typePlant = 'plant';
 
 const alignmentUnaligned = 'unaligned';
 const alignmentNeutral = 'neutral';
+const alignmentAny = 'any alignment';
+
+const alignmentMaskUnaligned = 0;
+const alignmentMaskLG = 1;
+const alignmentMaskNG = 2;
+const alignmentMaskCG = 4;
+const alignmentMaskLN = 8;
+const alignmentMaskTN = 16;
+const alignmentMaskCN = 32;
+const alignmentMaskLE = 64;
+const alignmentMaskNE = 128;
+const alignmentMaskCE = 256;
+
+const alignmentMaskGood = alignmentMaskLG | alignmentMaskNG | alignmentMaskCG;
+const alignmentMaskEvil = alignmentMaskLE | alignmentMaskNE | alignmentMaskCE;
+const alignmentMaskLawful = alignmentMaskLG | alignmentMaskLN | alignmentMaskLE;
+const alignmentMaskChaotic = alignmentMaskCG | alignmentMaskCN | alignmentMaskCE;
+const alignmentMaskAny = alignmentMaskGood | alignmentMaskEvil | alignmentMaskLN | alignmentMaskTN | alignmentMaskCN; 
 
 const armorNatural = "Natural Armor";
 
@@ -42,10 +61,15 @@ const conditionUnconscious = 'unconscious';
 
 const languageCreator = 'One Language Known By Its Creator';
 const languageIgnan = 'Ignan';
+const languageAnyOne = 'Any One Language';
+const languageCommon = 'Common';
 
 const skillRankUnproficient = 0;
 const skillRankProficient = 1;
 const skillRankExpert = 2;
+
+const raceAny = 'any race';
+const raceHuman = 'human';
 
 const monsterList = {
     ape: {
@@ -384,6 +408,42 @@ const monsterList = {
                     },
                 }
             },
+        }
+    },
+    commoner: {
+        type: typeHumanoid,
+        alignment: alignmentAny,
+        race: raceAny,
+        lockedStats: {
+            attacks: {
+                club: {
+                    reach: reachMedium,
+                    damageType: damageTypeBludgeoning,
+                    name: 'Club'
+                }
+            },
+            extraLanguages: 1,
+            slug: "commoner",
+            size: sizeMedium
+        },
+        stats: {
+            0 : {
+                name: "Commoner",
+                hitDice: 1,
+                speed: 30,
+                str: 10,
+                dex: 10,
+                con: 10,
+                int: 10,
+                wis: 10,
+                cha: 10,
+                attacks: {
+                    club: {
+                        damageDice: 1,
+                        damageDieSize: 4
+                    }
+                }
+            }
         }
     },
     crocodile: {
@@ -1543,8 +1603,28 @@ const skills = {
     athletics: 'str',
     perception: 'wis',
     stealth: 'dex'
-
 }
+
+const races = [
+    {
+        name : raceAny
+    },
+    {
+        name: raceHuman,
+        stats: {
+            size: sizeMedium,
+            languages: [languageCommon],
+        },
+        bonusStats: {
+            str: 1,
+            con: 1,
+            dex: 1,
+            int: 1,
+            wis: 1,
+            cha: 1
+        }
+    }
+]
 
 const traits = {
     bloodyFrenzy : {

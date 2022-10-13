@@ -23,6 +23,11 @@ html(lang="en")
             #variant-wrapper 
                 label(for='variant-select') Variant:
                 select#variant-select(name='variant-select')
+            #race-wrapper 
+                label(for='race-select') Race:
+                select#race-select(name='race-select')
+                    option(value='0') Any Race
+                    option(value='1') Human
             input#wild-shape(type="checkbox" name="wild-shape")
             label(for="wild-shape") This is a wild shape/shapechange
             #wild-shape-wrapper
