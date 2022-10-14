@@ -7,6 +7,7 @@ const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const rollup = require('gulp-better-rollup');
 const rollupBabel = require('rollup-plugin-babel');
+const cachebust = require('gulp-cache-bust');
 
 const $ = gulpLoadPlugins();
 
@@ -29,6 +30,11 @@ const html = () =>
 		})))
 		.pipe(production($.htmlmin({ collapseWhitespace: true })))
 		.pipe(production($.eol()))
+		.pipe(gulp.dest('docs'));
+
+const cacheBusting = () =>
+    gulp.src('docs/**/*.html', {base: 'docs'})
+        .pipe(cachebust())
 		.pipe(gulp.dest('docs'));
 
 const css = () =>
@@ -68,11 +74,11 @@ const js = () =>
 		.pipe(production($.eol()))
 		.pipe(gulp.dest('docs'));
 
-const build = gulp.parallel(css, js, html);
+const build = gulp.series(gulp.parallel(css, js, html), cacheBusting);
 
 const watch = () => {
 	gulp.watch('src/**/*.scss', gulp.series(cleanCSS, css));
-	gulp.watch('src/**/*.pug', gulp.series(cleanHTML, html));
+	gulp.watch('src/**/*.pug', gulp.series(cleanHTML, html, cacheBusting));
 	gulp.watch('src/**/*.js', gulp.series(cleanJS, js));
 };
 		

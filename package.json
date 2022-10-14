@@ -11,6 +11,7 @@
     "cssnano": "^5.0.5",
     "gulp": "^4.0.2",
     "gulp-better-rollup": "^4.0.1",
+    "gulp-cache-bust": "^1.4.1",
     "gulp-environments": "^1.0.1",
     "gulp-eol": "^0.2.0",
     "gulp-html-beautify": "^1.0.1",
