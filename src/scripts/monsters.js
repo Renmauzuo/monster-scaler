@@ -34,12 +34,31 @@ const alignmentMaskCN = 32;
 const alignmentMaskLE = 64;
 const alignmentMaskNE = 128;
 const alignmentMaskCE = 256;
+const alignmentMaskAny = 511;
 
 const alignmentMaskGood = alignmentMaskLG | alignmentMaskNG | alignmentMaskCG;
 const alignmentMaskEvil = alignmentMaskLE | alignmentMaskNE | alignmentMaskCE;
 const alignmentMaskLawful = alignmentMaskLG | alignmentMaskLN | alignmentMaskLE;
 const alignmentMaskChaotic = alignmentMaskCG | alignmentMaskCN | alignmentMaskCE;
-const alignmentMaskAny = alignmentMaskGood | alignmentMaskEvil | alignmentMaskLN | alignmentMaskTN | alignmentMaskCN; 
+const alignmentMaskAnyLawfulGood = alignmentMaskGood | alignmentMaskLawful;
+
+const alignmentStrings = {
+    alignmentMaskUnaligned : 'unaligned',
+    alignmentMaskLG: 'lawful good',
+    alignmentMaskNG: 'neutral good',
+    alignmentMaskCG: 'chaotic good',
+    alignmentMaskLN: 'lawful neutral',
+    alignmentMaskTN: 'neutral',
+    alignmentMaskCN: 'chaotic neutral',
+    alignmentMaskLE: 'lawful evil',
+    alignmentMaskNE: 'neutral evil',
+    alignmentMaskCE: 'chaotic evil',
+    alignmentMaskGood : 'any good',
+    alignmentMaskEvil : 'any evil',
+    alignmentMaskLawful : 'any lawful',
+    alignmentMaskChaotic : 'any chaotic',
+    alignmentMaskAnyLawfulGood : 'any lawful or good'
+}
 
 const armorNatural = "Natural Armor";
 
@@ -63,12 +82,14 @@ const languageCreator = 'One Language Known By Its Creator';
 const languageIgnan = 'Ignan';
 const languageAnyOne = 'Any One Language';
 const languageCommon = 'Common';
+const languageDwarfish = 'Dwarfish';
 
 const skillRankUnproficient = 0;
 const skillRankProficient = 1;
 const skillRankExpert = 2;
 
 const raceAny = 'any race';
+const raceDwarf = 'dwarf';
 const raceHuman = 'human';
 
 const monsterList = {
@@ -410,6 +431,7 @@ const monsterList = {
             },
         }
     },
+    //TODO: Commoners are actually extremely OP for CR 0, which leads to ridiculous scaling. Might need add some extra statblocks, or just leave commoner out
     commoner: {
         type: typeHumanoid,
         alignment: alignmentAny,
@@ -1610,10 +1632,28 @@ const races = [
         name : raceAny
     },
     {
+        //This includes hill dwarf stats, will need to split up if other dwarf subraces are added
+        name: raceDwarf,
+        stats: {
+            size: sizeMedium,
+            languages: [languageCommon, languageDwarfish],
+            alignment: alignmentMaskAnyLawfulGood,
+            speed: 25,
+            darkvision: 60,
+            resistances: [damageTypePoison],
+        },
+        traits: ['dwarvenTraining', 'dwarvenResilience', 'dwarvenToughness', 'toolProficiency', 'stoneCunning'],
+        bonusStats: {
+            con: 2,
+            wis: 1,
+        }
+    },
+    {
         name: raceHuman,
         stats: {
             size: sizeMedium,
             languages: [languageCommon],
+            speed: 30
         },
         bonusStats: {
             str: 1,
@@ -1629,24 +1669,37 @@ const races = [
 const traits = {
     bloodyFrenzy : {
         name: "Bloody Frenzy",
-        description: "The {{slug}} has advantage on melee attack rolls against any creature that doesn't have all its hit points." 
+        description: "{{slug}} has advantage on melee attack rolls against any creature that doesn't have all its hit points." 
+    },
+    dwarvenResilience : {
+        name: "Dwarven Resilience",
+        description: "{{slug}} has advantage on saving throws against poison." 
+    },
+    dwarvenToughness : {
+        name: "Dwarven Tougness",
+        description: "{{slug}} has one extra hit point per hit die.",
+        hitPointsPerHitDie: 1
+    },
+    dwarvenTraining : {
+        name: "Dwarven Combat Training",
+        description: "{{slug}} has proficiency with the battleaxe, handaxe, light hammer, and warhammer." 
     },
     echolocation: {
         name: "Echolocation",
-        description: "The {{slug}} can't use its blindsight while deafened."
+        description: "{{slug}} can't use its blindsight while deafened."
     },
     falseAppearance: {
         name: "False Appearance",
-        description: "While the {{slug}} remains motionless, it is indistinguishable from a normal {{slug}}."
+        description: "While {{slug}} remains motionless, it is indistinguishable from a normal {{slug}}."
     },
     fireForm: {
         name: "Fire Form",
-        description: "The {{slug}} can move through a space as narrow as 1 inch wide without squeezing. A creature that touches the {{slug}} or hits it with a melee attack while within 5 ft. of it takes {{trait:damage}} fire damage. In addition, the {{slug}} can enter a hostile creature's space and stop there. The first time it enters a creature's space on a turn, that creature takes {{trait:damage}} fire damage and catches fire; until someone takes an action to douse the fire, the creature takes {{trait:damage}} fire damage at the start of each of its turns.",
+        description: "{{slug}} can move through a space as narrow as 1 inch wide without squeezing. A creature that touches {{slug}} or hits it with a melee attack while within 5 ft. of it takes {{trait:damage}} fire damage. In addition, {{slug}} can enter a hostile creature's space and stop there. The first time it enters a creature's space on a turn, that creature takes {{trait:damage}} fire damage and catches fire; until someone takes an action to douse the fire, the creature takes {{trait:damage}} fire damage at the start of each of its turns.",
         dealsDamage: true
     },
     holdBreath: {
         name: "Hold Breath",
-        description: "The {{slug}} can hold its breath for {{trait:duration}} minutes.",
+        description: "{{slug}} can hold its breath for {{trait:duration}} minutes.",
         hasDuration: true
     },
     illumination: {
@@ -1655,39 +1708,47 @@ const traits = {
     },
     keenHearing : {
         name: "Keen Hearing",
-        description: "The {{slug}} has advantage on Wisdom (Perception) checks that rely on hearing." 
+        description: "{{slug}} has advantage on Wisdom (Perception) checks that rely on hearing." 
     },
     keenHearingSmell : {
         name: "Keen Hearing and Smell",
-        description: "The {{slug}} has advantage on Wisdom (Perception) checks that rely on hearing or smell." 
+        description: "{{slug}} has advantage on Wisdom (Perception) checks that rely on hearing or smell." 
     },
     keenSmell : {
         name: "Keen Smell",
-        description: "The {{slug}} has advantage on Wisdom (Perception) checks that rely on smell."
+        description: "{{slug}} has advantage on Wisdom (Perception) checks that rely on smell."
     },
     packTactics: {
         name: "Pack Tactics",
-        description: "The {{slug}} has advantage on an attack roll against a creature if at least one of the {{slug}}'s allies is within 5 ft. of the creature and the ally isn't incapacitated."
+        description: "{{slug}} has advantage on an attack roll against a creature if at least one of {{slug}}'s allies is within 5 ft. of the creature and the ally isn't incapacitated."
     },
     magicAttacks: {
         name: "Magic Weapons",
-        description: "The {{slug}}'s weapon attacks are magical."
+        description: "{{slug}}'s weapon attacks are magical."
     },
     pounce: {
         name: "Pounce",
-        description: "If the {{slug}} moves at least 20 feet straight toward a creature and then hits it with a claw attack on the same turn, that target must succeed on a DC {{trait:DC}} Strength saving throw or be knocked prone. If the target is prone, the {{slug}} can make one bite attack against it as a bonus action.",
+        description: "If {{slug}} moves at least 20 feet straight toward a creature and then hits it with a claw attack on the same turn, that target must succeed on a DC {{trait:DC}} Strength saving throw or be knocked prone. If the target is prone, {{slug}} can make one bite attack against it as a bonus action.",
         allowsSave: true,
         dcStat: "str"
     },
+    stoneCunning : {
+        name: "Stonecunning",
+        description: "Whenever {{slug}} makes an Intelligence (History) check related to the origin of stonework, they are considered proficient in the History skill and add double their proficiency bonus to the check, instead of their normal proficiency bonus."
+    },
+    toolProficiency: {
+        name: 'Tool Proficiency',
+        description: '{{slug}} has proficiency with one type of artisan&rsquo;s tools: smith&rsquo;s tools, brewer&rsquo;s supplies, or mason&rsquo;s tools. '
+    },
     tramplingCharge: {
         name: "Trampling Charge",
-        description: "If the {{slug}} moves at least 20 ft. straight toward a creature and then hits it with a gore attack on the same turn, that target must succeed on a DC {{trait:DC}} Strength saving throw or be knocked prone. If the target is prone, the {{slug}} can make one stomp attack against it as a bonus action.",
+        description: "If {{slug}} moves at least 20 ft. straight toward a creature and then hits it with a gore attack on the same turn, that target must succeed on a DC {{trait:DC}} Strength saving throw or be knocked prone. If the target is prone, {{slug}} can make one stomp attack against it as a bonus action.",
         allowsSave: true,
         dcStat: "str"
     },
     waterBreathing: {
         name: "Water Breathing",
-        description: "The {{slug}} can breathe only underwater."
+        description: "{{slug}} can breathe only underwater."
     },
     waterSusceptibility: {
         name: "Water Suspceptibility",
@@ -1705,14 +1766,14 @@ const procs = {
     },
     grappleBiteSizeRestricted: {
         name: "Grapple Bite",
-        description: "If the target is a {{trait:size}} or smaller creature, it is grappled (escape DC {{trait:DC}}). Until this grapple ends, the target is restrained, and the {{slug}} can't bite another target",
+        description: "If the target is a {{trait:size}} or smaller creature, it is grappled (escape DC {{trait:DC}}). Until this grapple ends, the target is restrained, and {{slug}} can't bite another target",
         allowsSave: true,
         dcStat: "str",
         sizeRestricted: true
     },
     grappleBite: {
         name: "Grapple Bite",
-        description: "The target is grappled (escape dc {{trait:DC}}) Until this grapple ends, the target is restrained, and the {{slug}} can't bite another target.",
+        description: "The target is grappled (escape dc {{trait:DC}}) Until this grapple ends, the target is restrained, and {{slug}} can't bite another target.",
         allowsSave: true,
         dcStat: "str"
     },

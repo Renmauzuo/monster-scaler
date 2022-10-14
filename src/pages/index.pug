@@ -9,29 +9,38 @@ html(lang="en")
     body
         #monster-selector.container
             h2 Pick a monster
-            label(for='monster-select') Monster Template:
-            select#monster-select(name='monster-select')
-            label(for='cr-select') Challenge Rating:
-            select#cr-select(name='cr-select')
-                option(value='0') 0
-                option(value='0.125') 1/8
-                option(value='0.25') 1/4
-                option(value='0.5') 1/2
-                - var i = 0;
-                while i < 30
-                    option(value=++i)= i
-            #variant-wrapper 
-                label(for='variant-select') Variant:
-                select#variant-select(name='variant-select')
-            #race-wrapper 
-                label(for='race-select') Race:
-                select#race-select(name='race-select')
-                    option(value='0') Any Race
-                    option(value='1') Human
+            .form-row 
+                div
+                    label(f or='monster-select') Monster Template:
+                    select#monster-select(name='monster-select')
+                div
+                    label(for='cr-select') Challenge Rating:
+                    select#cr-select(name='cr-select')
+                        option(value='0') 0
+                        option(value='0.125') 1/8
+                        option(value='0.25') 1/4
+                        option(value='0.5') 1/2
+                        - var i = 0;
+                        while i < 30
+                            option(value=++i)= i
+                #variant-wrapper 
+                    label(for='variant-select') Variant:
+                    select#variant-select(name='variant-select')
+                #race-wrapper 
+                    label(for='race-select') Race:
+                    select#race-select(name='race-select')
+                        each val, index in ['Any Race', 'Dwarf', 'Human']
+                            option(value=index)= val
+            label(for='name') Custom Name
+            input#name(type="text" name='name')
+            #npc-wrapper
+                input#npcCheckbox(type="checkbox" name="npcCheckbox")
+                label(for="npcCheckbox") Proper name/unique NPC
+                br
             input#wild-shape(type="checkbox" name="wild-shape")
             label(for="wild-shape") This is a wild shape/shapechange
             #wild-shape-wrapper
-                .wild-shape-row
+                .form-row
                     div
                         label(for='player-int') Intelligence:
                         input#player-int(name='player-int' type='number' step="1" min="0" value="10")
@@ -41,7 +50,7 @@ html(lang="en")
                     div
                         label(for='player-cha') Charisma:
                         input#player-cha(name='player-cha' type='number' step="1" min="0" value="10")
-                .wild-shape-row
+                .form-row
                     div
                         label(for='ws-ac-bonus') Extra AC:
                         input#ws-ac-bonus(name='ws-ac-bonus' type='number' step="1" min="0" value="0")

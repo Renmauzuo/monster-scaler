@@ -140,12 +140,12 @@
 
 #wild-shape-wrapper {
     display: none;
+}
 
-    .wild-shape-row {
-        @include desktop {
-            display: flex;
-            column-gap: 1em;
-        }
+.form-row {
+    @include desktop {
+        display: flex;
+        column-gap: 1em;
     }
 }
 

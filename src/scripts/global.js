@@ -13,6 +13,7 @@ $(function () {
         let paramsCR = params.get('cr');
         let paramsVariant = params.get('variant');
         let paramsRace = params.get('race');
+        let paramsName = params.get('name');
         //Ensure it's a valid monster before selecting
         if ($('#monster-select option[value="'+paramMonster+'"]').length) {
             $('#monster-select').val(paramMonster);
@@ -44,6 +45,13 @@ $(function () {
 
         if (paramsRace) {
             $('#race-select').val(paramsRace);
+        }
+
+        if (paramsName) {
+            $('#name').val(paramsName);
+            if (params.get('npc') !== null) {
+                $('#npcCheckbox')[0].checked = true;
+            }
         }
     }
 
@@ -98,6 +106,7 @@ function calculateSelectedMonster() {
     let selectedVariant;
     let wildShape = $('#wild-shape')[0].checked;
     let currentRace;
+    let customName = $('#name').val();
     if (selectedMonster.variants) {
         selectedVariant = selectedMonster.variants[$('#variant-select').val()];
     }
@@ -116,6 +125,12 @@ function calculateSelectedMonster() {
     }
     if (selectedMonster.type == typeHumanoid) {
         directLink += '&race='+ $('#race-select').val();
+    }
+    if (customName) {
+        directLink += '&name=' + customName;
+        if ($('#npcCheckbox').is(':checked')) {
+            directLink += '&npc';
+        }
     }
     $('#direct-link').attr('href', directLink);
 
@@ -175,7 +190,13 @@ function calculateSelectedMonster() {
         derivedStats = mergeObjects(derivedStats, wildShapeStats);
     }
     derivedStats.proficiency = averageStats[targetCR].proficiency;
-
+    if (customName) {
+        derivedStats.name = customName;
+        $('#npc-wrapper').show();
+        derivedStats.unique = $('#npcCheckbox').is(':checked');
+    } else {
+        $('#npc-wrapper').hide();
+    }
     //Store some strings in derived stats so they are available outside this scope
     derivedStats.alignment = selectedMonster.alignment;
     
@@ -200,6 +221,9 @@ function calculateSelectedMonster() {
     if (wildShape && $('#magic-attacks')[0].checked) {
         traitList.push('magicAttacks');
     }
+    if (currentRace && currentRace.traits) {
+        traitList = traitList.concat(currentRace.traits);
+    }
     for (let i = 0; i < traitList.length; i++) {
         derivedStats.traits[traitList[i]] = generateTrait(traitList[i], targetCR, sourceStats);
     }
@@ -218,20 +242,7 @@ function calculateSelectedMonster() {
             derivedStats[abilityScores[i]] = extrapolateFromBenchmark(abilityScores[i], targetCR, abilityBenchmarks, false);
         }
         derivedStats.abilityModifiers[abilityScores[i]] = abilityScoreModifier(derivedStats[abilityScores[i]]);
-    }
-
-    //Add racial bonuses
-    if (selectedMonster.type === typeHumanoid && selectedMonster.race === raceAny && currentRace !== races[0]) {
-        for (let stat in currentRace.bonusStats) {
-            //Skip mental ability scores if this is a shape change
-            if (['int', 'wis', 'cha'].includes(stat) && wildShape) {
-                continue;
-            }
-            derivedStats[stat] += currentRace.bonusStats[stat];
-        }
-    }
-
-    
+    }    
 
     //Need to check vs undefined rather than do implicit cast to acocunt for cases where bonus armor is already derived as 0
     if (derivedStats.bonusArmor == undefined) {
@@ -260,9 +271,17 @@ function calculateSelectedMonster() {
 
     if (!derivedStats.hitDice) {
         //Like AC bonuses, we calculate hit dice by extrapolating a target HP number and working backwards rather than extrapolating hit dice directly
-        let hpBenchmarks = findBenchmarksForStat(["size", "con", "hitDice"], targetCR, sourceStats);
+        let hpStats = ["con", "hitDice"];
+        //Don't search for size for humanoids as their size is locked (and will cause an error)
+        if (selectedMonster.type !== typeHumanoid) {
+            hpStats.push("size");
+        }
+        let hpBenchmarks = findBenchmarksForStat(hpStats, targetCR, sourceStats);
         for (let benchmark in hpBenchmarks) {
             let currentBenchmark = hpBenchmarks[benchmark];
+            if (!currentBenchmark.size) {
+                currentBenchmark.size = derivedStats.size;
+            }
             currentBenchmark.hp = Math.floor(hitPointsPerHitDie(currentBenchmark) * currentBenchmark.hitDice);
         }
         let targetHP = extrapolateFromBenchmark('hp', targetCR, hpBenchmarks, false);
@@ -336,6 +355,22 @@ function calculateSelectedMonster() {
         }
     }
 
+    //Add racial bonuses
+    //These are added near the end so they don't affect other calculations
+    //ie, a dwarf thug should not end up with fewer HD than a human thug because of their HP bonuses
+    if (selectedMonster.type === typeHumanoid && selectedMonster.race === raceAny && currentRace !== races[0]) {
+        for (let stat in currentRace.bonusStats) {
+            //Skip mental ability scores if this is a shape change
+            if (['int', 'wis', 'cha'].includes(stat) && wildShape) {
+                continue;
+            }
+            derivedStats[stat] += currentRace.bonusStats[stat];
+            //This does mean we need to recalculate the modifier
+            derivedStats.abilityModifiers[stat] = abilityScoreModifier(derivedStats[stat]);
+        }
+    }
+    
+
     //Calculate movement speeds. These won't scale with CR, we just take the stat the stat from the closest lower CR.
     derivedStats.speed = findNearestLowerBenchmark('speed', targetCR, sourceStats);
     derivedStats.swim = findNearestLowerBenchmark('swim', targetCR, sourceStats);
@@ -349,7 +384,7 @@ function calculateSelectedMonster() {
     }
 
     //Once we have all the stats populate the statblock:
-    $('#monster-name').html(findNearestLowerBenchmark("name", targetCR, sourceStats));
+    $('#monster-name').html(derivedStats.name || findNearestLowerBenchmark("name", targetCR, sourceStats));
     $('#monster-type').html(sizes[derivedStats.size].name + ' ' + derivedStats.type + ', ' + selectedMonster.alignment);
 
     if (derivedStats.bonusArmor) {
@@ -357,7 +392,20 @@ function calculateSelectedMonster() {
     } else {
         $('#armor-class span').html(10 + derivedStats.abilityModifiers.dex);
     }
-    $('#hit-points span').html(Math.floor(hitPointsPerHitDie(derivedStats)*derivedStats.hitDice)+' ('+derivedStats.hitDice+'d'+sizes[derivedStats.size].hitDie+'+'+(derivedStats.abilityModifiers.con*derivedStats.hitDice)+')');
+
+    //Dwarves make HP more complicated
+    let hitPoints = Math.floor(hitPointsPerHitDie(derivedStats)*derivedStats.hitDice);
+    let bonusHP = derivedStats.abilityModifiers.con;
+    //Dwarven toughness is only added here so it doesn't change the hit dice of dwarf NPCs
+    for (let traitName in derivedStats.traits) {
+        let trait = derivedStats.traits[traitName];
+        if (trait.hitPointsPerHitDie) {
+            bonusHP += trait.hitPointsPerHitDie;
+            hitPoints += trait.hitPointsPerHitDie * derivedStats.hitDice;
+        }
+    }
+    $('#hit-points span').html(hitPoints+' ('+derivedStats.hitDice+'d'+sizes[derivedStats.size].hitDie+ ( bonusHP > 0 ? '+'+(bonusHP*derivedStats.hitDice) : '')+')');
+
     let speedString = "";
     if (derivedStats.speed) {
         speedString = derivedStats.speed + ' ft.';
@@ -729,15 +777,12 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
  */
  function generateTrait(traitName, targetCR, sourceStats) {
     let baseTrait = traits[traitName] || procs[traitName];
-    let newTrait = {};
-    newTrait.name = baseTrait.name;
-    newTrait.description = baseTrait.description;
+    let newTrait = Object.assign({}, baseTrait);
     if (sourceStats[targetCR] && sourceStats[targetCR].traits && sourceStats[targetCR].traits[traitName]) {
         newTrait = Object.assign(newTrait, sourceStats[targetCR].traits[traitName]);
     }
 
     if (baseTrait.allowsSave) {
-        newTrait.dcStat = baseTrait.dcStat;
         if (!newTrait.hasOwnProperty("dcAdjustment")) {
             let dcAdjustmentString = "traits__"+traitName+"__dcAdjustment";
             let dcAdjustmentBenchmarks = findBenchmarksForStat(dcAdjustmentString, targetCR, sourceStats);
@@ -887,7 +932,9 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
         let token = fullToken.substr(2, fullToken.length-4);
         let tokenValue = '';
 
-        if (statBlock[token]) {
+        if (token == 'slug') {
+            tokenValue = (statBlock.unique ? statBlock.name : 'the ' + statBlock['slug']) ;
+        } else if (statBlock[token]) {
             tokenValue = statBlock[token];
         } else {
             let tokenArray = token.split(':');
@@ -929,7 +976,7 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
 
         outputString = outputString.replace(fullToken, tokenValue);
     } 
-    return outputString;
+    return toSentenceCase(outputString);
  }
 
  /**
