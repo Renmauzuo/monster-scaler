@@ -14,6 +14,7 @@ $(function () {
         let paramsVariant = params.get('variant');
         let paramsRace = params.get('race');
         let paramsName = params.get('name');
+        let paramsGender = params.get('gender');
         //Ensure it's a valid monster before selecting
         if ($('#monster-select option[value="'+paramMonster+'"]').length) {
             $('#monster-select').val(paramMonster);
@@ -52,6 +53,10 @@ $(function () {
             if (params.get('npc') !== null) {
                 $('#npcCheckbox')[0].checked = true;
             }
+        }
+
+        if (paramsGender) {
+            $('#gender').val(paramsGender);
         }
     }
 
@@ -107,6 +112,7 @@ function calculateSelectedMonster() {
     let wildShape = $('#wild-shape')[0].checked;
     let currentRace;
     let customName = $('#name').val();
+    let customGender = parseInt($('#gender').val());
     if (selectedMonster.variants) {
         selectedVariant = selectedMonster.variants[$('#variant-select').val()];
     }
@@ -131,6 +137,10 @@ function calculateSelectedMonster() {
         if ($('#npcCheckbox').is(':checked')) {
             directLink += '&npc';
         }
+    }
+    //Don't need to include gender if it's the default
+    if (customGender) {
+        directLink += '&gender='+customGender;
     }
     $('#direct-link').attr('href', directLink);
 
@@ -199,6 +209,8 @@ function calculateSelectedMonster() {
     }
     //Store some strings in derived stats so they are available outside this scope
     derivedStats.alignment = selectedMonster.alignment;
+
+    derivedStats.gender = customGender || selectedMonster.gender || 4; //Default to genderless if no custom or creature default
     
     //Once we have our locked stats, go through the rest of the states to interpolate or extrapolate based on existing values.
     //All of the preset monster statblocks should be complete, but if we ever add "keyframes" for individual stats it may be possible to have CRs without all stats for a template
@@ -972,6 +984,8 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
                         tokenValue = averageRoll(damageDice, damageDieSize) + ' (' +  damageDice + 'd' + damageDieSize + ')';
                     }
                 }
+            } else if (tokenArray[0] == 'pronoun') {
+                tokenValue = pronouns[derivedStats.gender][tokenArray[1]];
             }
         }
 

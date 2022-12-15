@@ -31,8 +31,18 @@ html(lang="en")
                     select#race-select(name='race-select')
                         each val, index in ['Any Race', 'Dwarf', 'Human']
                             option(value=index)= val
-            label(for='name') Custom Name
-            input#name(type="text" name='name')
+            .form-row 
+                div
+                    label(for='name') Custom Name
+                    input#name(type="text" name='name')
+                div
+                    label(for='gender') Gender
+                    select#gender(name='gender')
+                        option(value=0) Default for creature
+                        option(value=1) Male (he/him/his)
+                        option(value=2) Female (she/her/hers)
+                        option(value=3) Non-binary (they/them/theirs)
+                        option(value=4) Genderless (it/it/its)
             #npc-wrapper
                 input#npcCheckbox(type="checkbox" name="npcCheckbox")
                 label(for="npcCheckbox") Proper name/unique NPC

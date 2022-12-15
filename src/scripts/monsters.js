@@ -42,6 +42,11 @@ const alignmentMaskLawful = alignmentMaskLG | alignmentMaskLN | alignmentMaskLE;
 const alignmentMaskChaotic = alignmentMaskCG | alignmentMaskCN | alignmentMaskCE;
 const alignmentMaskAnyLawfulGood = alignmentMaskGood | alignmentMaskLawful;
 
+const genderMale = 1;
+const genderFemale = 2;
+const genderNeutral = 3;
+const genderNone = 4;
+
 const alignmentStrings = {
     alignmentMaskUnaligned : 'unaligned',
     alignmentMaskLG: 'lawful good',
@@ -436,6 +441,7 @@ const monsterList = {
         type: typeHumanoid,
         alignment: alignmentAny,
         race: raceAny,
+        gender: genderNeutral,
         lockedStats: {
             attacks: {
                 club: {
@@ -1686,20 +1692,20 @@ const traits = {
     },
     echolocation: {
         name: "Echolocation",
-        description: "{{description}} can't use its blindsight while deafened."
+        description: "{{description}} can't use {{pronoun:possessiveAdj}} blindsight while deafened."
     },
     falseAppearance: {
         name: "False Appearance",
-        description: "While {{description}} remains motionless, it is indistinguishable from a normal {{appearance}}."
+        description: "While {{description}} remains motionless, {{pronoun:subject}} is indistinguishable from a normal {{appearance}}."
     },
     fireForm: {
         name: "Fire Form",
-        description: "{{description}} can move through a space as narrow as 1 inch wide without squeezing. A creature that touches {{description}} or hits it with a melee attack while within 5 ft. of it takes {{trait:damage}} fire damage. In addition, {{description}} can enter a hostile creature's space and stop there. The first time it enters a creature's space on a turn, that creature takes {{trait:damage}} fire damage and catches fire; until someone takes an action to douse the fire, the creature takes {{trait:damage}} fire damage at the start of each of its turns.",
+        description: "{{description}} can move through a space as narrow as 1 inch wide without squeezing. A creature that touches {{description}} or hits {{pronoun:object}} with a melee attack while within 5 ft. of {{pronoun:object}} takes {{trait:damage}} fire damage. In addition, {{description}} can enter a hostile creature's space and stop there. The first time {{pronoun:subject}} enters a creature's space on a turn, that creature takes {{trait:damage}} fire damage and catches fire; until someone takes an action to douse the fire, the creature takes {{trait:damage}} fire damage at the start of each of its turns.",
         dealsDamage: true
     },
     holdBreath: {
         name: "Hold Breath",
-        description: "{{description}} can hold its breath for {{trait:duration}} minutes.",
+        description: "{{description}} can hold {{pronoun:possessiveAdj}} breath for {{trait:duration}} minutes.",
         hasDuration: true
     },
     illumination: {
@@ -1734,7 +1740,7 @@ const traits = {
     },
     stoneCunning : {
         name: "Stonecunning",
-        description: "Whenever {{description}} makes an Intelligence (History) check related to the origin of stonework, they are considered proficient in the History skill and add double their proficiency bonus to the check, instead of their normal proficiency bonus."
+        description: "Whenever {{description}} makes an Intelligence (History) check related to the origin of stonework, {{pronoun:subject}} is considered proficient in the History skill and add double {{pronoun:possessiveAdj}} proficiency bonus to the check, instead of {{pronoun:possessiveAdj}} normal proficiency bonus."
     },
     toolProficiency: {
         name: 'Tool Proficiency',
@@ -1752,7 +1758,7 @@ const traits = {
     },
     waterSusceptibility: {
         name: "Water Suspceptibility",
-        description: "For every 5 ft. the elemental moves in water, or for every gallon of water splashed on it, it takes {{trait:damage}} cold damage.",
+        description: "For every 5 ft. the elemental moves in water, or for every gallon of water splashed on {{pronoun:object}}, {{pronoun:subject}} takes {{trait:damage}} cold damage.",
         dealsDamage: true //Technically it's the opposite, but why reinvent the wheel
     }
 }
@@ -1784,3 +1790,32 @@ const procs = {
         dcStat: "str"
     },
 }
+
+const pronouns = [
+    {}, //First one is black since 0 is default for creature type
+    {
+        subject: 'he',
+        object: 'him',
+        possessive: 'his', 
+        possessiveAdj: 'his' 
+    },
+    {
+        subject: 'she',
+        object: 'her',
+        possessive: 'hers',
+        possessiveAdj: 'her' 
+    },
+
+    {
+        subject: 'they',
+        object: 'them',
+        possessive: 'theirs',
+        possessiveAdj: 'their'
+    },
+    {
+        subject: 'it',
+        object: 'it',
+        possessive: 'its',
+        possessiveAdj: 'its'
+    }
+]
