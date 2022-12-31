@@ -13,7 +13,6 @@ $(function () {
         let paramsCR = params.get('cr');
         let paramsVariant = params.get('variant');
         let paramsRace = params.get('race');
-        let paramsName = params.get('name');
         let paramsGender = params.get('gender');
         //Ensure it's a valid monster before selecting
         if ($('#monster-select option[value="'+paramMonster+'"]').length) {
@@ -32,31 +31,33 @@ $(function () {
             $('#variant-select').val(paramsVariant);
         }
 
-        if (params.get('wildshape') !== null) {
-            $('#wild-shape-wrapper').show();
-            $('#wild-shape')[0].checked = true;
-            $('#player-int').val(params.get('int'));
-            $('#player-wis').val(params.get('wis'));
-            $('#player-cha').val(params.get('cha'));
-            $('#ws-ac-bonus').val(params.get('ac'));
-            $('#ws-attack-bonus').val(params.get('hit'));
-            $('#ws-damage-bonus').val(params.get('dam'));
-            $('#magic-attacks')[0].checked = params.get('magicAttacks') !== null;
-        }
-
         if (paramsRace) {
             $('#race-select').val(paramsRace);
         }
 
-        if (paramsName) {
-            $('#name').val(paramsName);
-            if (params.get('npc') !== null) {
-                $('#npcCheckbox')[0].checked = true;
-            }
-        }
-
         if (paramsGender) {
             $('#gender').val(paramsGender);
+        }
+
+        $('input:not([type="checkbox"])').each(function () {
+            let value = params.get($(this).attr('id'));
+            if (value) {
+                $(this).val(value);
+            }
+        });
+
+        $('input[type="checkbox"]').each(function () {
+            if(params.get($(this).attr('id')) !== null) {
+                $(this)[0].checked = true;
+            }
+        });
+
+        if ($('#wild-shape')[0].checked) {
+            $('#wild-shape-wrapper').show();
+            let paramsRider = params.get('riderType');
+            if (paramsRider) {
+                $('#ws-rider-type').val(paramsRider);
+            }
         }
     }
 
@@ -83,7 +84,6 @@ $(function () {
  * Shows or hides the variant dropdown based on the current monster, and populates it with any variant options.
  *
  * @param {boolean} animated Whether or not to animate the show/hide
- * @return {string} The sentence case string
  */
 function setupVariantSelect(animated) {
     let animationDuration = animated ? 400 : 0;
@@ -117,26 +117,30 @@ function calculateSelectedMonster() {
         selectedVariant = selectedMonster.variants[$('#variant-select').val()];
     }
 
+    //Generate a direct link to this specific creature and stat set
     let directLink = location.toString().replace(location.search, "");
     directLink += '?monster='+monsterID+'&cr='+targetCR;
     if (selectedVariant) {
         directLink += '&variant='+$('#variant-select').val();
     }
+
     if (wildShape) {
-        directLink += '&wildshape&int='+$('#player-int').val() + '&wis=' + $('#player-wis').val() + '&cha=' + $('#player-cha').val();
-        directLink += '&ac='+$('#ws-ac-bonus').val() + '&hit=' + $('#ws-attack-bonus').val() + '&dam=' + $('#ws-damage-bonus').val();
-        if ($('#magic-attacks')[0].checked) {
-            directLink += '&magicAttacks';
-        }
+        directLink += '&riderType' + '=' + $('#ws-rider-type').val();
     }
+
+    $('input:visible:not([type="checkbox"])').each(function () {
+        let value = $(this).val();
+        if (value) {
+            directLink += '&' + $(this).attr('id') + '=' + value;
+        }
+    });
+
+    $('input:visible:checked').each(function () {
+        directLink += '&' + $(this).attr('id');
+    });
+
     if (selectedMonster.type == typeHumanoid) {
         directLink += '&race='+ $('#race-select').val();
-    }
-    if (customName) {
-        directLink += '&name=' + customName;
-        if ($('#npcCheckbox').is(':checked')) {
-            directLink += '&npc';
-        }
     }
     //Don't need to include gender if it's the default
     if (customGender) {
@@ -203,7 +207,7 @@ function calculateSelectedMonster() {
     if (customName) {
         derivedStats.name = customName;
         $('#npc-wrapper').show();
-        derivedStats.unique = $('#npcCheckbox').is(':checked');
+        derivedStats.unique = $('#unique-npc').is(':checked');
     } else {
         $('#npc-wrapper').hide();
     }
@@ -629,7 +633,12 @@ function calculateSelectedMonster() {
                 attackString += ')';
             }
 
-            attackString += ' ' +  currentAttack.damageType + ' damage.';
+            attackString += ' ' +  currentAttack.damageType + ' damage';
+            let wsRiderDice = parseInt($('#ws-rider-dice').val());
+            if (wildShape && wsRiderDice) {
+                attackString += ' plus ' + damageString(wsRiderDice, parseInt($('#ws-rider-die-size').val())) + ' ' + $('#ws-rider-type').val() + ' damage';
+            } 
+            attackString += '.';
             if (currentAttack.generatedProc) {
                 attackString+= ' ' + replaceTokensInString(currentAttack.generatedProc.description, derivedStats, currentAttack.generatedProc);
             }
@@ -981,7 +990,7 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
                     if (damageDieSize === 1) {
                         tokenValue = damageDice;
                     } else {
-                        tokenValue = averageRoll(damageDice, damageDieSize) + ' (' +  damageDice + 'd' + damageDieSize + ')';
+                        tokenValue = damageString(damageDice, damageDieSize);
                     }
                 }
             } else if (tokenArray[0] == 'pronoun') {
@@ -1023,10 +1032,36 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
  * @param {Number} dieSize The size of the dice being rolled
  * @return {Number} The average roll, rounded down
  */
-  function averageRoll(diceCount, dieSize) {
-      let averagePerDie = (1 + dieSize) / 2;
-      return Math.floor(diceCount * averagePerDie);
-  }
+function averageRoll(diceCount, dieSize) {
+    let averagePerDie = (1 + dieSize) / 2;
+    return Math.floor(diceCount * averagePerDie);
+}
+
+/**
+ * Returns a damage string based on a set of damage dice and a modifier.
+ * Eg 1, 4, 1, becomes 3 (1d4 + 1)
+ *
+ * @param {Number} damageDice The number of damage dice
+ * @param {Number} damageDieSize The size of the damage dice
+ * @param {Number} [damageBonus=0] The damage modifier (from ability scores, enchantments, etc)
+ * @return {string} The damage string
+ */
+function damageString(damageDice, damageDieSize, damageBonus = 0) {
+    let maxDamage = damageDice * damageDieSize + damageBonus;
+    //If the attack can't do more than one damage total omit the roll and just show 1 flat damage
+    if (maxDamage > 1) {
+        if (damageDieSize == 1) {
+            return damageDice + damageBonus;
+        }
+        let output = averageRoll(damageDice, damageDieSize) + damageBonus + ' (' + damageDice + 'd' + damageDieSize;
+        if (damageBonus) {
+            output += (damageBonus >= 0 ? ' + ' : ' - ' ) + Math.abs(damageBonus);
+        }
+        output += ')';
+        return output;
+    } 
+    return '1';
+}
 
 /**
  * Returns an appropriate damage die size and count to reach an estiamted average damage number

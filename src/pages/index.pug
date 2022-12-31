@@ -44,8 +44,8 @@ html(lang="en")
                         option(value=3) Non-binary (they/them/theirs)
                         option(value=4) Genderless (it/it/its)
             #npc-wrapper
-                input#npcCheckbox(type="checkbox" name="npcCheckbox")
-                label(for="npcCheckbox") Proper name/unique NPC
+                input#unique-npc(type="checkbox" name="unique-npc")
+                label(for="unique-npc") Proper name/unique NPC
                 br
             input#wild-shape(type="checkbox" name="wild-shape")
             label(for="wild-shape") This is a wild shape/shapechange
@@ -70,6 +70,26 @@ html(lang="en")
                     div
                         label(for='ws-damage-bonus') Extra Damage:
                         input#ws-damage-bonus(name='ws-damage-bonus' type='number' step="1" min="0" value="0")
+                .form-row
+                    div
+                        label(for='ws-rider-dice') Damage Rider Dice:
+                        input#ws-rider-dice(name='ws-rider-dice' type='number' step="1" min="0" value="0")
+                    div
+                        label(for='ws-rider-die-size') Damage Rider Die Size:
+                        input#ws-rider-die-size(name='ws-rider-die-size' type='number' step="1" min="1" value="0")
+                    div 
+                        label(for='ws-rider-type') Damage Rider Type:
+                        select#ws-rider-type(name='ws-rider-type')
+                            option(value="acid") Acid
+                            option(value="cold") Cold
+                            option(value="fire") Fire
+                            option(value="force") Force
+                            option(value="lightning") Lightning
+                            option(value="poison") Poison
+                            option(value="psychic") Psychic
+                            option(value="necrotic") Necrotic
+                            option(value="radiant") Radiant
+                            option(value="thunder") Thunder
                 input#magic-attacks(type="checkbox" name="magic-attacks")
                 label(for="magic-attacks") Magic Attacks
             p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
