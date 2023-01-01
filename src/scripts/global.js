@@ -201,6 +201,12 @@ function calculateSelectedMonster() {
             wis: $('#player-wis').val(),
             cha: $('#player-cha').val()
         }
+        if ($('#ws-resists').val().length) {
+            wildShapeStats.resistances = $('#ws-resists').val();
+        }
+        if ($('#ws-immunities').val().length) {
+            wildShapeStats.immunities = $('#ws-immunities').val();
+        }
         derivedStats = mergeObjects(derivedStats, wildShapeStats);
     }
     derivedStats.proficiency = averageStats[targetCR].proficiency;
@@ -490,6 +496,7 @@ function calculateSelectedMonster() {
             resistancesString += toSentenceCase(derivedStats.resistances[i]);
         }
         $('#resistances span').html(resistancesString);
+        $('#resistances').show();
     } else {
         $('#resistances').hide();
     }
@@ -503,6 +510,7 @@ function calculateSelectedMonster() {
             immunitiesString += toSentenceCase(derivedStats.immunities[i]);
         }
         $('#immunities span').html(immunitiesString);
+        $('#immunities').show();
     } else {
         $('#immunities').hide();
     }

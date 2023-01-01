@@ -1,4 +1,5 @@
 doctype html
+- let damageTypes = ['Acid','Cold','Fire','Force','Lightning','Poison','Psychic','Necrotic','Radiant','Thunder'];
 html(lang="en")
     head
         meta(charset='UTF-8')
@@ -80,16 +81,19 @@ html(lang="en")
                     div 
                         label(for='ws-rider-type') Damage Rider Type:
                         select#ws-rider-type(name='ws-rider-type')
-                            option(value="acid") Acid
-                            option(value="cold") Cold
-                            option(value="fire") Fire
-                            option(value="force") Force
-                            option(value="lightning") Lightning
-                            option(value="poison") Poison
-                            option(value="psychic") Psychic
-                            option(value="necrotic") Necrotic
-                            option(value="radiant") Radiant
-                            option(value="thunder") Thunder
+                            each val in damageTypes
+                                option= val
+                .form-row 
+                    div 
+                        label(for='ws-resists') Resistances:
+                        select#ws-resists(name='ws-resists' multiple)
+                            each val in damageTypes
+                                option= val
+                    div 
+                        label(for='ws-immunities') Immunities:
+                        select#ws-immunities(name='ws-immunities' multiple)
+                            each val in damageTypes
+                                option= val
                 input#magic-attacks(type="checkbox" name="magic-attacks")
                 label(for="magic-attacks") Magic Attacks
             p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
@@ -155,6 +159,9 @@ html(lang="en")
             details
                 summary How it works 
                 p This tool works by comparing a creature's stats to a list of averages for its original CR, then applying that to averages for its new CR. For example, if a creature has 150% of the average strength for its original CR then it will have roughly 150% (rounded) of average strength at its scaled CR. Some of the averages were taken from the "Monster Statistics by Challenge Rating" table in the Dungeon Masters Guide; others were calculated by averaging the stats of many existing creatures.
+            details 
+                summary Wild Shape/Shapechange Options 
+                p If you select the "wild shape/shapechange" checkbox additional fields will appear allowing you to add your own stats if you are using a particular form as a wild shape. Mental ability scores (int, wis, cha) will override whatever is in the creature's actual stat block. There are also additional fields to add bonus stats or abilities which you might have from class features or items which affect wild shapes, such as the Insignia of the Claw.
             p Creature statistics from the SRD are property of Wizards of the Coast and are used here in accordance with the 
                 a(href="https://media.wizards.com/2016/downloads/SRD-OGL_V1.1.pdf") OPEN GAME LICENSE
                 | .
