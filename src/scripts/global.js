@@ -603,8 +603,15 @@ function calculateSelectedMonster() {
     if (derivedStats.attacks) {
         for (let attack in derivedStats.attacks) {
             let currentAttack = derivedStats.attacks[attack];
-            let abilityModifier = currentAttack.finesse ? Math.max(derivedStats.abilityModifiers.str, derivedStats.abilityModifiers.dex) : derivedStats.abilityModifiers.str;
-            
+            let abilityModifier;
+            if (currentAttack.finesse) {
+                abilityModifier = Math.max(derivedStats.abilityModifiers.str, derivedStats.abilityModifiers.dex);
+            } else if (currentAttack.spellAttack) {
+                abilityModifier = derivedStats.abilityModifiers[derivedStats.castingStat];
+            } else {
+                abilityModifier = derivedStats.abilityModifiers.str;
+            }
+
             //Save some things for Fight Club export
             currentAttack.attackBonus = derivedStats.proficiency + abilityModifier;
             currentAttack.damageBonus = abilityModifier;
@@ -613,7 +620,7 @@ function calculateSelectedMonster() {
                 currentAttack.damageBonus += parseInt($('#ws-damage-bonus').val());
             }
             
-            let attackString = '<em>' + (currentAttack.ranged ? 'Ranged' : 'Melee') + ' Weapon Attack:</em> ';
+            let attackString = '<em>' + (currentAttack.ranged ? 'Ranged' : 'Melee') + ' ' + (currentAttack.spellAttack ? 'Spell' : 'Weapon') + ' Attack:</em> ';
             let rangeString;
             if (currentAttack.ranged) {
                 rangeString = 'range ' + currentAttack.range + (currentAttack.longRange ? '/' + currentAttack.longRange : '');
@@ -944,7 +951,7 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
  * @return {string} The sentence case string
  */
  function toSentenceCase(targetString) {
-    return targetString[0].toUpperCase() + targetString.substr(1);
+    return targetString.replace(/(^\s*\w|[\.\!\?]\s*\w)/g,function(c){return c.toUpperCase()});
  }
  
  /**
@@ -966,6 +973,15 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
 
         if (statBlock[token]) {
             tokenValue = statBlock[token];
+        } else if (token === "castingStatName") {
+            let statNames = {
+                int: "Intelligence",
+                wis: "Wisdom",
+                cha: "Charisma"
+            }
+            tokenValue = statNames[statBlock.castingStat];
+        } else if (token === "spellSaveDC") {
+            tokenValue = 8 + statBlock.proficiency + statBlock.abilityModifiers[statBlock.castingStat];
         } else {
             let tokenArray = token.split(':');
             if (tokenArray[0] == 'DC') {
@@ -1000,6 +1016,41 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
                     } else {
                         tokenValue = damageString(damageDice, damageDieSize);
                     }
+                } else if (tokenArray[1] == 'spellListText') {
+                    let spellList = [];
+                    for (let spellId in trait.spellList) {
+                        let spell = trait.spellList[spellId];
+                        let uses = spell.uses;
+                        if (spellList[uses]) {
+                            spellList[uses].push(spellId);
+                        } else {
+                            spellList[uses] = [spellId];
+                        }
+                    }
+
+                    function formatSpellNames(spellArray) {
+                        let output = '';
+                        for (let i = 0; i < spellArray.length; i++) {
+                            if (output.length) {
+                                output += ', ';
+                            }
+                            output += spells[spellArray[i]].name;
+                        }
+                        return output;
+                    }
+
+                    tokenValue = "<br/><br/>";
+                    if (spellList[0]) {
+                        tokenValue += "At will: " + formatSpellNames(spellList[0]);
+                        tokenValue += "<br/>";
+                    }
+                    for (let i = spellList.length - 1; i > 0; i--) {
+                        if (spellList[i]) {
+                            tokenValue += i + '/day' + (spellList[i].length > 1 ? ' each' : '') + ': ' + formatSpellNames(spellList[i]); 
+                            tokenValue += "<br/>";
+                        }
+                    }
+                    console.log(spellList);
                 }
             } else if (tokenArray[0] == 'pronoun') {
                 tokenValue = pronouns[derivedStats.gender][tokenArray[1]];

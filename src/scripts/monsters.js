@@ -19,10 +19,12 @@ const typeBeast = 'beast';
 const typeElemental = 'elemental';
 const typeHumanoid = 'humanoid';
 const typePlant = 'plant';
+const typeFey = 'fey';
 
 const alignmentUnaligned = 'unaligned';
 const alignmentNeutral = 'neutral';
 const alignmentAny = 'any alignment';
+const alignmentChaoticNeutral = 'chaotic neutral';
 
 const alignmentMaskUnaligned = 0;
 const alignmentMaskLG = 1;
@@ -73,6 +75,7 @@ const damageTypeSlashing = 'slashing';
 const damageTypeMundanePhysical = 'Bludgeoning, Piercing, and Slashing From Nonmagical Attacks';
 const damageTypeFire = 'fire';
 const damageTypePoison = 'poison';
+const damageTypePsychic = 'psychic';
 
 const conditionExhaustion = 'exhaustion';
 const conditionGrappled = 'grappled';
@@ -82,12 +85,15 @@ const conditionPoisoned = 'poisoned';
 const conditionProne = 'prone';
 const conditionRestrainted = 'restrained';
 const conditionUnconscious = 'unconscious';
+const conditionCharmed = 'charmed';
+const conditionFrightened = 'frightened';
 
 const languageCreator = 'One Language Known By Its Creator';
 const languageIgnan = 'Ignan';
 const languageAnyOne = 'Any One Language';
 const languageCommon = 'Common';
 const languageDwarfish = 'Dwarfish';
+const languageSylvan = 'Sylvan';
 
 const skillRankUnproficient = 0;
 const skillRankProficient = 1;
@@ -808,6 +814,80 @@ const monsterList = {
             "echolocation",
             "holdBreath",
             "keenHearing"
+        ]
+    },
+    naiad: {
+        type: typeFey,
+        alignment: alignmentChaoticNeutral,
+        lockedStats: {
+            armorDescription: armorNatural,
+            attacks: {
+                psychicTouch: {
+                    reach: reachMedium,
+                    damageType: damageTypePsychic,
+                    name: 'Psychic Touch',
+                    spellAttack: true
+                }
+            },
+            castingStat: 'cha',
+            languages: [
+                languageCommon,
+                languageSylvan
+            ],
+            resistances: [damageTypePsychic],
+            immunities: [damageTypePoison],
+            conditionImmunities: [conditionCharmed, conditionFrightened, conditionPoisoned],
+            skills: {
+                persuasion: skillRankProficient,
+                sleightOfHand: skillRankProficient
+            },
+            slug: "naiad",
+            size: sizeMedium
+        },
+        stats: {
+            2 : {
+                name: "Naiad",
+                bonusArmor: 2,
+                hitDice: 7,
+                speed: 30,
+                swim: 30,
+                str: 10,
+                dex: 16,
+                con: 11,
+                int: 15,
+                wis: 10,
+                cha: 18,
+                attacks: {
+                    psychicTouch: {
+                        damageDice: 1,
+                        damageDieSize: 10
+                    }
+                },
+                traits: {
+                    innateSpellcasting: {
+                        spellList: {
+                            minorIllusion: {
+                                uses: 0
+                            },
+                            phantasmalForce: {
+                                uses: 3
+                            },
+                            fly: {
+                                uses: 1
+                            },
+                            hypnoticPattern: {
+                                uses: 1
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        traits: [
+            "amphibious",
+            "invisibleInWater",
+            "innateSpellcasting",
+            "magicResistance"
         ]
     },
     saberToothedTiger: {
@@ -1630,6 +1710,8 @@ const sizes = [
 const skills = {
     athletics: 'str',
     perception: 'wis',
+    persuasion: 'cha',
+    sleightOfHand: 'dex',
     stealth: 'dex'
 }
 
@@ -1673,6 +1755,10 @@ const races = [
 ]
 
 const traits = {
+    amphibious: {
+        name: "Amphibious",
+        description: "{{description}} can breathe air and water."
+    },
     bloodyFrenzy : {
         name: "Bloody Frenzy",
         description: "{{description}} has advantage on melee attack rolls against any creature that doesn't have all its hit points." 
@@ -1710,7 +1796,15 @@ const traits = {
     },
     illumination: {
         name: "Illumination",
-        description: "The elemental sheds bright light in a 30-foot radius and dim light in an additional 30 ft."
+        description: "{{description}} sheds bright light in a 30-foot radius and dim light in an additional 30 ft."
+    },
+    innateSpellcasting: {
+        name: "Innate Spellcasting",
+        description: "{{description}}'s spellcasting ability is {{castingStatName}} (spell save DC {{spellSaveDC}}). {{pronoun:subject}} can innately cast the following spells, requiring no material components: {{trait:spellListText}}"
+    },
+    invisibleInWater: {
+        name: "Invisible in Water",
+        description: "{{description}} is invisible while fully immersed in water."
     },
     keenHearing : {
         name: "Keen Hearing",
@@ -1731,6 +1825,10 @@ const traits = {
     magicAttacks: {
         name: "Magic Weapons",
         description: "{{description}}'s weapon attacks are magical."
+    },
+    magicResistance: {
+        name: "Magic Resistance",
+        description: "{{description}} has advantage on saving throws against spells and other magical effects."
     },
     pounce: {
         name: "Pounce",
@@ -1819,3 +1917,18 @@ const pronouns = [
         possessiveAdj: 'its'
     }
 ]
+
+var spells = {
+    fly: {
+        name: 'fly'
+    },
+    hypnoticPattern: {
+        name: 'hypnotic pattern'
+    },
+    minorIllusion: {
+        name: 'minor illusion'
+    },
+    phantasmalForce: {
+        name: 'phantasmal force'
+    }
+}
