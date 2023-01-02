@@ -842,7 +842,30 @@ const monsterList = {
                 sleightOfHand: skillRankProficient
             },
             slug: "naiad",
-            size: sizeMedium
+            size: sizeMedium,
+            multiattack: {
+                attacks: {
+                    psychicTouch: 2,
+                }
+            },
+            traits: {
+                innateSpellcasting: {
+                    spellList: {
+                        minorIllusion: {
+                            uses: 0
+                        },
+                        phantasmalForce: {
+                            uses: 3
+                        },
+                        fly: {
+                            uses: 1
+                        },
+                        hypnoticPattern: {
+                            uses: 1
+                        }
+                    }
+                }
+            }
         },
         stats: {
             2 : {
@@ -861,24 +884,6 @@ const monsterList = {
                     psychicTouch: {
                         damageDice: 1,
                         damageDieSize: 10
-                    }
-                },
-                traits: {
-                    innateSpellcasting: {
-                        spellList: {
-                            minorIllusion: {
-                                uses: 0
-                            },
-                            phantasmalForce: {
-                                uses: 3
-                            },
-                            fly: {
-                                uses: 1
-                            },
-                            hypnoticPattern: {
-                                uses: 1
-                            }
-                        }
                     }
                 }
             }
