@@ -210,13 +210,8 @@ function calculateSelectedMonster() {
         derivedStats = mergeObjects(derivedStats, wildShapeStats);
     }
     derivedStats.proficiency = averageStats[targetCR].proficiency;
-    if (customName) {
-        derivedStats.name = customName;
-        $('#npc-wrapper').show();
-        derivedStats.unique = $('#unique-npc').is(':checked');
-    } else {
-        $('#npc-wrapper').hide();
-    }
+
+
     //Store some strings in derived stats so they are available outside this scope
     derivedStats.alignment = selectedMonster.alignment;
 
@@ -225,6 +220,20 @@ function calculateSelectedMonster() {
     //Once we have our locked stats, go through the rest of the states to interpolate or extrapolate based on existing values.
     //All of the preset monster statblocks should be complete, but if we ever add "keyframes" for individual stats it may be possible to have CRs without all stats for a template
     //For this reason we do the interpolation for EACH stat individually, rather than finding the closest statblock to draw from
+
+    //Grab the most appropriate name if this CR doesn't have one
+    if (!derivedStats.name) {
+        derivedStats.name = findNearestLowerBenchmark("name", targetCR, sourceStats);
+    }
+    if (customName) {
+        //If there's a custom name assign that, but hang onto the original name
+        derivedStats.defaultName = derivedStats.name;
+        derivedStats.name = customName;
+        $('#npc-wrapper').show();
+        derivedStats.unique = $('#unique-npc').is(':checked');
+    } else {
+        $('#npc-wrapper').hide();
+    }
 
     if(!derivedStats.slug) {
         derivedStats.slug = findNearestLowerBenchmark("slug", targetCR, sourceStats);
@@ -409,7 +418,7 @@ function calculateSelectedMonster() {
     }
 
     //Once we have all the stats populate the statblock:
-    $('#monster-name').html(derivedStats.name || findNearestLowerBenchmark("name", targetCR, sourceStats));
+    $('#monster-name').html((customName && wildShape) ? (customName + ' (' + derivedStats.defaultName + ')') : derivedStats.name);
     $('#monster-type').html(sizes[derivedStats.size].name + ' ' + derivedStats.type + ', ' + selectedMonster.alignment);
 
     if (derivedStats.bonusArmor) {
