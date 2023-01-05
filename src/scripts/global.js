@@ -906,6 +906,13 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
         }
     }
 
+    if (baseTrait.appliesCondition) {
+        if (!newTrait.hasOwnProperty("condition")) {
+            let conditionString = "traits__"+traitName+"__condition";
+            newTrait.condition = findNearestLowerBenchmark(conditionString, targetCR, sourceStats);
+        }
+    }
+
     if (baseTrait.dealsDamage) {
         let damageDiceString = 'traits__'+traitName+'__damageDice';
         let damageDieSizeString =  'traits__'+traitName+'__damageDieSize';

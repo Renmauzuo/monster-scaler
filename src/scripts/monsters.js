@@ -1964,7 +1964,8 @@ const procs = {
     },
     conditionNoSave: {
         name: "Status No Save",
-        description: "The target is {{trait:condition}} until the start of {{description}}'s next turn."
+        description: "The target is {{trait:condition}} until the start of {{description}}'s next turn.",
+        appliesCondition: true
     },
     takeDown: {
         name: "Takedown",
