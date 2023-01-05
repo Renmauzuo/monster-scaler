@@ -4,39 +4,34 @@ var derivedStats;
 $(function () {
 
     for (let monster in monsterList) {
-        $('<option value='+monster+'>'+(monsterList[monster].menuName || toSentenceCase(monster))+'</option>').appendTo('#monster-select');
+        $('<option value='+monster+'>'+(monsterList[monster].menuName || toSentenceCase(monster))+'</option>').appendTo('#creature');
     }
 
     if (location.search.length) {
         let params = new URLSearchParams(location.search);
-        let paramMonster = params.get('monster');
-        let paramsCR = params.get('cr');
-        let paramsVariant = params.get('variant');
-        let paramsRace = params.get('race');
-        let paramsGender = params.get('gender');
-        //Ensure it's a valid monster before selecting
-        if ($('#monster-select option[value="'+paramMonster+'"]').length) {
-            $('#monster-select').val(paramMonster);
-        }
-        //Ensure it's a valid cr before selecting
-        if ($('#cr-select option[value="'+paramsCR+'"]').length) {
-            $('#cr-select').val(paramsCR);
-        }
+
+        //Skip variant at first because it must come after monster
+        $('select:not(#variant)').each(function () {
+            let value = params.get($(this).attr('id'));
+            if (value) {
+                if ($(this).attr('multiple')) {
+                    //Convert value to an array
+                    $(this).val(value.split(','));
+                } else {
+                    //Make sure the value is valid
+                    if ($(this).children('option[value="'+value+'"]').length) {
+                        $(this).val(value);
+                    }
+                }
+            }
+        });
 
         //Need to do this after mosnter is selected, but before variant is selected
         setupVariantSelect(false);
-
         //Select the variant if it has one
-        if ($('#variant-select option[value="'+paramsVariant+'"]').length) {
-            $('#variant-select').val(paramsVariant);
-        }
-
-        if (paramsRace) {
-            $('#race-select').val(paramsRace);
-        }
-
-        if (paramsGender) {
-            $('#gender').val(paramsGender);
+        let paramsVariant = params.get('variant');
+        if (paramsVariant && $('#variant option[value="'+paramsVariant+'"]').length) {
+            $('#variant').val(paramsVariant);
         }
 
         $('input:not([type="checkbox"])').each(function () {
@@ -61,7 +56,7 @@ $(function () {
         }
     }
 
-    $('#monster-select').on('change', function () {
+    $('#creature').on('change', function () {
         setupVariantSelect(true);
     });
 
@@ -87,12 +82,12 @@ $(function () {
  */
 function setupVariantSelect(animated) {
     let animationDuration = animated ? 400 : 0;
-    let monsterID = $('#monster-select').val();
+    let monsterID = $('#creature').val();
     let selectedMonster = monsterList[monsterID];
     if (selectedMonster.variants) {
-        $('#variant-select').empty();
+        $('#variant').empty();
         for (let variant in selectedMonster.variants) {
-            $('<option value='+variant+'>'+selectedMonster.variants[variant].name+'</option>').appendTo('#variant-select');
+            $('<option value='+variant+'>'+selectedMonster.variants[variant].name+'</option>').appendTo('#variant');
         }
         $('#variant-wrapper').slideDown(animationDuration);
     } else {
@@ -104,9 +99,9 @@ function setupVariantSelect(animated) {
  * Scales monster stats based on the selected template and challenge rating.
  */
 function calculateSelectedMonster() {
-    let monsterID = $('#monster-select').val();
+    let monsterID = $('#creature').val();
     let selectedMonster = monsterList[monsterID];
-    let targetCR = $('#cr-select').val();
+    let targetCR = $('#target-cr').val();
     let numTargetCR = Number(targetCR); //Certain comparisons require a numeric version of the CR
     let selectedVariant;
     let wildShape = $('#wild-shape')[0].checked;
@@ -114,19 +109,21 @@ function calculateSelectedMonster() {
     let customName = $('#name').val();
     let customGender = parseInt($('#gender').val());
     if (selectedMonster.variants) {
-        selectedVariant = selectedMonster.variants[$('#variant-select').val()];
+        selectedVariant = selectedMonster.variants[$('#variant').val()];
     }
 
     //Generate a direct link to this specific creature and stat set
     let directLink = location.toString().replace(location.search, "");
-    directLink += '?monster='+monsterID+'&cr='+targetCR;
-    if (selectedVariant) {
-        directLink += '&variant='+$('#variant-select').val();
-    }
+    directLink += '';
 
-    if (wildShape) {
-        directLink += '&riderType' + '=' + $('#ws-rider-type').val();
-    }
+    $('select:visible').each(function () {
+        let value = $(this).val();
+        if (value && value.length) {
+            directLink += '&' + $(this).attr('id') + '=' + value;
+        }
+    });
+    //Replace the first & with ?
+    directLink = directLink.replace('&', '?');
 
     $('input:visible:not([type="checkbox"])').each(function () {
         let value = $(this).val();
@@ -139,13 +136,6 @@ function calculateSelectedMonster() {
         directLink += '&' + $(this).attr('id');
     });
 
-    if (selectedMonster.type == typeHumanoid) {
-        directLink += '&race='+ $('#race-select').val();
-    }
-    //Don't need to include gender if it's the default
-    if (customGender) {
-        directLink += '&gender='+customGender;
-    }
     $('#direct-link').attr('href', directLink);
 
     //Need to combine variant stats with base stats, if applicable
@@ -1274,7 +1264,7 @@ function findDamageDice(targetDamage, preferredDieSize) {
  * Converts the current creature's statistic into the XML format used by Fight Club 5e and initiates a download
  */
  function exportFightClub() {
-    let cr = $('#cr-select').val();
+    let cr = $('#target-cr').val();
     let fightClubXML = xmlNode('name', $('#monster-name').html());
     fightClubXML += xmlNode('size', sizes[derivedStats.size].name.substring(0,1));
     fightClubXML += xmlNode('type', derivedStats.type);

@@ -8,15 +8,15 @@ html(lang="en")
         meta(name="description" content="Tool for scaling monsters up or down in Dungeons and Dragons 5th edition.")
         link(rel='stylesheet' type='text/css' href='styles/global.min.css')
     body
-        #monster-selector.container
+        #creatureor.container
             h2 Pick a monster
             .form-row 
                 div
                     label(f or='monster-select') Monster Template:
-                    select#monster-select(name='monster-select')
+                    select#creature(name='monster-select')
                 div
                     label(for='cr-select') Challenge Rating:
-                    select#cr-select(name='cr-select')
+                    select#target-cr(name='cr-select')
                         option(value='0') 0
                         option(value='0.125') 1/8
                         option(value='0.25') 1/4
@@ -26,7 +26,7 @@ html(lang="en")
                             option(value=++i)= i
                 #variant-wrapper 
                     label(for='variant-select') Variant:
-                    select#variant-select(name='variant-select')
+                    select#variant(name='variant-select')
                 #race-wrapper 
                     label(for='race-select') Race:
                     select#race-select(name='race-select')
