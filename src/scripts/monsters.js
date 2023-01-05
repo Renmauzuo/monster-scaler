@@ -25,6 +25,7 @@ const alignmentUnaligned = 'unaligned';
 const alignmentNeutral = 'neutral';
 const alignmentAny = 'any alignment';
 const alignmentChaoticNeutral = 'chaotic neutral';
+const alignmentChaoticGood = 'chaotic good';
 
 const alignmentMaskUnaligned = 0;
 const alignmentMaskLG = 1;
@@ -87,6 +88,7 @@ const conditionRestrainted = 'restrained';
 const conditionUnconscious = 'unconscious';
 const conditionCharmed = 'charmed';
 const conditionFrightened = 'frightened';
+const conditionBlinded = 'blinded';
 
 const languageCreator = 'One Language Known By Its Creator';
 const languageIgnan = 'Ignan';
@@ -567,6 +569,77 @@ const monsterList = {
                 }
             }
         }
+    },
+    dolphinDelighter: {
+        menuName: "Dolphin Delighter",
+        type: typeFey,
+        alignment: alignmentChaoticGood,
+        lockedStats: {
+            armorDescription: armorNatural,
+            attacks: {
+                dazzlingSlam: {
+                    reach: reachShort,
+                    damageType: damageTypeBludgeoning,
+                    damageRiderType: damageTypePsychic,
+                    name: 'Dazzling Slam',
+                    proc: 'conditionNoSave'
+                }
+            },
+            multiattack: {
+                attacks: {
+                    dazzlingSlam: 2
+                }
+            },
+            skills: {
+                perception: skillRankProficient,
+                performance: skillRankProficient
+            },
+            slug: "dolphin",
+        },
+        stats: {
+            3 : {
+                name: "Dolphin Delighter",
+                bonusArmor: 3,
+                blindsight: 60,
+                hitDice: 5,
+                speed: 0,
+                swim: 60,
+                size: sizeMedium,
+                str: 14,
+                dex: 13,
+                con: 13,
+                int: 11,
+                wis: 12,
+                cha: 16,
+                attacks: {
+                    dazzlingSlam: {
+                        damageDice: 1,
+                        damageDieSize: 6,
+                        damageRiderDice: 2,
+                        damageRiderDieSize: 6
+                    }
+                },
+                traits: {
+                    conditionNoSave: {
+                        condition: 'blinded'
+                    },
+                    delightfulLight: {
+                        damageDice: 2,
+                        damageDieSize: 10
+                    },
+                    holdBreath: {
+                        duration: 20
+                    },
+                }
+            }
+        },
+        bonusActions: [
+            'delightfulLight',
+            'feyLeap'
+        ],
+        traits: [
+            "holdBreath"
+        ]
     },
     elephant: {
         type: typeBeast,
@@ -1715,6 +1788,7 @@ const sizes = [
 const skills = {
     athletics: 'str',
     perception: 'wis',
+    performance: 'cha',
     persuasion: 'cha',
     sleightOfHand: 'dex',
     stealth: 'dex'
@@ -1759,6 +1833,8 @@ const races = [
     }
 ]
 
+//Procs, traits, and actions could possibly be condensed into one list since they are used similarly.
+//The only real reason they're kept apart is in case we ever add custom monster building, they'll need to be differentiated, but that could be handled with a field
 const traits = {
     amphibious: {
         name: "Amphibious",
@@ -1886,13 +1962,31 @@ const procs = {
         allowsSave: true,
         dcStat: "str"
     },
+    conditionNoSave: {
+        name: "Status No Save",
+        description: "The target is {{trait:condition}} until the start of {{description}}'s next turn."
+    },
     takeDown: {
         name: "Takedown",
         description: "If the target is a creature, it must succeed on a DC {{trait:DC}} Strength saving throw or be knocked prone",
         allowsSave: true,
         dcStat: "str"
     },
-}
+};
+
+//TODO: Make recharge an adjustable attribute, if necessary.
+const actions = {
+    delightfulLight: {
+        name: "Delightful Light (Recharge 5–6)",
+        description: "{{description}} magically emanates light in a 10-foot radius for a moment. {{description}} and each creature of {{pronoune:possessiveAdj}} choice in that light gain {{trait:damage}} temporary hit points.",
+        dealsDamage: true, //Not really but there's no reason to create an entirely separate mechanic for healing
+    },
+    feyLeap: {
+        name: "Fey Leap",
+        description: "{{description}} teleports up to 30 feet to an unoccupied space {{pronoun:subject}} can see. Immediately before teleporting, {{description}} can choose one creature within 5 feet of {{pronoun:object}}. That creature can teleport with {{description}}, appearing in an unoccupied space within 5 feet of {{description}}'s destination space."
+    }
+};
+
 
 const pronouns = [
     {}, //First one is black since 0 is default for creature type

@@ -262,6 +262,20 @@ function calculateSelectedMonster() {
         derivedStats.traits[traitList[i]] = generateTrait(traitList[i], targetCR, sourceStats);
     }
 
+    //Actions are handled somewhat like traits, although at this time there are no additional ones from race or variant
+    if (selectedMonster.actions) {
+        derivedStats.actions = {};
+        for (let i = 0; i < selectedMonster.actions.length; i++) {
+            derivedStats.actions[selectedMonster.actions[i]] = generateTrait(selectedMonster.actions[i], targetCR, sourceStats);
+        }
+    }
+    if (selectedMonster.bonusActions) {
+        derivedStats.bonusActions = {};
+        for (let i = 0; i < selectedMonster.bonusActions.length; i++) {
+            derivedStats.bonusActions[selectedMonster.bonusActions[i]] = generateTrait(selectedMonster.bonusActions[i], targetCR, sourceStats);
+        }
+    }
+
     if(!derivedStats.size) {
         let sizeBenchmarks = findBenchmarksForStat("size", targetCR, sourceStats);
         derivedStats.size = extrapolateFromBenchmark("size", targetCR, sizeBenchmarks, true);
@@ -370,6 +384,16 @@ function calculateSelectedMonster() {
         if (currentAttack.ranged && !currentAttack.range) {
             currentAttack.range = findNearestLowerBenchmark('attacks__'+attack+'__range', targetCR, sourceStats);
             currentAttack.longRange = findNearestLowerBenchmark('attacks__'+attack+'__longRange', targetCR, sourceStats);
+        }
+
+        //This could possibly be made into a function to share logic with the block above, but this one is a little difference since it doesn't include ability score bonuses
+        if (currentAttack.damageRiderType && !currentAttack.damageRiderDice) {
+            let damageDiceString = 'attacks__'+attack+'__damageRiderDice';
+            let damageDieSizeString =  'attacks__'+attack+'__damageRiderDieSize';
+            
+            let estimatedDice = scaleDamageRoll(damageDiceString, damageDieSizeString, targetCR, sourceStats);
+            currentAttack.damageRiderDice = estimatedDice[0];
+            currentAttack.damageRiderDieSize = estimatedDice[1];
         }
 
         if (currentAttack.proc) {
@@ -658,6 +682,11 @@ function calculateSelectedMonster() {
             }
 
             attackString += ' ' +  currentAttack.damageType + ' damage';
+
+            //Add riders and procs
+            if (currentAttack.damageRiderDice) {
+                attackString += ' plus ' + damageString(currentAttack.damageRiderDice, currentAttack.damageRiderDieSize) + ' ' + currentAttack.damageRiderType + ' damage';
+            }
             let wsRiderDice = parseInt($('#ws-rider-dice').val());
             if (wildShape && wsRiderDice) {
                 attackString += ' plus ' + damageString(wsRiderDice, parseInt($('#ws-rider-die-size').val())) + ' ' + $('#ws-rider-type').val() + ' damage';
@@ -670,6 +699,19 @@ function calculateSelectedMonster() {
             $('<p><strong>'+currentAttack.name+'</strong> '+attackString+'</p>').appendTo('#attacks');
         }
     }
+
+    if (derivedStats.bonusActions) {
+        $('#bonus-actions').empty();
+        $('#bonus-actions-wrapper').show();
+        for (let bonusActionName in derivedStats.bonusActions) {
+            let currentBonusAction = derivedStats.bonusActions[bonusActionName];
+            currentBonusAction.text = replaceTokensInString(currentBonusAction.description, derivedStats, currentBonusAction); //save the output text for Fight Club
+            $('<p><strong><em>'+currentBonusAction.name+'.</em></strong> '+currentBonusAction.text+'</p>').appendTo('#bonus-actions');
+        }
+    } else {
+        $('#bonus-actions-wrapper').hide();
+    }
+
 }
 
 /**
@@ -824,7 +866,7 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
  * @return {Object} A new trait or proc with a completed description and scaled attributes (DC, Damage, etc)
  */
  function generateTrait(traitName, targetCR, sourceStats) {
-    let baseTrait = traits[traitName] || procs[traitName];
+    let baseTrait = traits[traitName] || procs[traitName] || actions[traitName];
     let newTrait = Object.assign({}, baseTrait);
     if (sourceStats[targetCR] && sourceStats[targetCR].traits && sourceStats[targetCR].traits[traitName]) {
         newTrait = Object.assign(newTrait, sourceStats[targetCR].traits[traitName]);
@@ -866,17 +908,9 @@ function extrapolateFromBenchmark(stat, targetCR, benchmarks, linearExtrapolatio
 
     if (baseTrait.dealsDamage) {
         let damageDiceString = 'traits__'+traitName+'__damageDice';
-        let damageDieString =  'traits__'+traitName+'__damageDieSize';
-        let attributes = [damageDiceString, damageDieString];
+        let damageDieSizeString =  'traits__'+traitName+'__damageDieSize';
 
-        let damageBenchmarks = findBenchmarksForStat(attributes, targetCR, sourceStats);
-        for (let benchmark in damageBenchmarks) {
-            let currentBenchmark = damageBenchmarks[benchmark];
-            currentBenchmark.damagePerRound = averageRoll(currentBenchmark[damageDiceString], currentBenchmark[damageDieString]);
-        }
-        let estimatedDamage = extrapolateFromBenchmark('damagePerRound', targetCR, damageBenchmarks, false);
-        let preferredDieSize = findNearestLowerBenchmark(damageDieString, targetCR, sourceStats);
-        let estimatedDice = findDamageDice(estimatedDamage, preferredDieSize);
+        let estimatedDice = scaleDamageRoll(damageDiceString, damageDieSizeString, targetCR, sourceStats);
         newTrait.damageDice = estimatedDice[0];
         newTrait.damageDieSize = estimatedDice[1];
     }
@@ -1276,7 +1310,13 @@ function findDamageDice(targetDamage, preferredDieSize) {
         attackXML += xmlNode('attack', attackString);
         fightClubXML += xmlNode('action', attackXML);
     }
-
+    for (let bonusActionName in derivedStats.bonusActions) {
+        //Fight club XML doesn't appear to supprot bonus actions, so for now we just export them as actions and add a note.
+        let bonusActionXML = xmlNode('name', derivedStats.bonusActions[bonusActionName].name + '(Bonus Action)');
+        bonusActionXML += xmlNode('text', derivedStats.bonusActions[bonusActionName].text);
+        fightClubXML += xmlNode('action', bonusActionXML);
+    }
+    //TODO: Bonus Actions
     fightClubXML = xmlNode('monster', fightClubXML);
     fightClubXML = "<?xml version='1.0' encoding='utf-8'?>" + xmlNode("compendium", fightClubXML);
 
@@ -1304,4 +1344,31 @@ function findDamageDice(targetDamage, preferredDieSize) {
  */
  function xmlNode(tag, value) {
     return "<"+tag+">"+value+"</"+tag+">";
+ }
+
+ /**
+ * Takes a damage (or healing) roll and scales it based on average damage by CR
+ * TODO: Add ability score modifiers and use this function for basic attacks as well
+ *
+ * @param {string} damageDiceString Flattened path to the damage dice attribute, eg attacks__bite__damageDice
+ * @param {string} damageDieString Flattened path to the damage die size attribute, eg attacks__bite__damageDieSize
+ * @param {string} targetCR The challenge rating to generate the damage for
+ * @param {Object} sourceStats The stat block to use for finding damage benchmarks
+ * @return {Array} An array containing number of dice at index 0 and die size at index 1
+ */
+ function scaleDamageRoll(damageDiceString, damageDieSizeString, targetCR, sourceStats) {
+
+    let attributes = [damageDiceString, damageDieSizeString];
+
+    let damageBenchmarks = findBenchmarksForStat(attributes, targetCR, sourceStats);
+    for (let benchmark in damageBenchmarks) {
+        let currentBenchmark = damageBenchmarks[benchmark];
+        currentBenchmark.damagePerRound = averageRoll(currentBenchmark[damageDiceString], currentBenchmark[damageDieSizeString]);
+    }
+
+    let estimatedDamage = extrapolateFromBenchmark('damagePerRound', targetCR, damageBenchmarks, false);
+    let preferredDieSize = findNearestLowerBenchmark(damageDieSizeString, targetCR, sourceStats);
+    
+    let estimatedDice = findDamageDice(estimatedDamage, preferredDieSize);
+    return estimatedDice;
  }
