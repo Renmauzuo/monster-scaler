@@ -208,8 +208,10 @@ function calculateSelectedMonster() {
             wildShapeStats.immunities = $('#ws-immunities').val();
         }
         derivedStats = mergeObjects(derivedStats, wildShapeStats);
+        derivedStats.proficiency = averageStats[$('#player-level').val()].proficiency;
+    } else {
+        derivedStats.proficiency = averageStats[targetCR].proficiency;
     }
-    derivedStats.proficiency = averageStats[targetCR].proficiency;
 
 
     //Store some strings in derived stats so they are available outside this scope
@@ -497,7 +499,7 @@ function calculateSelectedMonster() {
             if (skillString.length) {
                 skillString += ', ';
             }
-            let skillModifier = averageStats[targetCR].proficiency*derivedStats.skills[skill] + derivedStats.abilityModifiers[skills[skill]];
+            let skillModifier = derivedStats.proficiency*derivedStats.skills[skill] + derivedStats.abilityModifiers[skills[skill]];
             let modifierString = (skillModifier >= 0 ? '+' : '') + skillModifier;
             skillString+= toSentenceCase(skill) + ' ' + modifierString;
         }

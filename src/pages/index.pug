@@ -51,6 +51,9 @@ html(lang="en")
             input#wild-shape(type="checkbox" name="wild-shape")
             label(for="wild-shape") This is a wild shape/shapechange
             #wild-shape-wrapper
+                div
+                    label(for='player-level') Shapeshifter Level:
+                    input#player-level(name='player-level' type='number' step="1" min="1" max="30" value="10")
                 .form-row
                     div
                         label(for='player-int') Intelligence:
@@ -82,7 +85,7 @@ html(lang="en")
                         label(for='ws-rider-type') Damage Rider Type:
                         select#ws-rider-type(name='ws-rider-type')
                             each val in damageTypes
-                                option= val
+                                option(value=val.toLowerCase())= val
                 .form-row 
                     div 
                         label(for='ws-resists') Resistances:
