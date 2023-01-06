@@ -105,6 +105,8 @@ const raceAny = 'any race';
 const raceDwarf = 'dwarf';
 const raceHuman = 'human';
 
+const senses = ['darkvision', 'blindsight'];
+
 const monsterList = {
     ape: {
         type: typeBeast,
@@ -1979,7 +1981,7 @@ const procs = {
 const actions = {
     delightfulLight: {
         name: "Delightful Light (Recharge 5–6)",
-        description: "{{description}} magically emanates light in a 10-foot radius for a moment. {{description}} and each creature of {{pronoune:possessiveAdj}} choice in that light gain {{trait:damage}} temporary hit points.",
+        description: "{{description}} magically emanates light in a 10-foot radius for a moment. {{description}} and each creature of {{pronoun:possessiveAdj}} choice in that light gain {{trait:damage}} temporary hit points.",
         dealsDamage: true, //Not really but there's no reason to create an entirely separate mechanic for healing
     },
     feyLeap: {

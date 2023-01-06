@@ -429,8 +429,11 @@ function calculateSelectedMonster() {
     derivedStats.fly = findNearestLowerBenchmark('fly', targetCR, sourceStats);
 
     //Determine what senses the creature should have
-    if (!derivedStats.blindsight) {
-        derivedStats.blindsight = findNearestLowerBenchmark('blindsight', targetCR, sourceStats);
+    for (let i = 0; i < senses.length; i++) {
+        let sense = senses[i];
+        if (!derivedStats[sense]) {
+            derivedStats[sense] = findNearestLowerBenchmark(sense, targetCR, sourceStats);
+        }
     }
 
     //Once we have all the stats populate the statblock:
@@ -553,15 +556,17 @@ function calculateSelectedMonster() {
         $('#condition-immunities').hide();
     }
 
-    //TODO: Add additional senses
     let sensesString = "";
-    if (derivedStats.blindsight) {
-        sensesString += "blindsight " + derivedStats.blindsight + ' ft., '
+    for (let i = 0; i < senses.length; i++) {
+        let sense = senses[i];
+        if (derivedStats[sense]) {
+            sensesString += sensesString.length ? ', ' : '';
+            sensesString += sense + " " + derivedStats[sense] + ' ft.'
+        }
     }
-    if (derivedStats.darkvision) {
-        sensesString += "Darkvision " + derivedStats.darkvision + ' ft., '
-    }
+
     derivedStats.sensesString = sensesString; //Need to store this without passive perception added as Fight Club tracks that separately
+    sensesString += sensesString.length ? ', ' : '';
     derivedStats.passivePerception = (10 + derivedStats.abilityModifiers.wis + (derivedStats.skills && derivedStats.skills.hasOwnProperty('perception') ? averageStats[targetCR].proficiency : 0));
     sensesString += 'passive Perception ' + derivedStats.passivePerception;
     $('#senses span').html(sensesString);
@@ -596,10 +601,11 @@ function calculateSelectedMonster() {
 
     $('#attacks').empty();
     if (derivedStats.multiattack) {
+        let multiattackString;
         if (Object.keys(derivedStats.multiattack.attacks).length > 1) {
             //Text reads differently if there are multiple different attack types
             let attackCount = 0;
-            let multiattackString = "";
+            multiattackString = "";
             let attacks = Object.keys(derivedStats.multiattack.attacks);
             for (let i = 0; i < attacks.length; i++) {
                 attackCount += derivedStats.multiattack.attacks[attacks[i]];
@@ -612,17 +618,18 @@ function calculateSelectedMonster() {
                     multiattackString += (attacks.length > 2 ? ',' : '') + ' and ';
                 }
             }
-            multiattackString = '<strong>Multiattack:</strong> ' + toSentenceCase(derivedStats.description) + ' makes ' + numberStrings[attackCount] + ' attacks:' + multiattackString + '.';
+            multiattackString = toSentenceCase(derivedStats.description) + ' makes ' + numberStrings[attackCount] + ' attacks:' + multiattackString + '.';
             if (derivedStats.multiattack.requireDifferentTargets) {
                 //This may need to change if a creature with more than two attacks ever gets this attribute, but for now it's fine as is as only the t rex has this restriction
                 multiattackString+= ' It can&rsquo;t make both attacks against the same target.';
             }
-            $('<p>'+multiattackString+'</p>').appendTo('#attacks');
         } else {
             let attack = Object.keys(derivedStats.multiattack.attacks)[0];
-            let multiattackString = '<strong>Multiattack:</strong> ' + toSentenceCase(derivedStats.description) + ' makes ' + numberStrings[derivedStats.multiattack.attacks[attack]] + ' ' + derivedStats.attacks[attack].name.toLowerCase() + ' attacks.';
-            $('<p>'+multiattackString+'</p>').appendTo('#attacks');
+            multiattackString = toSentenceCase(derivedStats.description) + ' makes ' + numberStrings[derivedStats.multiattack.attacks[attack]] + ' ' + derivedStats.attacks[attack].name.toLowerCase() + ' attacks.';
         }
+        //Store the string for fight club
+        derivedStats.multiattackString = multiattackString;
+        $('<p><strong>Multiattack:</strong>'+multiattackString+'</p>').appendTo('#attacks');
         
     }
     if (derivedStats.attacks) {
@@ -1294,6 +1301,11 @@ function findDamageDice(targetDamage, preferredDieSize) {
         traitXML += xmlNode('text', derivedStats.traits[traitName].text);
         fightClubXML += xmlNode('trait', traitXML);
     }
+    if (derivedStats.multiattack) {
+        let multiattackXML = xmlNode('name', "Multiattack");
+        multiattackXML += xmlNode('text', derivedStats.multiattackString);
+        fightClubXML += xmlNode('action', multiattackXML);
+    }
     for (let attackName in derivedStats.attacks) {
         let currentAttack = derivedStats.attacks[attackName];
         let attackXML = xmlNode('name', currentAttack.name);
@@ -1311,7 +1323,7 @@ function findDamageDice(targetDamage, preferredDieSize) {
     }
     for (let bonusActionName in derivedStats.bonusActions) {
         //Fight club XML doesn't appear to supprot bonus actions, so for now we just export them as actions and add a note.
-        let bonusActionXML = xmlNode('name', derivedStats.bonusActions[bonusActionName].name + '(Bonus Action)');
+        let bonusActionXML = xmlNode('name', derivedStats.bonusActions[bonusActionName].name + ' (Bonus Action)');
         bonusActionXML += xmlNode('text', derivedStats.bonusActions[bonusActionName].text);
         fightClubXML += xmlNode('action', bonusActionXML);
     }
