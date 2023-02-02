@@ -970,6 +970,59 @@ const monsterList = {
             "magicResistance"
         ]
     },
+    quetzalcoatlus: {
+        type: typeBeast,
+        subtype: 'dinosaur',
+        alignment: alignmentUnaligned,
+        lockedStats: {
+            int: 2,
+            skills: {
+                perception: skillRankProficient,
+            },
+            attacks: {
+                bite: {
+                    reach: reachShort,
+                    damageType: damageTypePiercing,
+                    name: 'Bite',
+                    proc: 'flyingCharge',
+                }
+            },
+        },
+        traits: [
+            "flyby"
+        ],
+        stats: {
+            2: {
+                name: 'Quetzalcoatlus',
+                size: sizeHuge,
+                hitDice: 4,
+                str: 15,
+                dex: 13,
+                con: 13,
+                wis: 10,
+                cha: 5,
+                slug: 'quetzalcoatlus',
+                speed: 10,
+                fly: 80,
+                attacks: {
+                    bite: {
+                        damageDice: 3,
+                        damageDieSize: 6
+                    }
+                },
+                traits: {
+                    flyingCharge: {
+                        damageDice: 3,
+                        damageDieSize: 6
+                    }
+                }
+            },
+            8: {
+                name: "Hatzegopteryx",
+                slug: "hatzegopteryx"
+            }
+        }
+    },
     saberToothedTiger: {
         menuName: 'Saber-Toothed Tiger',
         type: typeBeast,
@@ -1872,6 +1925,10 @@ const traits = {
         description: "{{description}} can move through a space as narrow as 1 inch wide without squeezing. A creature that touches {{description}} or hits {{pronoun:object}} with a melee attack while within 5 ft. of {{pronoun:object}} takes {{trait:damage}} fire damage. In addition, {{description}} can enter a hostile creature's space and stop there. The first time {{pronoun:subject}} enters a creature's space on a turn, that creature takes {{trait:damage}} fire damage and catches fire; until someone takes an action to douse the fire, the creature takes {{trait:damage}} fire damage at the start of each of its turns.",
         dealsDamage: true
     },
+    flyby: {
+        name: "Flyby",
+        description: "{{description}} doesn't provoke an opportunity attack when it flies out of an enemy's reach.",
+    },
     holdBreath: {
         name: "Hold Breath",
         description: "{{description}} can hold {{pronoun:possessiveAdj}} breath for {{trait:duration}} minutes.",
@@ -1950,6 +2007,11 @@ const procs = {
         name: "Ignite",
         description: "If the target is a creature or a flammable object, it ignites. Until a creature takes an action to douse the fire, the target takes {{trait:damage}} fire damage at the start of each of its turns.",
         dealsDamage: true,
+    },
+    flyingCharge: {
+        name: "Flying Charge",
+        description: "If {{description}} flew least 30 feet toward the target immediately before the hit, the target takes an extra {{trait:damage}} piercing damage.",
+        dealsDamage: true
     },
     grappleBiteSizeRestricted: {
         name: "Grapple Bite",

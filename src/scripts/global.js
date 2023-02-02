@@ -182,6 +182,9 @@ function calculateSelectedMonster() {
         }
     } else {
         derivedStats.type = selectedMonster.type;
+        if (selectedMonster.subtype) {
+            derivedStats.type += ' (' + selectedMonster.subtype + ')';
+        }
         $('#race-wrapper').hide();
     }
     if (wildShape) {
