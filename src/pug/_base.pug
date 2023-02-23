@@ -1,0 +1,18 @@
+- var title;
+- var description;
+block vars
+doctype html
+html(lang="en")
+    head
+        meta(charset='UTF-8')
+        title=title
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        meta(name="description" content=description)
+        link(rel='stylesheet' type='text/css' href='styles/global.min.css')
+        block styles
+body
+    block content
+    script(src='https://code.jquery.com/jquery-3.4.1.min.js' integrity='sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=' crossorigin='anonymous')
+    script(src='scripts/data.min.js')
+    script(src='scripts/global.min.js')
+    block scripts 

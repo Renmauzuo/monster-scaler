@@ -1,0 +1,15 @@
+extends ../pug/_base.pug
+
+append vars
+    - title = "Sidekick Builder";
+    - description = "Tool for building sidekicks in Dungeons and Dragons 5th edition.";
+
+append scripts
+    script(src='scripts/sidekicks.min.js')
+
+append content 
+    #sidekick-builder.container
+        h2 Build a sidekick
+        form#monster-form
+            .form-row 
+                include ../pug/monster-selection.pug

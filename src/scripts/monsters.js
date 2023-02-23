@@ -1,2098 +1,393 @@
-//Sizes
-//Sizes start at 1 so that tiny doesn't implicitly evaluate to false.
-const sizeTiny = 1;
-const sizeSmall = 2;
-const sizeMedium = 3;
-const sizeLarge = 4;
-const sizeHuge = 5;
-const sizeGargantuan = 6;
+var monsterStats;
 
-const reachVeryShort = 0;
-const reachShort = 1;
-const reachMediumShort = 2;
-const reachMedium = 3;
-const reachMediumLong = 4;
-const reachLong = 4;
-const reachVeryLong = 5;
+$(function () {
 
-const typeBeast = 'beast';
-const typeElemental = 'elemental';
-const typeHumanoid = 'humanoid';
-const typePlant = 'plant';
-const typeFey = 'fey';
+    if (location.search.length) {
+        let params = new URLSearchParams(location.search);
 
-const alignmentUnaligned = 'unaligned';
-const alignmentNeutral = 'neutral';
-const alignmentAny = 'any alignment';
-const alignmentChaoticNeutral = 'chaotic neutral';
-const alignmentChaoticGood = 'chaotic good';
-
-const alignmentMaskUnaligned = 0;
-const alignmentMaskLG = 1;
-const alignmentMaskNG = 2;
-const alignmentMaskCG = 4;
-const alignmentMaskLN = 8;
-const alignmentMaskTN = 16;
-const alignmentMaskCN = 32;
-const alignmentMaskLE = 64;
-const alignmentMaskNE = 128;
-const alignmentMaskCE = 256;
-const alignmentMaskAny = 511;
-
-const alignmentMaskGood = alignmentMaskLG | alignmentMaskNG | alignmentMaskCG;
-const alignmentMaskEvil = alignmentMaskLE | alignmentMaskNE | alignmentMaskCE;
-const alignmentMaskLawful = alignmentMaskLG | alignmentMaskLN | alignmentMaskLE;
-const alignmentMaskChaotic = alignmentMaskCG | alignmentMaskCN | alignmentMaskCE;
-const alignmentMaskAnyLawfulGood = alignmentMaskGood | alignmentMaskLawful;
-
-const genderMale = 1;
-const genderFemale = 2;
-const genderNeutral = 3;
-const genderNone = 4;
-
-const alignmentStrings = {
-    alignmentMaskUnaligned : 'unaligned',
-    alignmentMaskLG: 'lawful good',
-    alignmentMaskNG: 'neutral good',
-    alignmentMaskCG: 'chaotic good',
-    alignmentMaskLN: 'lawful neutral',
-    alignmentMaskTN: 'neutral',
-    alignmentMaskCN: 'chaotic neutral',
-    alignmentMaskLE: 'lawful evil',
-    alignmentMaskNE: 'neutral evil',
-    alignmentMaskCE: 'chaotic evil',
-    alignmentMaskGood : 'any good',
-    alignmentMaskEvil : 'any evil',
-    alignmentMaskLawful : 'any lawful',
-    alignmentMaskChaotic : 'any chaotic',
-    alignmentMaskAnyLawfulGood : 'any lawful or good'
-}
-
-const armorNatural = "Natural Armor";
-
-const damageTypePiercing = 'piercing';
-const damageTypeBludgeoning = 'bludgeoning';
-const damageTypeSlashing = 'slashing';
-const damageTypeMundanePhysical = 'Bludgeoning, Piercing, and Slashing From Nonmagical Attacks';
-const damageTypeFire = 'fire';
-const damageTypePoison = 'poison';
-const damageTypePsychic = 'psychic';
-
-const conditionExhaustion = 'exhaustion';
-const conditionGrappled = 'grappled';
-const conditionParalyzed = 'paralyzed';
-const conditionPetrified = 'petrified';
-const conditionPoisoned = 'poisoned';
-const conditionProne = 'prone';
-const conditionRestrainted = 'restrained';
-const conditionUnconscious = 'unconscious';
-const conditionCharmed = 'charmed';
-const conditionFrightened = 'frightened';
-const conditionBlinded = 'blinded';
-
-const languageCreator = 'One Language Known By Its Creator';
-const languageIgnan = 'Ignan';
-const languageAnyOne = 'Any One Language';
-const languageCommon = 'Common';
-const languageDwarfish = 'Dwarfish';
-const languageSylvan = 'Sylvan';
-
-const skillRankUnproficient = 0;
-const skillRankProficient = 1;
-const skillRankExpert = 2;
-
-const raceAny = 'any race';
-const raceDwarf = 'dwarf';
-const raceHuman = 'human';
-
-const senses = ['darkvision', 'blindsight'];
-
-const monsterList = {
-    ape: {
-        type: typeBeast,
-        alignment: alignmentUnaligned,
-        lockedStats: {
-            attacks: {
-                fist: {
-                    reach: reachMedium,
-                    damageType: damageTypeBludgeoning,
-                    name: 'Fist'
-                },
-                rock: {
-                    damageType: damageTypeBludgeoning,
-                    name: 'Rock',
-                    ranged: true
-                }
-            },
-            skills: {
-                athletics : skillRankProficient,
-                perception : skillRankProficient
-            },
-            slug: "ape",
-            multiattack: {
-                attacks: {
-                    fist : 2
-                }
-            },
-        },
-        stats: {
-            .5 : {
-                name: "Ape",
-                hitDice: 3,
-                speed: 30,
-                climb: 30,
-                size: sizeMedium,
-                str: 16,
-                dex: 14,
-                con: 14,
-                int: 6,
-                wis: 12,
-                cha: 7,
-                attacks: {
-                    fist: {
-                        damageDice: 1,
-                        damageDieSize: 6
-                    },
-                    rock: {
-                        range: 25,
-                        longRange: 50,
-                        damageDice: 1,
-                        damageDieSize: 6
-                    }
-                }
-            },
-            7 : {
-                name: "Giant Ape",
-                hitDice: 15,
-                speed: 40,
-                climb: 40,
-                size: sizeHuge,
-                str: 23,
-                dex: 14,
-                con: 18,
-                int: 7,
-                wis: 12,
-                cha: 7,
-                attacks: {
-                    fist: {
-                        damageDice: 3,
-                        damageDieSize: 10
-                    },
-                    rock: {
-                        range: 50,
-                        longRange: 100,
-                        damageDice: 7,
-                        damageDieSize: 6
+        //Skip variant at first because it must come after monster
+        $('select:not(#variant)').each(function () {
+            let value = params.get($(this).attr('id'));
+            if (value) {
+                if ($(this).attr('multiple')) {
+                    //Convert value to an array
+                    $(this).val(value.split(','));
+                } else {
+                    //Make sure the value is valid
+                    if ($(this).children('option[value="'+value+'"]').length) {
+                        $(this).val(value);
                     }
                 }
             }
+        });
+
+        //Need to do this after mosnter is selected, but before variant is selected
+        setupVariantSelect(false);
+        //Select the variant if it has one
+        let paramsVariant = params.get('variant');
+        if (paramsVariant && $('#variant option[value="'+paramsVariant+'"]').length) {
+            $('#variant').val(paramsVariant);
         }
-    },
-    awakenedPlant: {
-        menuName: 'Awakened Plant',
-        type: typePlant,
-        alignment: alignmentUnaligned,
-        variants: {
-            shrub : {
-                name: "Awakened Shrub",
-                stats: {
-                    0 : {
-                        name: "Awakened Shrub",
-                        attacks: {
-                            rake: {
-                                damageDieSize: 4,
-                                damageDice: 1
-                            },
-                        },
-                    },
-                },
-                lockedStats: {
-                    slug: "shrub",
-                    resistances: [damageTypePiercing],
-                    attacks: {
-                        rake: {
-                            reach: reachMediumShort,
-                            damageType: damageTypeSlashing,
-                            name: 'Rake',
-                            finesse: true
-                        },
-                    },
-                }
-            },
-            tree: {
-                name: "Awakened Tree",
-                stats: {
-                    0: {
-                        name: "Awakened Sapling"
-                    },
-                    2 : {
-                        name: "Awakened Tree",
-                        attacks: {
-                            slam: {
-                                damageDieSize: 6,
-                                damageDice: 3
-                            },
-                        },
-                    },
-                },
-                lockedStats: {
-                    slug: "tree",
-                    resistances: [damageTypeBludgeoning, damageTypePiercing],
-                    attacks: {
-                        slam: {
-                            reach: reachMediumShort,
-                            damageType: damageTypeBludgeoning,
-                            name: 'Slam',
-                        },
-                    },
-                }
+
+        $('input:not([type="checkbox"])').each(function () {
+            let value = params.get($(this).attr('id'));
+            if (value) {
+                $(this).val(value);
             }
-        },
-        lockedStats: {
-            armorDescription: armorNatural,
-            int: 10,
-            wis: 10,
-            vulnerabilities: [damageTypeFire],
-            languages: [languageCreator]
-        },
-        traits: [
-            "falseAppearance"
-        ],
-        stats: {
-            0 : {
-                bonusArmor: 0,
-                speed: 20,
-                hitDice: 3,
-                size: sizeSmall,
-                str: 3,
-                dex: 8,
-                con: 11,
-                cha: 6,
-            },
-            2 : {
-                bonusArmor: 5,
-                hitDice: 7,
-                size: sizeHuge,
-                str: 19,
-                dex: 6,
-                con: 15,
-                cha: 7,
+        });
+
+        $('input[type="checkbox"]').each(function () {
+            if(params.get($(this).attr('id')) !== null) {
+                $(this)[0].checked = true;
             }
-        }
-    },
-    baboon: {
-        type: typeBeast,
-        alignment: alignmentUnaligned,
-        lockedStats: {
-            attacks: {
-                bite: {
-                    reach: reachMedium,
-                    damageType: damageTypePiercing,
-                    name: 'Bite'
-                }
-            },
-            slug: "baboon",
-        },
-        traits: [
-            "packTactics"
-        ],
-        stats: {
-            0 : {
-                name: "Baboon",
-                hitDice: 1,
-                speed: 30,
-                climb: 30,
-                size: sizeSmall,
-                str: 8,
-                dex: 14,
-                con: 11,
-                int: 4,
-                wis: 12,
-                cha: 6,
-                attacks: {
-                    bite: {
-                        damageDice: 1,
-                        damageDieSize: 4
-                    },
-                }
-            },
-        }
-    },
-    badger: {
-        type: typeBeast,
-        alignment: alignmentUnaligned,
-        lockedStats: {
-            attacks: {
-                bite: {
-                    reach: reachMedium,
-                    damageType: damageTypePiercing,
-                    name: 'Bite',
-                    finesse: true
-                }
-            },
-            int: 2,
-            slug: "badger",
-        },
-        traits: [
-            "keenSmell"
-        ],
-        stats: {
-            0 : {
-                name: "Badger",
-                hitDice: 1,
-                speed: 20,
-                burrow: 5,
-                size: sizeTiny,
-                str: 4,
-                dex: 11,
-                con: 12,
-                wis: 12,
-                cha: 5,
-                attacks: {
-                    bite: {
-                        damageDice: 1,
-                        damageDieSize: 1
-                    },
-                }
-            },
-            .25 : {
-                name: "Giant Badger",
-                hitDice: 12,
-                speed: 30,
-                burrow: 10,
-                size: sizeMedium,
-                str: 13,
-                dex: 10,
-                con: 15,
-                wis: 12,
-                cha: 5,
-                multiattack: {
-                  attacks: {
-                    bite: 1,
-                    claws: 1
-                  }
-                },
-                attacks: {
-                    bite: {
-                        damageDice: 1,
-                        damageDieSize: 6
-                    },
-                    claws: {
-                        reach: reachMedium,
-                        damageType: damageTypeSlashing,
-                        name: 'Claws',
-                        damageDice: 2,
-                        damageDieSize: 4
-                    }
-                }
-            },
-        }
-    },
-    bat: {
-        type: typeBeast,
-        alignment: alignmentUnaligned,
-        lockedStats: {
-            attacks: {
-                bite: {
-                    reach: reachMedium,
-                    damageType: damageTypePiercing,
-                    name: 'Bite',
-                }
-            },
-            int: 2,
-            blindsight: 60,
-            slug: "bat",
-        },
-        traits: [
-            "keenHearing",
-            "echolocation"
-        ],
-        stats: {
-            0 : {
-                name: "Bat",
-                hitDice: 1,
-                speed: 5,
-                fly: 30,
-                size: sizeTiny,
-                str: 2,
-                dex: 15,
-                con: 8,
-                wis: 12,
-                cha: 4,
-                attacks: {
-                    bite: {
-                        damageDice: 1,
-                        damageDieSize: 1
-                    },
-                }
-            },
-            .25 : {
-                name: "Giant Bat",
-                hitDice: 12,
-                speed: 30,
-                fly: 30,
-                size: sizeMedium,
-                str: 15,
-                dex: 16,
-                con: 11,
-                wis: 12,
-                cha: 6,
-                attacks: {
-                    bite: {
-                        damageDice: 1,
-                        damageDieSize: 6
-                    },
-                }
-            },
-        }
-    },
-    //TODO: Commoners are actually extremely OP for CR 0, which leads to ridiculous scaling. Might need add some extra statblocks, or just leave commoner out
-    commoner: {
-        type: typeHumanoid,
-        alignment: alignmentAny,
-        race: raceAny,
-        gender: genderNeutral,
-        lockedStats: {
-            attacks: {
-                club: {
-                    reach: reachMedium,
-                    damageType: damageTypeBludgeoning,
-                    name: 'Club'
-                }
-            },
-            extraLanguages: 1,
-            slug: "commoner",
-            size: sizeMedium
-        },
-        stats: {
-            0 : {
-                name: "Commoner",
-                hitDice: 1,
-                speed: 30,
-                str: 10,
-                dex: 10,
-                con: 10,
-                int: 10,
-                wis: 10,
-                cha: 10,
-                attacks: {
-                    club: {
-                        damageDice: 1,
-                        damageDieSize: 4
-                    }
-                }
-            }
-        }
-    },
-    crocodile: {
-        type: typeBeast,
-        alignment: alignmentUnaligned,
-        lockedStats: {
-            armorDescription: armorNatural,
-            int: 2,
-            slug: "crocodile",
-            attacks: {
-                bite: {
-                    reach: reachShort,
-                    damageType: damageTypePiercing,
-                    name: 'Bite',
-                    proc: 'grappleBite'
-                }
-            },
-            skills: {
-                stealth: skillRankExpert
-            },
-        },
-        traits: [
-            "holdBreath"
-        ],
-        stats: {
-            .5: {
-                name: "Crocodile",
-                bonusArmor: 2,
-                hitDice: 3,
-                speed: 20,
-                swim: 30,
-                size: sizeLarge,
-                str: 15,
-                dex: 10,
-                con: 13,
-                wis: 10,
-                cha: 5,
-                attacks: {
-                    bite: {
-                        damageDice: 1,
-                        damageDieSize: 10
-                    }
-                },
-                traits: {
-                    holdBreath: {
-                        duration: 15
-                    }
-                }
-            },
-            5: {
-                name: "Giant Crocodile",
-                bonusArmor: 5,
-                hitDice: 9,
-                speed: 30,
-                swim: 50,
-                size: sizeHuge,
-                str: 21,
-                dex: 9,
-                con: 17,
-                wis: 10,
-                cha: 7,
-                attacks: {
-                    bite: {
-                        damageDice: 3,
-                        damageDieSize: 10
-                    },
-                    tail: {
-                        reach: reachMediumShort,
-                        damageType: damageTypeBludgeoning,
-                        name: "Tail",
-                        proc: "takeDown",
-                        damageDice: 2,
-                        damageDieSize: 8,
-                        notGrappled: true
-                    }
-                },
-                multiattack: {
-                    attacks: {
-                        bite : 1,
-                        tail: 1
-                    }
-                },
-                traits: {
-                    holdBreath: {
-                        duration: 30
-                    }
-                }
-            }
-        }
-    },
-    dolphinDelighter: {
-        menuName: "Dolphin Delighter",
-        type: typeFey,
-        alignment: alignmentChaoticGood,
-        lockedStats: {
-            armorDescription: armorNatural,
-            attacks: {
-                dazzlingSlam: {
-                    reach: reachShort,
-                    damageType: damageTypeBludgeoning,
-                    damageRiderType: damageTypePsychic,
-                    name: 'Dazzling Slam',
-                    proc: 'conditionNoSave'
-                }
-            },
-            multiattack: {
-                attacks: {
-                    dazzlingSlam: 2
-                }
-            },
-            skills: {
-                perception: skillRankProficient,
-                performance: skillRankProficient
-            },
-            slug: "dolphin",
-        },
-        stats: {
-            3 : {
-                name: "Dolphin Delighter",
-                bonusArmor: 3,
-                blindsight: 60,
-                hitDice: 5,
-                speed: 0,
-                swim: 60,
-                size: sizeMedium,
-                str: 14,
-                dex: 13,
-                con: 13,
-                int: 11,
-                wis: 12,
-                cha: 16,
-                attacks: {
-                    dazzlingSlam: {
-                        damageDice: 1,
-                        damageDieSize: 6,
-                        damageRiderDice: 2,
-                        damageRiderDieSize: 6
-                    }
-                },
-                traits: {
-                    conditionNoSave: {
-                        condition: 'blinded'
-                    },
-                    delightfulLight: {
-                        damageDice: 2,
-                        damageDieSize: 10
-                    },
-                    holdBreath: {
-                        duration: 20
-                    },
-                }
-            }
-        },
-        bonusActions: [
-            'delightfulLight',
-            'feyLeap'
-        ],
-        traits: [
-            "holdBreath"
-        ]
-    },
-    elephant: {
-        type: typeBeast,
-        alignment: alignmentUnaligned,
-        lockedStats: {
-            armorDescription: armorNatural,
-            attacks: {
-                gore: {
-                    reach: reachShort,
-                    damageType: damageTypePiercing,
-                    name: 'Gore'
-                },
-                stomp: {
-                    reach: reachShort,
-                    damageType: damageTypeBludgeoning,
-                    name: 'Stomp',
-                    proneOnly: true
-                }
-            },
-            int: 3,
-        },
-        traits: [
-            "tramplingCharge"
-        ],
-        variants: {
-            elephant: {
-                name: "Elephant",
-                lockedStats: {
-                    int: 3,
-                },
-                stats: {
-                    4: {
-                        slug: "elephant",
-                        name: "Elephant",
-                        speed: 40,
-                        cha: 6,
-                    },
-                    6: {
-                        slug: "mammoth",
-                        name: "Mammoth",
-                        cha: 6,
-                    }
-                }
-            },
-            triceratops: {
-                name: "Triceratops",
-                lockedStats: {
-                    int: 2,
-                },
-                stats: {
-                    5: {
-                        slug: "triceratops",
-                        name: "Triceratops",
-                        speed: 50,
-                        cha: 5
-                    }
-                }
-            }
-        },
-        stats: {
-            4 : {
-                bonusArmor: 3,
-                hitDice: 8,
-                size: sizeHuge,
-                str: 22,
-                dex: 9,
-                con: 17,
-                wis: 11,
-                traits: {
-                    tramplingCharge: {
-                        dcAdjustment: -4
-                    }
-                },
-                attacks: {
-                    gore: {
-                        damageDice: 3,
-                        damageDieSize: 8
-                    },
-                    stomp: {
-                        damageDice: 3,
-                        damageDieSize: 10
-                    }
-                }
-            },
-            5 : {
-                bonusArmor: 4,
-                hitDice: 10,
-                size: sizeHuge,
-                str: 22,
-                dex: 9,
-                con: 17,
-                wis: 11,
-                traits: {
-                    tramplingCharge: {
-                        dcAdjustment: -4
-                    }
-                },
-                attacks: {
-                    gore: {
-                        damageDice: 4,
-                        damageDieSize: 8
-                    },
-                    stomp: {
-                        damageDice: 3,
-                        damageDieSize: 10
-                    }
-                }
-            },
-            6 : {
-                bonusArmor: 4,
-                hitDice: 11,
-                size: sizeHuge,
-                str: 24,
-                dex: 9,
-                con: 21,
-                wis: 11,
-                traits: {
-                    tramplingCharge: {
-                        dcAdjustment: 0
-                    }
-                },
-                attacks: {
-                    gore: {
-                        damageDice: 4,
-                        damageDieSize: 8,
-                        reach: reachMediumShort
-                    },
-                    stomp: {
-                        damageDice: 4,
-                        damageDieSize: 10
-                    }
-                }
-            }
-        }
-    },
-    fireElemental: {
-        menuName: "Fire Elemental",
-        type: typeElemental,
-        alignment: alignmentNeutral,
-        lockedStats: {
-            darkvision: 60,
-            languages: [languageIgnan],
-            resistances: [damageTypeMundanePhysical],
-            immunities: [damageTypeFire, damageTypePoison],
-            conditionImmunities: [conditionExhaustion, conditionGrappled, conditionParalyzed, conditionPetrified, conditionPoisoned, conditionProne, conditionRestrainted, conditionUnconscious],
-            attacks: {
-                touch: {
-                    reach: reachMediumShort,
-                    damageType: damageTypeFire,
-                    name: 'Touch',
-                    proc: 'ignite'
-                }
-            },
-            slug: "elemental",
-            multiattack: {
-                attacks: {
-                    touch : 2
-                }
-            },
-        },
-        traits: ["fireForm", "illumination", "waterSusceptibility"],
-        stats: {
-            5 : {
-                name: "Fire Elemental",
-                hitDice: 12,
-                speed: 50,
-                size: sizeLarge,
-                str: 10,
-                dex: 17,
-                con: 16,
-                int: 6,
-                wis: 10,
-                cha: 7,
-                attacks: {
-                    touch: {
-                        damageDice: 2,
-                        damageDieSize: 6,
-                        finesse: true
-                    }
-                },
-                traits: {
-                    ignite: {
-                        damageDice: 1,
-                        damageDieSize: 10
-                    },
-                    fireForm: {
-                        damageDice: 1,
-                        damageDieSize: 10
-                    },
-                    waterSusceptibility: {
-                        damageDice: 1,
-                        damageDieSize: 1
-                    }
-                }
-            }
-        }
-    },
-    killerWhale: {
-        menuName: "Killer Whale",
-        type: typeBeast,
-        alignment: alignmentUnaligned,
-        lockedStats: {
-            armorDescription: armorNatural,
-            attacks: {
-                bite: {
-                    reach: reachShort,
-                    damageType: damageTypePiercing,
-                    name: 'Bite'
-                }
-            },
-            int: 3,
-            skills: {
-                perception: skillRankProficient
-            },
-            slug: "whale",
-        },
-        stats: {
-            3 : {
-                name: "Killer Whale",
-                bonusArmor: 2,
-                blindsight: 120,
-                hitDice: 12,
-                speed: 0,
-                swim: 60,
-                size: sizeHuge,
-                str: 19,
-                dex: 10,
-                con: 13,
-                wis: 12,
-                cha: 7,
-                attacks: {
-                    bite: {
-                        damageDice: 5,
-                        damageDieSize: 6
-                    }
-                },
-                traits: {
-                    holdBreath: {
-                        duration: 30
-                    }
-                }
-            }
-        },
-        traits: [
-            "echolocation",
-            "holdBreath",
-            "keenHearing"
-        ]
-    },
-    naiad: {
-        type: typeFey,
-        alignment: alignmentChaoticNeutral,
-        lockedStats: {
-            armorDescription: armorNatural,
-            attacks: {
-                psychicTouch: {
-                    reach: reachMedium,
-                    damageType: damageTypePsychic,
-                    name: 'Psychic Touch',
-                    spellAttack: true
-                }
-            },
-            castingStat: 'cha',
-            languages: [
-                languageCommon,
-                languageSylvan
-            ],
-            resistances: [damageTypePsychic],
-            immunities: [damageTypePoison],
-            conditionImmunities: [conditionCharmed, conditionFrightened, conditionPoisoned],
-            skills: {
-                persuasion: skillRankProficient,
-                sleightOfHand: skillRankProficient
-            },
-            slug: "naiad",
-            size: sizeMedium,
-            multiattack: {
-                attacks: {
-                    psychicTouch: 2,
-                }
-            },
-            traits: {
-                innateSpellcasting: {
-                    spellList: {
-                        minorIllusion: {
-                            uses: 0
-                        },
-                        phantasmalForce: {
-                            uses: 3
-                        },
-                        fly: {
-                            uses: 1
-                        },
-                        hypnoticPattern: {
-                            uses: 1
-                        }
-                    }
-                }
-            }
-        },
-        stats: {
-            2 : {
-                name: "Naiad",
-                bonusArmor: 2,
-                hitDice: 7,
-                speed: 30,
-                swim: 30,
-                str: 10,
-                dex: 16,
-                con: 11,
-                int: 15,
-                wis: 10,
-                cha: 18,
-                attacks: {
-                    psychicTouch: {
-                        damageDice: 1,
-                        damageDieSize: 10
-                    }
-                }
-            }
-        },
-        traits: [
-            "amphibious",
-            "invisibleInWater",
-            "innateSpellcasting",
-            "magicResistance"
-        ]
-    },
-    quetzalcoatlus: {
-        type: typeBeast,
-        subtype: 'dinosaur',
-        alignment: alignmentUnaligned,
-        lockedStats: {
-            int: 2,
-            skills: {
-                perception: skillRankProficient,
-            },
-            attacks: {
-                bite: {
-                    reach: reachShort,
-                    damageType: damageTypePiercing,
-                    name: 'Bite',
-                    proc: 'flyingCharge',
-                }
-            },
-        },
-        traits: [
-            "flyby"
-        ],
-        stats: {
-            2: {
-                name: 'Quetzalcoatlus',
-                size: sizeHuge,
-                hitDice: 4,
-                str: 15,
-                dex: 13,
-                con: 13,
-                wis: 10,
-                cha: 5,
-                slug: 'quetzalcoatlus',
-                speed: 10,
-                fly: 80,
-                attacks: {
-                    bite: {
-                        damageDice: 3,
-                        damageDieSize: 6
-                    }
-                },
-                traits: {
-                    flyingCharge: {
-                        damageDice: 3,
-                        damageDieSize: 6
-                    }
-                }
-            },
-            8: {
-                name: "Hatzegopteryx",
-                slug: "hatzegopteryx"
-            }
-        }
-    },
-    saberToothedTiger: {
-        menuName: 'Saber-Toothed Tiger',
-        type: typeBeast,
-        alignment: alignmentUnaligned,
-        lockedStats: {
-            slug: 'tiger',
-            int: 3,
-            skills: {
-                perception: skillRankProficient,
-                stealth: skillRankExpert
-            },
-            attacks: {
-                bite: {
-                    reach: reachShort,
-                    damageType: damageTypePiercing,
-                    name: 'Bite'
-                },
-                claw: {
-                    reach: reachShort,
-                    damageType: damageTypeSlashing,
-                    name: 'Claw'
-                },
-            },
-        },
-        traits: [
-            "keenSmell",
-            "pounce"
-        ],
-        stats: {
-            2: {
-                name: 'Saber-Toothed Tiger',
-                size: sizeLarge,
-                hitDice: 7,
-                str: 18,
-                dex: 14,
-                con: 15,
-                wis: 12,
-                cha: 8,
-                speed: 40,
-                attacks: {
-                    bite: {
-                        damageDice: 1,
-                        damageDieSize: 10
-                    }, 
-                    claw: {
-                        damageDice: 2,
-                        damageDieSize: 6
-                    }
-                }
-            }
-        }
-    },
-    shark: {
-        menuName: 'Shark',
-        type: typeBeast,
-        alignment: alignmentUnaligned,
-        variants: {
-            frenzy : {
-                name: "Bloody Frenzy",
-                traits: [
-                    "bloodyFrenzy"
-                ],
-                stats: {
-                    .5 : {
-                        name: "Small Hunter Shark",
-                    },
-                    2 : {
-                        name: "Hunter Shark",
-                    }
-                }
-            },
-            packHunter: {
-                name: "Pack Hunter",
-                traits: [
-                    "packTactics"
-                ],
-                stats: {
-                    .5 : {
-                        name: "Reef Shark",
-                    },
-                    2 : {
-                        name: "Large Reef Shark",
-                    }
-                }
-            }
-        },
-        lockedStats: {
-            armorDescription: armorNatural,
-            attacks: {
-                bite: {
-                    reach: reachShort,
-                    damageType: damageTypePiercing,
-                    name: 'Bite'
-                },
-            },
-            int: 1,
-            skills: {
-                perception : skillRankProficient
-            },
-            slug: "shark",
-        },
-        traits: [
-            "waterBreathing"
-        ],
-        stats: {
-            .5 : {
-                bonusArmor: 1,
-                hitDice: 4,
-                swim: 40,
-                size: sizeMedium,
-                str: 14,
-                dex: 13,
-                con: 13,
-                wis: 10,
-                cha: 4,
-                attacks: {
-                    bite: {
-                        damageDice: 1,
-                        damageDieSize: 8
-                    }
-                }
-            },
-            2 : {
-                bonusArmor: 1,
-                hitDice: 6,
-                swim: 40,
-                size: sizeLarge,
-                str: 18,
-                dex: 13,
-                con: 15,
-                wis: 10,
-                cha: 4,
-                attacks: {
-                    bite: {
-                        damageDice: 2,
-                        damageDieSize: 8
-                    }
-                }
-            },
-            5 : {
-                name: "Giant Shark",
-                bonusArmor: 3,
-                hitDice: 11,
-                swim: 50,
-                size: sizeHuge,
-                str: 23,
-                dex: 11,
-                con: 21,
-                wis: 10,
-                cha: 5,
-                attacks: {
-                    bite: {
-                        damageDice: 3,
-                        damageDieSize: 10
-                    }
-                }
-            }
-        }
-    },
-    trex: {
-        type: typeBeast,
-        alignment: alignmentUnaligned,
-        lockedStats: {
-            armorDescription: armorNatural,
-            attacks: {
-                bite: {
-                    reach: reachMedium,
-                    proc: 'grappleBiteSizeRestricted',
-                    damageType: damageTypePiercing,
-                    name: 'Bite'
-                },
-                tail: {
-                    reach: reachMedium,
-                    damageType: damageTypeBludgeoning,
-                    name: 'Tail'
-                }
-            },
-            int: 2,
-            skills: {
-                perception : skillRankProficient
-            },
-            slug: "tyrannosaurus",
-            multiattack: {
-                attacks: {
-                    bite : 1,
-                    tail: 1
-                },
-                requireDifferentTargets: true
-            },
-        },
-        stats: {
-            8 : {
-                name: "Tyrannosaurus Rex",
-                bonusArmor: 3,
-                hitDice: 13,
-                speed: 50,
-                size: sizeHuge,
-                str: 25,
-                dex: 10,
-                con: 19,
-                wis: 12,
-                cha: 9,
-                attacks: {
-                    bite: {
-                        damageDice: 4,
-                        damageDieSize: 12
-                    },
-                    tail: {
-                        damageDice: 3,
-                        damageDieSize: 8
-                    }
-                },
-                traits: {
-                    grappleBiteSizeRestricted: {
-                        dcAdjustment: -1,
-                        sizeAdjustment: -2
-                    }
-                }
-            }
-        }
-    },
-    wolf: {
-        traits: [
-            "keenHearingSmell",
-            "packTactics",
-        ],
-        type: "beast",
-        alignment: "unaligned",
-        lockedStats: {
-            armorDescription: armorNatural,
-            attacks: {
-                bite: {
-                    reach: reachShort,
-                    proc: 'takeDown',
-                    damageType: damageTypePiercing,
-                    name: 'Bite',
-                    finesse: true
-                }
-            },
-            int: 3,
-            skills: {
-                perception : skillRankProficient,
-                stealth: skillRankProficient
-            },
-            slug: "wolf",
-        },
-        stats: {
-            0 : {
-                name: "Wolf Pup",
-            },
-            .25: {
-                name: "Wolf",
-                bonusArmor: 1,
-                hitDice: 2,
-                speed: 40,
-                size: sizeMedium,
-                str: 12,
-                dex: 15,
-                con: 12,
-                wis: 12,
-                cha: 6,
-                attacks: {
-                    bite: {
-                        damageDice: 2,
-                        damageDieSize: 4
-                    }
-                }
-            },
-            1 : {
-                name: "Dire Wolf",
-                bonusArmor: 2,
-                hitDice: 5,
-                speed: 50,
-                size: sizeLarge,
-                str: 17,
-                dex: 15,
-                con: 15,
-                wis: 12,
-                cha: 7,
-                attacks: {
-                    bite: {
-                        damageDice: 2,
-                        damageDieSize: 6
-                    }
-                }
-            },
-            20 : {
-                name: "Legendary Wolf"
+        });
+
+        if ($('#wild-shape')[0].checked) {
+            $('#wild-shape-wrapper').show();
+            let paramsRider = params.get('riderType');
+            if (paramsRider) {
+                $('#ws-rider-type').val(paramsRider);
             }
         }
     }
-}
 
-/*
- * These are rough averages of different stats per CR
- * These are not used to populate monster stats directly, but are used to compare stats to maintain relative values at different CRs
- * For example, a creature with above average strength for its CR will continue to have above average strength at other CRs
- * Most of these stats were determined by average stats of monsters in various rulebooks by CR.
- * However, outliers sometimes skewed results for certain CRs, especially at high levels when there are very few monsters at each CR, so many of these vlaues have been "fudged" to create a smoother upward transition.
- * Decimal values are to ease the curve a bit, even though all final values will be rounded.
- * Beasts were excluded from average INT calculations, as their INT tends to be capped at 3, regardless of CR.
+    $('#wild-shape').on('change', function () {
+        if ($(this)[0].checked) {
+            $('#wild-shape-wrapper').slideDown();
+        } else {
+            $('#wild-shape-wrapper').slideUp();
+        }
+    });
+
+    //Pretty much any input change means a recalculation
+    $('input,select').on('change', calculateSelectedMonster);
+
+    calculateSelectedMonster();
+
+});
+
+/**
+ * Scales monster stats based on the selected template and challenge rating.
  */
-
-const averageStats = {
-    0 : {
-        proficiency: 2,
-        damagePerRound: .5,
-        xp: 10,
-        ac: 12, 
-        hp: 4,
-        str: 5,
-        dex: 12,
-        con: 10,
-        int: 7,
-        wis: 10,
-        cha: 5,
-        size: sizeSmall - .5 //Low end of small
-    },
-    .125 : {
-        proficiency: 2,
-        damagePerRound: 2.5,
-        xp: 25,
-        ac: 13, 
-        hp: 21,
-        str: 9,
-        dex: 12,
-        con: 10,
-        int: 7,
-        wis: 10,
-        cha: 6,
-        size: sizeSmall
-    },
-    .25 : {
-        proficiency: 2,
-        damagePerRound: 4.5,
-        xp: 50,
-        ac: 13, 
-        hp: 43,
-        str: 10,
-        dex: 12,
-        con: 10,
-        int: 8,
-        wis: 10,
-        cha: 6,
-        size: sizeMedium - .5 //Low end of medium
-    },
-    .5 : {
-        proficiency: 2,
-        damagePerRound: 7,
-        xp: 100,
-        ac: 13, 
-        hp: 60,
-        str: 11,
-        dex: 12,
-        con: 11,
-        int: 8,
-        wis: 10,
-        cha: 7,
-        size: sizeMedium - .4
-    },
-    1 : {
-        proficiency: 2,
-        damagePerRound: 11.5,
-        xp: 200,
-        ac: 13, 
-        hp: 78,
-        str: 13,
-        dex: 12,
-        con: 13,
-        int: 8,
-        wis: 10,
-        cha: 8,
-        size: sizeMedium - .25
-    },
-    2 : {
-        proficiency: 2,
-        damagePerRound: 17.5,
-        xp: 450,
-        ac: 13, 
-        hp: 93,
-        str: 14,
-        dex: 12,
-        con: 14,
-        int: 8,
-        wis: 11,
-        cha: 8,
-        size: sizeMedium
-    },
-    3 : {
-        proficiency: 2,
-        damagePerRound: 23.5,
-        xp: 700,
-        ac: 13, 
-        hp: 108,
-        str: 14,
-        dex: 13,
-        con: 14,
-        int: 9,
-        wis: 11,
-        cha: 9,
-        size: sizeMedium + .25
-    },
-    4 : {
-        proficiency: 2,
-        damagePerRound: 29.5,
-        ac: 14, 
-        xp: 1100,
-        hp: 123,
-        str: 15,
-        dex: 13,
-        con: 15,
-        int: 9,
-        wis: 11,
-        cha: 9,
-        size: sizeMedium + .4 //High end of medium
-    },
-    5 : {
-        proficiency: 3,
-        damagePerRound: 35.5,
-        xp: 1800,
-        ac: 15, 
-        hp: 138,
-        str: 16,
-        dex: 13,
-        con: 16,
-        int: 9,
-        wis: 11,
-        cha: 9,
-        size: sizeLarge - .5 //Low end of large
-    },
-    6 : {
-        proficiency: 3,
-        damagePerRound: 41.5,
-        xp: 2300,
-        ac: 15, 
-        hp: 153,
-        str: 16,
-        dex: 13,
-        con: 16,
-        int: 10,
-        wis: 12,
-        cha: 10,
-        size: sizeLarge - .4
-    },
-    7 : {
-        proficiency: 3,
-        damagePerRound: 47.5,
-        xp: 2900,
-        ac: 15, 
-        hp: 168,
-        str: 17,
-        dex: 13,
-        con: 16,
-        int: 10,
-        wis: 12,
-        cha: 11,
-        size: sizeLarge - .3
-    },
-    8 : {
-        proficiency: 3,
-        damagePerRound: 53.5,
-        xp: 3900,
-        ac: 16, 
-        hp: 183,
-        str: 17,
-        dex: 13,
-        con: 16,
-        int: 10,
-        wis: 13,
-        cha: 12,
-        size: sizeLarge - .25
-    },
-    9 : {
-        proficiency: 4,
-        damagePerRound: 59.5,
-        xp: 5000,
-        ac: 16, 
-        hp: 198,
-        str: 17,
-        dex: 13,
-        con: 17,
-        int: 11,
-        wis: 13,
-        cha: 12,
-        size: sizeLarge - .15
-    },
-    10 : {
-        proficiency: 4,
-        damagePerRound: 65.5,
-        xp: 5900,
-        ac: 17, 
-        hp: 213,
-        str: 18,
-        dex: 14,
-        con: 18,
-        int: 11,
-        wis: 14,
-        cha: 13,
-        size: sizeLarge
-    },
-    11 : {
-        proficiency: 4,
-        damagePerRound: 71.5,
-        xp: 7200,
-        ac: 17, 
-        hp: 228,
-        str: 18,
-        dex: 14,
-        con: 18,
-        int: 11,
-        wis: 14,
-        cha: 14,
-        size: sizeLarge + .1
-    },
-    12 : {
-        proficiency: 4,
-        damagePerRound: 77.5,
-        xp: 8400,
-        ac: 17, 
-        hp: 243,
-        str: 18,
-        dex: 14,
-        con: 19,
-        int: 12,
-        wis: 14,
-        cha: 15,
-        size: sizeLarge + .2
-    },
-    13 : {
-        proficiency: 5,
-        damagePerRound: 83.5,
-        xp: 10000,
-        ac: 18, 
-        hp: 258,
-        str: 19,
-        dex: 14,
-        con: 19,
-        int: 12,
-        wis: 14,
-        cha: 15,
-        size: sizeLarge + .3
-    },
-    14 : {
-        proficiency: 5,
-        damagePerRound: 89.5,
-        xp: 11500,
-        ac: 18, 
-        hp: 273,
-        str: 19,
-        dex: 14,
-        con: 19,
-        int: 13,
-        wis: 15,
-        cha: 15,
-        size: sizeHuge - .5
-    },
-    15 : {
-        proficiency: 5,
-        damagePerRound: 95.5,
-        xp: 13000,
-        ac: 18, 
-        hp: 288,
-        str: 20,
-        dex: 14,
-        con: 19,
-        int: 13,
-        wis: 15,
-        cha: 16,
-        size: sizeHuge - .4
-    },
-    16 : {
-        proficiency: 5,
-        damagePerRound: 101.5,
-        xp: 15000,
-        ac: 18, 
-        hp: 303,
-        str: 21,
-        dex: 14,
-        con: 20,
-        int: 13,
-        wis: 16,
-        cha: 17,
-        size: sizeHuge - .3
-    },
-    17 : {
-        proficiency: 6,
-        damagePerRound: 107.5,
-        xp: 18000,
-        ac: 19, 
-        hp: 318,
-        str: 21,
-        dex: 14,
-        con: 20,
-        int: 14,
-        wis: 16,
-        cha: 18,
-        size: sizeHuge - .2
-    },
-    18 : {
-        proficiency: 6,
-        damagePerRound: 113.5,
-        xp: 20000,
-        ac: 19, 
-        hp: 333,
-        str: 22,
-        dex: 14,
-        con: 20,
-        int: 14,
-        wis: 17,
-        cha: 19,
-        size: sizeHuge
-    },
-    19 : {
-        proficiency: 6,
-        damagePerRound: 119.5,
-        xp: 22000,
-        ac: 19, 
-        hp: 348,
-        str: 23,
-        dex: 14,
-        con: 21,
-        int: 15,
-        wis: 18,
-        cha: 20,
-        size: sizeHuge + .1
-    },
-    20 : {
-        proficiency: 6,
-        damagePerRound: 131.5,
-        xp: 25000,
-        ac: 19, 
-        hp: 378,
-        str: 24,
-        dex: 15,
-        con: 22,
-        int: 15,
-        wis: 18,
-        cha: 20,
-        size: sizeHuge + .2
-    },
-    21 : {
-        proficiency: 7,
-        damagePerRound: 149.5,
-        xp: 33000,
-        ac: 19, 
-        hp: 423,
-        str: 25,
-        dex: 15,
-        con: 23,
-        int: 16,
-        wis: 19,
-        cha: 21,
-        size: sizeHuge + .3
-    },
-    22 : {
-        proficiency: 7,
-        damagePerRound: 167.5,
-        xp: 41000,
-        ac: 19, 
-        hp: 468,
-        str: 26,
-        dex: 15,
-        con: 24,
-        int: 17,
-        wis: 19,
-        cha: 21,
-        size: sizeHuge + .4
-    },
-    23 : {
-        proficiency: 7,
-        damagePerRound: 185.5,
-        xp: 50000,
-        ac: 19,
-        hp: 513,
-        str: 27,
-        dex: 15,
-        con: 25,
-        int: 18,
-        wis: 20,
-        cha: 22,
-        size: sizeGargantuan - .2
-    },
-    24 : {
-        proficiency: 7,
-        damagePerRound: 203.5,
-        xp: 62000,
-        ac: 19,
-        hp: 558,
-        str: 27,
-        dex: 15,
-        con: 25,
-        int: 18,
-        wis: 20,
-        cha: 23,
-        size: sizeGargantuan
-    },
-    25 : {
-        proficiency: 8,
-        damagePerRound: 221,
-        xp: 75000,
-        ac: 19,
-        hp: 603,
-        str: 28,
-        dex: 15,
-        con: 26,
-        int: 19,
-        wis: 20,
-        cha: 24,
-        size: sizeGargantuan
-    },
-    26 : {
-        proficiency: 8,
-        damagePerRound: 240,
-        xp: 90000,
-        ac: 19,
-        hp: 648,
-        str: 28,
-        dex: 15,
-        con: 26,
-        int: 20,
-        wis: 21,
-        cha: 25,
-        size: sizeGargantuan
-    },
-    27 : {
-        proficiency: 8,
-        damagePerRound: 258,
-        xp: 105000,
-        ac: 19, 
-        hp: 693,
-        str: 29,
-        dex: 15,
-        con: 27,
-        int: 21,
-        wis: 21,
-        cha: 26,
-        size: sizeGargantuan
-    },
-    28 : {
-        proficiency: 8,
-        damagePerRound: 276,
-        xp: 120000,
-        ac: 19, 
-        hp: 738,
-        str: 29,
-        dex: 15,
-        con: 28,
-        int: 22,
-        wis: 21,
-        cha: 27,
-        size: sizeGargantuan
-    },
-    29 : {
-        proficiency: 9,
-        damagePerRound: 294,
-        xp: 135000,
-        ac: 19, 
-        hp: 783,
-        str: 30,
-        dex: 15,
-        con: 29,
-        int: 23,
-        wis: 22,
-        cha: 28,
-        size: sizeGargantuan
-    },
-    30 : {
-        proficiency: 9,
-        damagePerRound: 312,
-        xp: 155000,
-        ac: 19,
-        hp: 828,
-        str: 30,
-        dex: 15,
-        con: 30,
-        int: 24,
-        wis: 22,
-        cha: 28,
-        size: sizeGargantuan
+function calculateSelectedMonster() {
+    let monsterID = $('#creature').val();
+    let selectedMonster = monsterList[monsterID];
+    let targetCR = $('#target-cr').val();
+    let numTargetCR = Number(targetCR); //Certain comparisons require a numeric version of the CR
+    let selectedVariant;
+    let wildShape = $('#wild-shape')[0].checked;
+    let currentRace;
+    let customName = $('#name').val();
+    let customGender = parseInt($('#gender').val());
+    if (selectedMonster.variants) {
+        selectedVariant = selectedMonster.variants[$('#variant').val()];
     }
-}
 
-const sizes = [
-    {}, //Placeholder for 0, as implicit boolean checks may fail if tiny is 0
-    {
-        name: 'Tiny',
-        hitDie: 4,
-        reach: [5,5,5,5,5,5,5]
-    },
-    {
-        name: 'Small',
-        hitDie: 6,
-        reach: [5,5,5,5,10,10,10]
-    },
-    {
-        name: 'Medium',
-        hitDie: 8,
-        reach: [5,5,5,5,10,15,20]
-    },
-    {
-        name: 'Large',
-        hitDie: 10,
-        reach: [5,5,5,10,15,20,25]
-    },
-    {
-        name: 'Huge',
-        hitDie: 12,
-        reach: [5,5,10,15,20,25,30]
-    },
-    {
-        name: 'Gargantuan',
-        hitDie: 20,
-        reach: [5,10,15,20,25,30,35]
+    //Generate a direct link to this specific creature and stat set
+    let directLink = location.toString().replace(location.search, "");
+    directLink += '?' + serializeForm($('#monster-form'));
+    $('#direct-link').attr('href', directLink);
+
+    //Need to combine variant stats with base stats, if applicable
+    let sourceStats = Object.assign({}, selectedMonster.stats);
+    if (selectedVariant && selectedVariant.stats) {
+        for (let cr in selectedVariant.stats) {
+            if (sourceStats[cr]) {
+                sourceStats[cr] = mergeObjects(sourceStats[cr], selectedVariant.stats[cr]);
+            } else {
+                sourceStats[cr] = selectedVariant.stats[cr];
+            }
+        }
+    }
+
+    //Start with locked stats and presets for this CR, if any
+    monsterStats = {};
+    monsterStats.cr = targetCR;
+    if (sourceStats[targetCR]) {
+        monsterStats = mergeObjects(monsterStats, sourceStats[targetCR]);
+    }
+    monsterStats = mergeObjects(monsterStats, selectedMonster.lockedStats);
+    if (selectedVariant && selectedVariant.lockedStats) {
+        monsterStats = mergeObjects(monsterStats, selectedVariant.lockedStats);
+    }
+    if (selectedMonster.type === typeHumanoid) {
+        if (selectedMonster.race === raceAny) {
+            currentRace = races[$('#race-select').val()]
+            monsterStats.type = selectedMonster.type + ' (' + currentRace.name + ')';
+
+            //If not any race apply the mods for the chosen race
+            if (currentRace !== races[0]) {
+                monsterStats = mergeObjects(monsterStats, currentRace.stats);
+
+                //If the NPC gets languages for their race deduct them from any "bonus languages"
+                if (monsterStats.extraLanguages && currentRace.stats.languages) {
+                    monsterStats.extraLanguages -= currentRace.stats.languages.length;
+                    monsterStats.extraLanguages = Math.max(monsterStats.extraLanguages, 0); //Make sure it's not negative
+                }
+            }
+
+        } else {
+            monsterStats.type = selectedMonster.type + ' (' + selectedMonster.type + ')';
+        }
+    } else {
+        monsterStats.type = selectedMonster.type;
+        if (selectedMonster.subtype) {
+            monsterStats.type += ' (' + selectedMonster.subtype + ')';
+        }
+        $('#race-wrapper').hide();
+    }
+    if (wildShape) {
+        //Override int, wis, and cha if this is a wild shape
+        let wildShapeStats = {
+            int: $('#player-int').val(),
+            wis: $('#player-wis').val(),
+            cha: $('#player-cha').val()
+        }
+        if ($('#ws-resists').val().length) {
+            wildShapeStats.resistances = $('#ws-resists').val();
+        }
+        if ($('#ws-immunities').val().length) {
+            wildShapeStats.immunities = $('#ws-immunities').val();
+        }
+        monsterStats = mergeObjects(monsterStats, wildShapeStats);
+        monsterStats.proficiency = averageStats[$('#player-level').val()].proficiency;
+        monsterStats.wildShape = wildShape;
+    } else {
+        monsterStats.proficiency = averageStats[targetCR].proficiency;
+    }
+
+
+    //Store some strings in derived stats so they are available outside this scope
+    monsterStats.alignment = selectedMonster.alignment;
+
+    monsterStats.gender = customGender || selectedMonster.gender || 4; //Default to genderless if no custom or creature default
+    
+    //Once we have our locked stats, go through the rest of the states to interpolate or extrapolate based on existing values.
+    //All of the preset monster statblocks should be complete, but if we ever add "keyframes" for individual stats it may be possible to have CRs without all stats for a template
+    //For this reason we do the interpolation for EACH stat individually, rather than finding the closest statblock to draw from
+
+    //Grab the most appropriate name if this CR doesn't have one
+    if (!monsterStats.name) {
+        monsterStats.name = findNearestLowerBenchmark("name", targetCR, sourceStats);
+    }
+    if (customName) {
+        //If there's a custom name assign that, but hang onto the original name
+        monsterStats.defaultName = monsterStats.name;
+        monsterStats.name = customName;
+        $('#npc-wrapper').show();
+        monsterStats.unique = $('#unique-npc').is(':checked');
+    } else {
+        $('#npc-wrapper').hide();
+    }
+
+    if(!monsterStats.slug) {
+        monsterStats.slug = findNearestLowerBenchmark("slug", targetCR, sourceStats);
+    }
+    monsterStats.appearance = monsterStats.slug; //TODO: Updated for creatures where appearance isn't slug (ie, treants are trees)
+    //Description for traits. The creature's proper name if it has one, otherwise "the [slug]"
+    monsterStats.description = (monsterStats.unique ? monsterStats.name : 'the ' + monsterStats.slug) ;
+
+    //Traits require a different approach from some other stats as we take a base from the trait library, but potentially apply modifiers to it based on creature stats.
+    //TODO: Adjust for creatures that gain additional traits as they level up
+    monsterStats.traits = {};
+    let traitList = [];
+    if (selectedMonster.traits) {
+        traitList = traitList.concat(selectedMonster.traits);
+    }
+    if (selectedVariant && selectedVariant.traits) {
+        traitList = traitList.concat(selectedVariant.traits); 
+    }
+    if (wildShape && $('#magic-attacks')[0].checked) {
+        traitList.push('magicAttacks');
+    }
+    if (currentRace && currentRace.traits) {
+        traitList = traitList.concat(currentRace.traits);
+    }
+    for (let i = 0; i < traitList.length; i++) {
+        monsterStats.traits[traitList[i]] = generateTrait(traitList[i], targetCR, sourceStats);
+    }
+
+    //Actions are handled somewhat like traits, although at this time there are no additional ones from race or variant
+    if (selectedMonster.actions) {
+        monsterStats.actions = {};
+        for (let i = 0; i < selectedMonster.actions.length; i++) {
+            monsterStats.actions[selectedMonster.actions[i]] = generateTrait(selectedMonster.actions[i], targetCR, sourceStats);
+        }
+    }
+    if (selectedMonster.bonusActions) {
+        monsterStats.bonusActions = {};
+        for (let i = 0; i < selectedMonster.bonusActions.length; i++) {
+            monsterStats.bonusActions[selectedMonster.bonusActions[i]] = generateTrait(selectedMonster.bonusActions[i], targetCR, sourceStats);
+        }
+    }
+
+    if(!monsterStats.size) {
+        let sizeBenchmarks = findBenchmarksForStat("size", targetCR, sourceStats);
+        monsterStats.size = extrapolateFromBenchmark("size", targetCR, sizeBenchmarks, true);
+        monsterStats.size = Math.min(6, monsterStats.size);
+    }
+
+    monsterStats.abilityModifiers = {};
+    for (let i = 0; i < abilityScores.length; i++) {
+        if (!monsterStats[abilityScores[i]]) {
+            let abilityBenchmarks = findBenchmarksForStat(abilityScores[i], targetCR, sourceStats);
+            monsterStats[abilityScores[i]] = extrapolateFromBenchmark(abilityScores[i], targetCR, abilityBenchmarks, false);
+        }
+        monsterStats.abilityModifiers[abilityScores[i]] = abilityScoreModifier(monsterStats[abilityScores[i]]);
+    }    
+
+    //Need to check vs undefined rather than do implicit cast to acocunt for cases where bonus armor is already derived as 0
+    if (monsterStats.bonusArmor == undefined) {
+        /* 
+         * CR is more concerned with derived stats like total AC than source stats like armor bonus
+         * So instead of extrapolating the armor bonus on its own we extrapolate total AC then reverse engineer armor bonus based on other AC mods
+         * This also solves the problem of average natural armor by CR being hard to calculate, since many creatures don't have natural armor.
+         */
+        let acBenchmarks = findBenchmarksForStat(["bonusArmor", "dex"], targetCR, sourceStats);
+        //Creature may not have bonus armor at all, in which case we skip this step
+        if (acBenchmarks) {
+            for (let benchmark in acBenchmarks) {
+                //5e is sometimes vague about monster stat calculations, so for simplicity we assume all bonus armor allows the full dex modifier
+                acBenchmarks[benchmark].ac = 10 + acBenchmarks[benchmark].bonusArmor + abilityScoreModifier(acBenchmarks[benchmark].dex);
+            }
+            let targetAC = extrapolateFromBenchmark('ac', targetCR, acBenchmarks, false);
+            //The max check shouldn't really be necessary, but we don't want to risk a creature with abnormally high dex resulting in a negative bonus armor rating
+            monsterStats.bonusArmor = Math.max(0, targetAC - 10 - monsterStats.abilityModifiers.dex);
+        } else {
+            monsterStats.bonusArmor = 0; //Need to define it to add wild shape bonus to it
+        }
+    }
+    if (wildShape) {
+        monsterStats.bonusArmor += parseInt($('#ws-ac-bonus').val());
+    }
+
+    if (!monsterStats.hitDice) {
+        //Like AC bonuses, we calculate hit dice by extrapolating a target HP number and working backwards rather than extrapolating hit dice directly
+        let hpStats = ["con", "hitDice"];
+        //Don't search for size for humanoids as their size is locked (and will cause an error)
+        if (!selectedMonster.lockedStats.size) {
+            hpStats.push("size");
+        }
+        let hpBenchmarks = findBenchmarksForStat(hpStats, targetCR, sourceStats);
+        for (let benchmark in hpBenchmarks) {
+            let currentBenchmark = hpBenchmarks[benchmark];
+            if (!currentBenchmark.size) {
+                currentBenchmark.size = monsterStats.size;
+            }
+            currentBenchmark.hp = Math.floor(hitPointsPerHitDie(currentBenchmark) * currentBenchmark.hitDice);
+        }
+        let targetHP = extrapolateFromBenchmark('hp', targetCR, hpBenchmarks, false);
+        let hpPerHD = hitPointsPerHitDie(monsterStats);
+        monsterStats.hitDice = Math.max(1, Math.round(targetHP / hpPerHD));
+    }
+
+    //Find all attacks the creature should have at the target CR by adding attacks for all CRs equal to or below target
+    for (let cr in sourceStats) {
+        if (parseFloat(cr) <= parseFloat(targetCR) && sourceStats[cr].attacks) {
+            for (let attack in sourceStats[cr].attacks) {
+                if (!monsterStats.attacks[attack]) {
+                    //We want to copy the attack except for its damage, as that may need to be adjusted based on CR
+                    let attackCopy = Object.assign({}, sourceStats[cr].attacks[attack]);
+                    delete attackCopy.damageDice;
+                    delete attackCopy.damageDieSize;
+                    monsterStats.attacks[attack] = attackCopy;
+                }
+            }
+        }
+    }
+    for (let attack in monsterStats.attacks) {
+        let currentAttack = monsterStats.attacks[attack];
+        //Ensure we are using appropriate stats for the target CR, if they are present
+        if (sourceStats[targetCR] && sourceStats[targetCR].attacks && sourceStats[targetCR].attacks[attack]) {
+            monsterStats.attacks[attack] = Object.assign(monsterStats.attacks[attack], sourceStats[targetCR].attacks[attack]);
+        }
+
+        //Fill in the gaps by extrapolating any missing attributes (such as attack damage)
+        if (!currentAttack.damageDice) {
+            let damageDiceString = 'attacks__'+attack+'__damageDice';
+            let damageDieString =  'attacks__'+attack+'__damageDieSize';
+            let attributes = ['str', damageDiceString, damageDieString];
+            if (currentAttack.finesse) {
+                attributes.push('dex');
+            }
+            let damageBenchmarks = findBenchmarksForStat(attributes, targetCR, sourceStats);
+            for (let benchmark in damageBenchmarks) {
+                let currentBenchmark = damageBenchmarks[benchmark];
+                currentBenchmark.damagePerRound = averageRoll(currentBenchmark[damageDiceString], currentBenchmark[damageDieString]);
+                currentBenchmark.damagePerRound +=  abilityScoreModifier(currentAttack.finesse ? Math.max(currentBenchmark.str, currentBenchmark.dex) : currentBenchmark.str);
+            }
+            let estimatedDamage = extrapolateFromBenchmark('damagePerRound', targetCR, damageBenchmarks, false);
+            let targetDamage = estimatedDamage - (currentAttack.finesse ? Math.max(monsterStats.abilityModifiers.str, monsterStats.abilityModifiers.dex) : monsterStats.abilityModifiers.str);
+            //console.log(targetDamage);
+            let preferredDieSize = findNearestLowerBenchmark(damageDieString, targetCR, sourceStats);
+            let estimatedDice = findDamageDice(targetDamage, preferredDieSize);
+            currentAttack.damageDice = estimatedDice[0];
+            currentAttack.damageDieSize = estimatedDice[1];
+        }
+
+        if (currentAttack.ranged && !currentAttack.range) {
+            currentAttack.range = findNearestLowerBenchmark('attacks__'+attack+'__range', targetCR, sourceStats);
+            currentAttack.longRange = findNearestLowerBenchmark('attacks__'+attack+'__longRange', targetCR, sourceStats);
+        }
+
+        //This could possibly be made into a function to share logic with the block above, but this one is a little difference since it doesn't include ability score bonuses
+        if (currentAttack.damageRiderType && !currentAttack.damageRiderDice) {
+            let damageDiceString = 'attacks__'+attack+'__damageRiderDice';
+            let damageDieSizeString =  'attacks__'+attack+'__damageRiderDieSize';
+            
+            let estimatedDice = scaleDamageRoll(damageDiceString, damageDieSizeString, targetCR, sourceStats);
+            currentAttack.damageRiderDice = estimatedDice[0];
+            currentAttack.damageRiderDieSize = estimatedDice[1];
+        }
+
+        if (currentAttack.proc) {
+            currentAttack.generatedProc = generateTrait(currentAttack.proc, targetCR, sourceStats);
+        }
+    }
+
+    if (!monsterStats.multiattack) {
+        //See if the creature gains multiattack as it goes up in CR
+        for (let cr in sourceStats) {
+            let numCR = Number(cr);
+            let highestCR = 0;
+            if (numCR <= numTargetCR && numCR > highestCR && sourceStats[cr].multiattack) {
+                highestCR = numCR;
+                monsterStats.multiattack = sourceStats[cr].multiattack;
+            }
+        }
+    }
+
+    //Add racial bonuses
+    //These are added near the end so they don't affect other calculations
+    //ie, a dwarf thug should not end up with fewer HD than a human thug because of their HP bonuses
+    if (selectedMonster.type === typeHumanoid && selectedMonster.race === raceAny && currentRace !== races[0]) {
+        for (let stat in currentRace.bonusStats) {
+            //Skip mental ability scores if this is a shape change
+            if (['int', 'wis', 'cha'].includes(stat) && wildShape) {
+                continue;
+            }
+            monsterStats[stat] += currentRace.bonusStats[stat];
+            //This does mean we need to recalculate the modifier
+            monsterStats.abilityModifiers[stat] = abilityScoreModifier(monsterStats[stat]);
+        }
     }
     
-];
 
-const skills = {
-    athletics: 'str',
-    perception: 'wis',
-    performance: 'cha',
-    persuasion: 'cha',
-    sleightOfHand: 'dex',
-    stealth: 'dex'
-}
+    //Calculate movement speeds. These won't scale with CR, we just take the stat the stat from the closest lower CR.
+    monsterStats.speed = findNearestLowerBenchmark('speed', targetCR, sourceStats);
+    monsterStats.swim = findNearestLowerBenchmark('swim', targetCR, sourceStats);
+    monsterStats.climb = findNearestLowerBenchmark('climb', targetCR, sourceStats);
+    monsterStats.burrow = findNearestLowerBenchmark('burrow', targetCR, sourceStats);
+    monsterStats.fly = findNearestLowerBenchmark('fly', targetCR, sourceStats);
 
-const races = [
-    {
-        name : raceAny
-    },
-    {
-        //This includes hill dwarf stats, will need to split up if other dwarf subraces are added
-        name: raceDwarf,
-        stats: {
-            size: sizeMedium,
-            languages: [languageCommon, languageDwarfish],
-            alignment: alignmentMaskAnyLawfulGood,
-            speed: 25,
-            darkvision: 60,
-            resistances: [damageTypePoison],
-        },
-        traits: ['dwarvenTraining', 'dwarvenResilience', 'dwarvenToughness', 'toolProficiency', 'stoneCunning'],
-        bonusStats: {
-            con: 2,
-            wis: 1,
-        }
-    },
-    {
-        name: raceHuman,
-        stats: {
-            size: sizeMedium,
-            languages: [languageCommon],
-            speed: 30
-        },
-        bonusStats: {
-            str: 1,
-            con: 1,
-            dex: 1,
-            int: 1,
-            wis: 1,
-            cha: 1
+    //Determine what senses the creature should have
+    for (let i = 0; i < senses.length; i++) {
+        let sense = senses[i];
+        if (!monsterStats[sense]) {
+            monsterStats[sense] = findNearestLowerBenchmark(sense, targetCR, sourceStats);
         }
     }
-]
 
-//Procs, traits, and actions could possibly be condensed into one list since they are used similarly.
-//The only real reason they're kept apart is in case we ever add custom monster building, they'll need to be differentiated, but that could be handled with a field
-const traits = {
-    amphibious: {
-        name: "Amphibious",
-        description: "{{description}} can breathe air and water."
-    },
-    bloodyFrenzy : {
-        name: "Bloody Frenzy",
-        description: "{{description}} has advantage on melee attack rolls against any creature that doesn't have all its hit points." 
-    },
-    dwarvenResilience : {
-        name: "Dwarven Resilience",
-        description: "{{description}} has advantage on saving throws against poison." 
-    },
-    dwarvenToughness : {
-        name: "Dwarven Tougness",
-        description: "{{description}} has one extra hit point per hit die.",
-        hitPointsPerHitDie: 1
-    },
-    dwarvenTraining : {
-        name: "Dwarven Combat Training",
-        description: "{{description}} has proficiency with the battleaxe, handaxe, light hammer, and warhammer." 
-    },
-    echolocation: {
-        name: "Echolocation",
-        description: "{{description}} can't use {{pronoun:possessiveAdj}} blindsight while deafened."
-    },
-    falseAppearance: {
-        name: "False Appearance",
-        description: "While {{description}} remains motionless, {{pronoun:subject}} is indistinguishable from a normal {{appearance}}."
-    },
-    fireForm: {
-        name: "Fire Form",
-        description: "{{description}} can move through a space as narrow as 1 inch wide without squeezing. A creature that touches {{description}} or hits {{pronoun:object}} with a melee attack while within 5 ft. of {{pronoun:object}} takes {{trait:damage}} fire damage. In addition, {{description}} can enter a hostile creature's space and stop there. The first time {{pronoun:subject}} enters a creature's space on a turn, that creature takes {{trait:damage}} fire damage and catches fire; until someone takes an action to douse the fire, the creature takes {{trait:damage}} fire damage at the start of each of its turns.",
-        dealsDamage: true
-    },
-    flyby: {
-        name: "Flyby",
-        description: "{{description}} doesn't provoke an opportunity attack when it flies out of an enemy's reach.",
-    },
-    holdBreath: {
-        name: "Hold Breath",
-        description: "{{description}} can hold {{pronoun:possessiveAdj}} breath for {{trait:duration}} minutes.",
-        hasDuration: true
-    },
-    illumination: {
-        name: "Illumination",
-        description: "{{description}} sheds bright light in a 30-foot radius and dim light in an additional 30 ft."
-    },
-    innateSpellcasting: {
-        name: "Innate Spellcasting",
-        description: "{{description}}'s spellcasting ability is {{castingStatName}} (spell save DC {{spellSaveDC}}). {{pronoun:subject}} can innately cast the following spells, requiring no material components: {{trait:spellListText}}"
-    },
-    invisibleInWater: {
-        name: "Invisible in Water",
-        description: "{{description}} is invisible while fully immersed in water."
-    },
-    keenHearing : {
-        name: "Keen Hearing",
-        description: "{{description}} has advantage on Wisdom (Perception) checks that rely on hearing." 
-    },
-    keenHearingSmell : {
-        name: "Keen Hearing and Smell",
-        description: "{{description}} has advantage on Wisdom (Perception) checks that rely on hearing or smell." 
-    },
-    keenSmell : {
-        name: "Keen Smell",
-        description: "{{description}} has advantage on Wisdom (Perception) checks that rely on smell."
-    },
-    packTactics: {
-        name: "Pack Tactics",
-        description: "{{description}} has advantage on an attack roll against a creature if at least one of {{description}}'s allies is within 5 ft. of the creature and the ally isn't incapacitated."
-    },
-    magicAttacks: {
-        name: "Magic Weapons",
-        description: "{{description}}'s weapon attacks are magical."
-    },
-    magicResistance: {
-        name: "Magic Resistance",
-        description: "{{description}} has advantage on saving throws against spells and other magical effects."
-    },
-    pounce: {
-        name: "Pounce",
-        description: "If {{description}} moves at least 20 feet straight toward a creature and then hits it with a claw attack on the same turn, that target must succeed on a DC {{trait:DC}} Strength saving throw or be knocked prone. If the target is prone, {{description}} can make one bite attack against it as a bonus action.",
-        allowsSave: true,
-        dcStat: "str"
-    },
-    stoneCunning : {
-        name: "Stonecunning",
-        description: "Whenever {{description}} makes an Intelligence (History) check related to the origin of stonework, {{pronoun:subject}} is considered proficient in the History skill and add double {{pronoun:possessiveAdj}} proficiency bonus to the check, instead of {{pronoun:possessiveAdj}} normal proficiency bonus."
-    },
-    toolProficiency: {
-        name: 'Tool Proficiency',
-        description: '{{description}} has proficiency with one type of artisan&rsquo;s tools: smith&rsquo;s tools, brewer&rsquo;s supplies, or mason&rsquo;s tools. '
-    },
-    tramplingCharge: {
-        name: "Trampling Charge",
-        description: "If {{description}} moves at least 20 ft. straight toward a creature and then hits it with a gore attack on the same turn, that target must succeed on a DC {{trait:DC}} Strength saving throw or be knocked prone. If the target is prone, {{description}} can make one stomp attack against it as a bonus action.",
-        allowsSave: true,
-        dcStat: "str"
-    },
-    waterBreathing: {
-        name: "Water Breathing",
-        description: "{{description}} can breathe only underwater."
-    },
-    waterSusceptibility: {
-        name: "Water Suspceptibility",
-        description: "For every 5 ft. the elemental moves in water, or for every gallon of water splashed on {{pronoun:object}}, {{pronoun:subject}} takes {{trait:damage}} cold damage.",
-        dealsDamage: true //Technically it's the opposite, but why reinvent the wheel
-    }
-}
+    renderStatblock(monsterStats);
 
-//Proc names aren't currently used, but may be someday if we add an edit feature
-const procs = {
-    ignite: {
-        name: "Ignite",
-        description: "If the target is a creature or a flammable object, it ignites. Until a creature takes an action to douse the fire, the target takes {{trait:damage}} fire damage at the start of each of its turns.",
-        dealsDamage: true,
-    },
-    flyingCharge: {
-        name: "Flying Charge",
-        description: "If {{description}} flew least 30 feet toward the target immediately before the hit, the target takes an extra {{trait:damage}} piercing damage.",
-        dealsDamage: true
-    },
-    grappleBiteSizeRestricted: {
-        name: "Grapple Bite",
-        description: "If the target is a {{trait:size}} or smaller creature, it is grappled (escape DC {{trait:DC}}). Until this grapple ends, the target is restrained, and {{description}} can't bite another target",
-        allowsSave: true,
-        dcStat: "str",
-        sizeRestricted: true
-    },
-    grappleBite: {
-        name: "Grapple Bite",
-        description: "The target is grappled (escape dc {{trait:DC}}) Until this grapple ends, the target is restrained, and {{description}} can't bite another target.",
-        allowsSave: true,
-        dcStat: "str"
-    },
-    conditionNoSave: {
-        name: "Status No Save",
-        description: "The target is {{trait:condition}} until the start of {{description}}'s next turn.",
-        appliesCondition: true
-    },
-    takeDown: {
-        name: "Takedown",
-        description: "If the target is a creature, it must succeed on a DC {{trait:DC}} Strength saving throw or be knocked prone",
-        allowsSave: true,
-        dcStat: "str"
-    },
-};
-
-//TODO: Make recharge an adjustable attribute, if necessary.
-const actions = {
-    delightfulLight: {
-        name: "Delightful Light (Recharge 5–6)",
-        description: "{{description}} magically emanates light in a 10-foot radius for a moment. {{description}} and each creature of {{pronoun:possessiveAdj}} choice in that light gain {{trait:damage}} temporary hit points.",
-        dealsDamage: true, //Not really but there's no reason to create an entirely separate mechanic for healing
-    },
-    feyLeap: {
-        name: "Fey Leap",
-        description: "{{description}} teleports up to 30 feet to an unoccupied space {{pronoun:subject}} can see. Immediately before teleporting, {{description}} can choose one creature within 5 feet of {{pronoun:object}}. That creature can teleport with {{description}}, appearing in an unoccupied space within 5 feet of {{description}}'s destination space."
-    }
-};
-
-
-const pronouns = [
-    {}, //First one is black since 0 is default for creature type
-    {
-        subject: 'he',
-        object: 'him',
-        possessive: 'his', 
-        possessiveAdj: 'his' 
-    },
-    {
-        subject: 'she',
-        object: 'her',
-        possessive: 'hers',
-        possessiveAdj: 'her' 
-    },
-
-    {
-        subject: 'they',
-        object: 'them',
-        possessive: 'theirs',
-        possessiveAdj: 'their'
-    },
-    {
-        subject: 'it',
-        object: 'it',
-        possessive: 'its',
-        possessiveAdj: 'its'
-    }
-]
-
-var spells = {
-    fly: {
-        name: 'fly'
-    },
-    hypnoticPattern: {
-        name: 'hypnotic pattern'
-    },
-    minorIllusion: {
-        name: 'minor illusion'
-    },
-    phantasmalForce: {
-        name: 'phantasmal force'
-    }
 }

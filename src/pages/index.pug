@@ -1,20 +1,20 @@
-doctype html
-- let damageTypes = ['Acid','Cold','Fire','Force','Lightning','Poison','Psychic','Necrotic','Radiant','Thunder'];
-html(lang="en")
-    head
-        meta(charset='UTF-8')
-        title Monster Scaler
-        meta(name="viewport" content="width=device-width, initial-scale=1.0")
-        meta(name="description" content="Tool for scaling monsters up or down in Dungeons and Dragons 5th edition.")
-        link(rel='stylesheet' type='text/css' href='styles/global.min.css')
-    body
-        #creatureor.container
-            h2 Pick a monster
+extends ../pug/_base.pug
+
+append vars
+    - let damageTypes = ['Acid','Cold','Fire','Force','Lightning','Poison','Psychic','Necrotic','Radiant','Thunder'];
+    - title = "Monster Scaler";
+    - description = "Tool for scaling monsters up or down in Dungeons and Dragons 5th edition.";
+
+append scripts
+    script(src='scripts/monsters.min.js')
+
+append content
+    #monster-selector.container
+        h2 Pick a monster
+        form#monster-form
             .form-row 
-                div
-                    label(f or='monster-select') Monster Template:
-                    select#creature(name='monster-select')
-                div
+                include ../pug/monster-selection.pug
+                #cr-wrapper
                     label(for='cr-select') Challenge Rating:
                     select#target-cr(name='cr-select')
                         option(value='0') 0
@@ -24,14 +24,6 @@ html(lang="en")
                         - var i = 0;
                         while i < 30
                             option(value=++i)= i
-                #variant-wrapper 
-                    label(for='variant-select') Variant:
-                    select#variant(name='variant-select')
-                #race-wrapper 
-                    label(for='race-select') Race:
-                    select#race-select(name='race-select')
-                        each val, index in ['Any Race', 'Dwarf', 'Human']
-                            option(value=index)= val
             .form-row 
                 div
                     label(for='name') Custom Name
@@ -99,81 +91,25 @@ html(lang="en")
                                 option= val
                 input#magic-attacks(type="checkbox" name="magic-attacks")
                 label(for="magic-attacks") Magic Attacks
-            p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
-        #monster-stats.container
-            #stat-block
-                h2#monster-name
-                p#monster-type
-                include ../pug/tapered-rule.pug
-                p.property#armor-class Armor Class 
-                    span
-                p.property#hit-points Hit Points 
-                    span
-                p.property#speed Speed 
-                    span
-                include ../pug/tapered-rule.pug
-                #ability-scores
-                    div
-                        p STR
-                        p#monster-str
-                    div
-                        p DEX
-                        p#monster-dex
-                    div
-                        p CON
-                        p#monster-con
-                    div
-                        p INT
-                        p#monster-int
-                    div
-                        p WIS
-                        p#monster-wis
-                    div
-                        p CHA
-                        p#monster-cha
-                include ../pug/tapered-rule.pug
-                p.property#skills Skills 
-                    span
-                p.property#vulnerabilities Vulnerabilities 
-                    span
-                p.property#resistances Damage Resistances 
-                    span
-                p.property#immunities Damage Immunities 
-                    span
-                p.property#condition-immunities Condition Immunities 
-                    span
-                p.property#senses Senses 
-                    span
-                p.property#languages Languages 
-                    span
-                p.property#challenge-rating Challenge 
-                    span
-                include ../pug/tapered-rule.pug
-                #traits
-                h3 Actions
-                #attacks
-                #bonus-actions-wrapper
-                    h3 Bonus Actions
-                    #bonus-actions
-        #footer.container
-            p 
-                a(id="direct-link" href="/") Direct link
-            button#fight-club(onclick="exportFightClub()") Export as XML for Fight Club
-            details
-                summary Using this tool
-                p This tool was created to scale certain monsters up or down a few levels to make them useable as summons or wild shape forms for a wider range of levels. Feel free to use this calculator however you like, though caution is advised when scaling low CR monsters up to very high levels, or vice versa. While stats like hp, damage, and ability scores are scaled up and down the tool currently does not adjust things like resistances, immunities, or legendary abilities. Scaling a high CR monster down to low levels may not be appropriate for a low level party as its abilities would still make it very powerful, while a low CR creature scaled up to very high levels may have appropriate stats but would lack the resistances and immunities commonly found at the higher CR. In particular be wary of scaling CR 0 monsters. Since the average stats for CR 0 are so low even a few points of variation can lead to a creature with vastly above average stat values at higher CRs.
-            details
-                summary How it works 
-                p This tool works by comparing a creature's stats to a list of averages for its original CR, then applying that to averages for its new CR. For example, if a creature has 150% of the average strength for its original CR then it will have roughly 150% (rounded) of average strength at its scaled CR. Some of the averages were taken from the "Monster Statistics by Challenge Rating" table in the Dungeon Masters Guide; others were calculated by averaging the stats of many existing creatures.
-            details 
-                summary Wild Shape/Shapechange Options 
-                p If you select the "wild shape/shapechange" checkbox additional fields will appear allowing you to add your own stats if you are using a particular form as a wild shape. Mental ability scores (int, wis, cha) will override whatever is in the creature's actual stat block. There are also additional fields to add bonus stats or abilities which you might have from class features or items which affect wild shapes, such as the Insignia of the Claw.
-            p Creature statistics from the SRD are property of Wizards of the Coast and are used here in accordance with the 
-                a(href="https://media.wizards.com/2016/downloads/SRD-OGL_V1.1.pdf") OPEN GAME LICENSE
-                | .
-            p
-                a(href="https://github.com/Renmauzuo/monster-scaler") Fork me on Github
-            p Want a specific creature added? More creatures will be added over time, but you may open an issue on Github to request that a particular creature be a higher priority.
-        script(src='https://code.jquery.com/jquery-3.4.1.min.js' integrity='sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=' crossorigin='anonymous')
-        script(src='scripts/monsters.min.js')
-        script(src='scripts/global.min.js')
+        p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
+    #monster-stats.container
+        include ../pug/stat-block.pug
+    #footer.container
+        p 
+            a(id="direct-link" href="/") Direct link
+        button#fight-club(onclick="exportFightClub(monsterStats)") Export as XML for Fight Club
+        details
+            summary Using this tool
+            p This tool was created to scale certain monsters up or down a few levels to make them useable as summons or wild shape forms for a wider range of levels. Feel free to use this calculator however you like, though caution is advised when scaling low CR monsters up to very high levels, or vice versa. While stats like hp, damage, and ability scores are scaled up and down the tool currently does not adjust things like resistances, immunities, or legendary abilities. Scaling a high CR monster down to low levels may not be appropriate for a low level party as its abilities would still make it very powerful, while a low CR creature scaled up to very high levels may have appropriate stats but would lack the resistances and immunities commonly found at the higher CR. In particular be wary of scaling CR 0 monsters. Since the average stats for CR 0 are so low even a few points of variation can lead to a creature with vastly above average stat values at higher CRs.
+        details
+            summary How it works 
+            p This tool works by comparing a creature's stats to a list of averages for its original CR, then applying that to averages for its new CR. For example, if a creature has 150% of the average strength for its original CR then it will have roughly 150% (rounded) of average strength at its scaled CR. Some of the averages were taken from the "Monster Statistics by Challenge Rating" table in the Dungeon Masters Guide; others were calculated by averaging the stats of many existing creatures.
+        details 
+            summary Wild Shape/Shapechange Options 
+            p If you select the "wild shape/shapechange" checkbox additional fields will appear allowing you to add your own stats if you are using a particular form as a wild shape. Mental ability scores (int, wis, cha) will override whatever is in the creature's actual stat block. There are also additional fields to add bonus stats or abilities which you might have from class features or items which affect wild shapes, such as the Insignia of the Claw.
+        p Creature statistics from the SRD are property of Wizards of the Coast and are used here in accordance with the 
+            a(href="https://media.wizards.com/2016/downloads/SRD-OGL_V1.1.pdf") OPEN GAME LICENSE
+            | .
+        p
+            a(href="https://github.com/Renmauzuo/monster-scaler") Fork me on Github
+        p Want a specific creature added? More creatures will be added over time, but you may open an issue on Github to request that a particular creature be a higher priority.
