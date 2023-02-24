@@ -136,6 +136,7 @@ function scaleMonster(monsterID, targetCR, options = {}) {
 
     //Traits require a different approach from some other stats as we take a base from the trait library, but potentially apply modifiers to it based on creature stats.
     //TODO: Adjust for creatures that gain additional traits as they level up
+    let lockedTraits = derivedStats.traits;
     derivedStats.traits = {};
     let traitList = [];
     if (selectedMonster.traits) {
@@ -149,6 +150,10 @@ function scaleMonster(monsterID, targetCR, options = {}) {
     }
     for (let i = 0; i < traitList.length; i++) {
         derivedStats.traits[traitList[i]] = generateTrait(traitList[i], targetCR, sourceStats);
+    }
+    //Overwrite with any locked attributes (such as spell list)
+    if (lockedTraits) {
+        derivedStats.traits = mergeObjects(derivedStats.traits, lockedTraits);
     }
 
     //Actions are handled somewhat like traits, although at this time there are no additional ones from race or variant
@@ -347,17 +352,15 @@ function renderStatblock(sourceStats) {
     }
 
     //Dwarves make HP more complicated
-    let hitPoints = Math.floor(hitPointsPerHitDie(sourceStats)*sourceStats.hitDice);
-    let bonusHP = sourceStats.abilityModifiers.con;
+    let bonusHP = sourceStats.abilityModifiers.con * sourceStats.hitDice;
     //Dwarven toughness is only added here so it doesn't change the hit dice of dwarf NPCs
     for (let traitName in sourceStats.traits) {
         let trait = sourceStats.traits[traitName];
         if (trait.hitPointsPerHitDie) {
-            bonusHP += trait.hitPointsPerHitDie;
-            hitPoints += trait.hitPointsPerHitDie * sourceStats.hitDice;
+            bonusHP += trait.hitPointsPerHitDie * sourceStats.hitDice;
         }
     }
-    $('#hit-points span').html(hitPoints+' ('+sourceStats.hitDice+'d'+sizes[sourceStats.size].hitDie+ ( bonusHP > 0 ? '+'+(bonusHP*sourceStats.hitDice) : '')+')');
+    $('#hit-points span').html(damageString(sourceStats.hitDice, sizes[sourceStats.size].hitDie, bonusHP));
 
     let speedString = "";
     if (sourceStats.speed) {
@@ -392,9 +395,9 @@ function renderStatblock(sourceStats) {
             if (skillString.length) {
                 skillString += ', ';
             }
-            let skillModifier = sourceStats.proficiency*sourceStats.skills[skill] + sourceStats.abilityModifiers[skills[skill]];
+            let skillModifier = sourceStats.proficiency*sourceStats.skills[skill] + sourceStats.abilityModifiers[skills[skill].ability];
             let modifierString = (skillModifier >= 0 ? '+' : '') + skillModifier;
-            skillString+= toSentenceCase(skill) + ' ' + modifierString;
+            skillString+= (skills[skill].name || toSentenceCase(skill)) + ' ' + modifierString;
         }
         $('#skills span').html(skillString);
     } else {
@@ -467,7 +470,7 @@ function renderStatblock(sourceStats) {
 
     sourceStats.sensesString = sensesString; //Need to store this without passive perception added as Fight Club tracks that separately
     sensesString += sensesString.length ? ', ' : '';
-    sourceStats.passivePerception = (10 + sourceStats.abilityModifiers.wis + (sourceStats.skills && sourceStats.skills.hasOwnProperty('perception') ? averageStats[targetCR].proficiency : 0));
+    sourceStats.passivePerception = (10 + sourceStats.abilityModifiers.wis + (sourceStats.skills && sourceStats.skills.hasOwnProperty('perception') ? sourceStats.proficiency : 0));
     sensesString += 'passive Perception ' + sourceStats.passivePerception;
     $('#senses span').html(sensesString);
 
@@ -597,6 +600,14 @@ function renderStatblock(sourceStats) {
             }
             currentAttack.text = attackString; //Save text for Fight Club
             $('<p><strong>'+currentAttack.name+'</strong> '+attackString+'</p>').appendTo('#attacks');
+        }
+    }
+
+    if (sourceStats.actions) {
+        for (let actionName in sourceStats.actions) {
+            let currentAction = sourceStats.actions[actionName];
+            currentAction.text = replaceTokensInString(currentAction.description, sourceStats, currentAction); //save the output text for Fight Club
+            $('<p><strong><em>'+currentAction.name+'.</em></strong> '+currentAction.text+'</p>').appendTo('#attacks');
         }
     }
 
@@ -987,7 +998,7 @@ function toSentenceCase(targetString) {
                         return output;
                     }
 
-                    tokenValue = "<br/><br/>";
+                    tokenValue = "<span class='trait-spacer'></span>";
                     if (spellList[0]) {
                         tokenValue += "At will: " + formatSpellNames(spellList[0]);
                         tokenValue += "<br/>";
@@ -998,7 +1009,6 @@ function toSentenceCase(targetString) {
                             tokenValue += "<br/>";
                         }
                     }
-                    console.log(spellList);
                 }
             } else if (tokenArray[0] == 'pronoun') {
                 tokenValue = pronouns[statBlock.gender][tokenArray[1]];
@@ -1167,6 +1177,7 @@ function mergeArrays(array1, array2) {
 
 /**
  * Converts a creature's statistic into the XML format used by Fight Club 5e and initiates a download
+ * TODO: Values pulled from the statblock div should be saved to the statblock object and pulled from there instead
  * @param {Object} statblock The statblock to convert to XML
  */
 function exportFightClub(statblock) {

@@ -24,18 +24,7 @@ append content
                         - var i = 0;
                         while i < 30
                             option(value=++i)= i
-            .form-row 
-                div
-                    label(for='name') Custom Name
-                    input#name(type="text" name='name')
-                div
-                    label(for='gender') Gender
-                    select#gender(name='gender')
-                        option(value=0) Default for creature
-                        option(value=1) Male (he/him/his)
-                        option(value=2) Female (she/her/hers)
-                        option(value=3) Non-binary (they/them/theirs)
-                        option(value=4) Genderless (it/it/its)
+            include ../pug/identity-selection.pug
             #npc-wrapper
                 input#unique-npc(type="checkbox" name="unique-npc")
                 label(for="unique-npc") Proper name/unique NPC
@@ -94,22 +83,18 @@ append content
         p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
     #monster-stats.container
         include ../pug/stat-block.pug
-    #footer.container
-        p 
-            a(id="direct-link" href="/") Direct link
-        button#fight-club(onclick="exportFightClub(monsterStats)") Export as XML for Fight Club
-        details
-            summary Using this tool
-            p This tool was created to scale certain monsters up or down a few levels to make them useable as summons or wild shape forms for a wider range of levels. Feel free to use this calculator however you like, though caution is advised when scaling low CR monsters up to very high levels, or vice versa. While stats like hp, damage, and ability scores are scaled up and down the tool currently does not adjust things like resistances, immunities, or legendary abilities. Scaling a high CR monster down to low levels may not be appropriate for a low level party as its abilities would still make it very powerful, while a low CR creature scaled up to very high levels may have appropriate stats but would lack the resistances and immunities commonly found at the higher CR. In particular be wary of scaling CR 0 monsters. Since the average stats for CR 0 are so low even a few points of variation can lead to a creature with vastly above average stat values at higher CRs.
-        details
-            summary How it works 
-            p This tool works by comparing a creature's stats to a list of averages for its original CR, then applying that to averages for its new CR. For example, if a creature has 150% of the average strength for its original CR then it will have roughly 150% (rounded) of average strength at its scaled CR. Some of the averages were taken from the "Monster Statistics by Challenge Rating" table in the Dungeon Masters Guide; others were calculated by averaging the stats of many existing creatures.
-        details 
-            summary Wild Shape/Shapechange Options 
-            p If you select the "wild shape/shapechange" checkbox additional fields will appear allowing you to add your own stats if you are using a particular form as a wild shape. Mental ability scores (int, wis, cha) will override whatever is in the creature's actual stat block. There are also additional fields to add bonus stats or abilities which you might have from class features or items which affect wild shapes, such as the Insignia of the Claw.
-        p Creature statistics from the SRD are property of Wizards of the Coast and are used here in accordance with the 
-            a(href="https://media.wizards.com/2016/downloads/SRD-OGL_V1.1.pdf") OPEN GAME LICENSE
-            | .
-        p
-            a(href="https://github.com/Renmauzuo/monster-scaler") Fork me on Github
-        p Want a specific creature added? More creatures will be added over time, but you may open an issue on Github to request that a particular creature be a higher priority.
+
+append footer
+    p 
+        a(id="direct-link" href="/") Direct link
+    button#fight-club(onclick="exportFightClub(monsterStats)") Export as XML for Fight Club
+    details
+        summary Using this tool
+        p This tool was created to scale certain monsters up or down a few levels to make them useable as summons or wild shape forms for a wider range of levels. Feel free to use this calculator however you like, though caution is advised when scaling low CR monsters up to very high levels, or vice versa. While stats like hp, damage, and ability scores are scaled up and down the tool currently does not adjust things like resistances, immunities, or legendary abilities. Scaling a high CR monster down to low levels may not be appropriate for a low level party as its abilities would still make it very powerful, while a low CR creature scaled up to very high levels may have appropriate stats but would lack the resistances and immunities commonly found at the higher CR. In particular be wary of scaling CR 0 monsters. Since the average stats for CR 0 are so low even a few points of variation can lead to a creature with vastly above average stat values at higher CRs.
+    details
+        summary How it works 
+        p This tool works by comparing a creature's stats to a list of averages for its original CR, then applying that to averages for its new CR. For example, if a creature has 150% of the average strength for its original CR then it will have roughly 150% (rounded) of average strength at its scaled CR. Some of the averages were taken from the "Monster Statistics by Challenge Rating" table in the Dungeon Masters Guide; others were calculated by averaging the stats of many existing creatures.
+    details 
+        summary Wild Shape/Shapechange Options 
+        p If you select the "wild shape/shapechange" checkbox additional fields will appear allowing you to add your own stats if you are using a particular form as a wild shape. Mental ability scores (int, wis, cha) will override whatever is in the creature's actual stat block. There are also additional fields to add bonus stats or abilities which you might have from class features or items which affect wild shapes, such as the Insignia of the Claw.
+

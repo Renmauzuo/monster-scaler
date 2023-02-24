@@ -95,6 +95,7 @@ const languageIgnan = 'Ignan';
 const languageAnyOne = 'Any One Language';
 const languageCommon = 'Common';
 const languageDwarfish = 'Dwarfish';
+const languageElvish = 'Elvish';
 const languageSylvan = 'Sylvan';
 
 const skillRankUnproficient = 0;
@@ -643,6 +644,83 @@ const monsterList = {
             "holdBreath"
         ]
     },
+    dryad: {
+        type: typeFey,
+        alignment: alignmentNeutral,
+        lockedStats: {
+            attacks: {
+                club: {
+                    reach: reachMedium,
+                    damageType: damageTypeBludgeoning,
+                    name: 'Club',
+                }
+            },
+            castingStat: 'cha',
+            gender: genderFemale,
+            languages: [
+                languageElvish,
+                languageSylvan
+            ],
+            skills: {
+                perception: skillRankProficient,
+                stealth: skillRankProficient
+            },
+            slug: "dryad",
+            size: sizeMedium,
+            traits: {
+                innateSpellcasting: {
+                    spellList: {
+                        druidcraft: {
+                            uses: 0
+                        },
+                        entangle: {
+                            uses: 3
+                        },
+                        goodberry: {
+                            uses: 3
+                        },
+                        barkskin: {
+                            uses: 1
+                        },
+                        passWithoutTrace: {
+                            uses: 1
+                        },
+                        shillelagh: {
+                            uses: 1
+                        }
+                    }
+                }
+            }
+        },
+        stats: {
+            1 : {
+                name: "Dryad",
+                hitDice: 5,
+                speed: 30,
+                str: 10,
+                dex: 12,
+                con: 11,
+                int: 14,
+                wis: 15,
+                cha: 18,
+                attacks: {
+                    club: {
+                        damageDice: 1,
+                        damageDieSize: 4
+                    }
+                },
+            }
+        },
+        actions: [
+            "feyCharm"
+        ],
+        traits: [
+            "innateSpellcasting",
+            "magicResistance",
+            "speakWithBeastsAndPlants",
+            "treeStride"
+        ]
+    },
     elephant: {
         type: typeBeast,
         alignment: alignmentUnaligned,
@@ -918,11 +996,6 @@ const monsterList = {
             },
             slug: "naiad",
             size: sizeMedium,
-            multiattack: {
-                attacks: {
-                    psychicTouch: 2,
-                }
-            },
             traits: {
                 innateSpellcasting: {
                     spellList: {
@@ -940,7 +1013,12 @@ const monsterList = {
                         }
                     }
                 }
-            }
+            },
+            multiattack: {
+                attacks: {
+                    psychicTouch: 2,
+                }
+            },
         },
         stats: {
             2 : {
@@ -960,7 +1038,7 @@ const monsterList = {
                         damageDice: 1,
                         damageDieSize: 10
                     }
-                }
+                },
             }
         },
         traits: [
@@ -1841,12 +1919,62 @@ const sizes = [
 ];
 
 const skills = {
-    athletics: 'str',
-    perception: 'wis',
-    performance: 'cha',
-    persuasion: 'cha',
-    sleightOfHand: 'dex',
-    stealth: 'dex'
+    acrobatics: {
+        ability: 'dex'
+    },
+    animalHandling: {
+        ability: 'wis',
+        name: 'Animal Handling'
+    },
+    arcana: {
+        ability: 'int'
+    },
+    athletics: {
+        ability: 'str'
+    },
+    deception: {
+        ability: 'cha'
+    },
+    history: {
+        ability: 'int'
+    },
+    insight: {
+        ability: 'wis'
+    },
+    intimidation: {
+        ability: 'cha'
+    },
+    investigation: {
+        ability: 'int'
+    },
+    medicine: {
+        ability: 'wis'
+    },
+    nature: {
+        ability: 'int'
+    },
+    perception: {
+        ability: 'wis'
+    },
+    performance: {
+        ability: 'cha'
+    },
+    persuasion: {
+        ability: 'cha'
+    },
+    religion: {
+        ability: 'int'
+    },
+    sleightOfHand: {
+        ability: 'dex',
+        name: 'Sleight Of Hand'
+    },
+    stealth: {
+        ability: 'dex'
+    },
+    survival: {
+        ability: 'wis'
+    },
 }
 
 const races = [
@@ -1976,9 +2104,17 @@ const traits = {
         allowsSave: true,
         dcStat: "str"
     },
+    speakWithBeastsAndPlants: {
+        name: "Speak with Beasts and Plants.",
+        description: "{{description}} can communicate with beasts and plants as if they shared a language."
+    },
     stoneCunning : {
         name: "Stonecunning",
         description: "Whenever {{description}} makes an Intelligence (History) check related to the origin of stonework, {{pronoun:subject}} is considered proficient in the History skill and add double {{pronoun:possessiveAdj}} proficiency bonus to the check, instead of {{pronoun:possessiveAdj}} normal proficiency bonus."
+    },
+    treeStride: {
+        name: "Tree Stride",
+        description: "Once on {{pronoun:object}} turn, {{description}} can use 10 feet of {{pronoun:object}} movement to step magically into one living tree within {{pronoun:object}} reach and emerge from a second living tree within 60 feet of the first tree, appearing in an unoccupied space within 5 feet of the second tree. Both trees must be large or bigger."
     },
     toolProficiency: {
         name: 'Tool Proficiency',
@@ -2046,6 +2182,12 @@ const actions = {
         description: "{{description}} magically emanates light in a 10-foot radius for a moment. {{description}} and each creature of {{pronoun:possessiveAdj}} choice in that light gain {{trait:damage}} temporary hit points.",
         dealsDamage: true, //Not really but there's no reason to create an entirely separate mechanic for healing
     },
+    feyCharm: {
+        name: "Fey Charm",
+        description: "{{description}} targets one humanoid or beast that {{pronoun:subject}} can see within 30 feet of {{pronoun:object}}. If the target can see {{description}}, it must succeed on a DC {{trait:DC}} Wisdom saving throw or be magically charmed. The charmed creature regards {{description}} as a trusted friend to be heeded and protected. Although the target isn't under {{description}}'s control, it takes {{description}}'s requests or actions in the most favorable way it can.<span class='trait-spacer'></span>Each time {{description}} or its allies do anything harmful to the target, it can repeat the saving throw, ending the effect on itself on a success. Otherwise, the effect lasts 24 hours or until {{description}} dies, is on a different plane of existence from the target, or ends the effect as a bonus action. If a target's saving throw is successful, the target is immune to {{description}}'s Fey Charm for the next 24 hours.<span class='trait-spacer'></span>{{description}} can have no more than one humanoid and up to three beasts charmed at a time.",
+        allowsSave: true,
+        dcStat: 'cha'
+    },
     feyLeap: {
         name: "Fey Leap",
         description: "{{description}} teleports up to 30 feet to an unoccupied space {{pronoun:subject}} can see. Immediately before teleporting, {{description}} can choose one creature within 5 feet of {{pronoun:object}}. That creature can teleport with {{description}}, appearing in an unoccupied space within 5 feet of {{description}}'s destination space."
@@ -2083,8 +2225,20 @@ const pronouns = [
 ]
 
 var spells = {
+    barkskin: {
+        name: 'barkskin'
+    },
+    druidcraft: {
+        name: 'druidcraft'
+    },
+    entangle: {
+        name: 'entangle'
+    },
     fly: {
         name: 'fly'
+    },
+    goodberry: {
+        name: 'goodberry'
     },
     hypnoticPattern: {
         name: 'hypnotic pattern'
@@ -2092,7 +2246,13 @@ var spells = {
     minorIllusion: {
         name: 'minor illusion'
     },
+    passWithoutTrace: {
+        name: 'pass without trace'
+    },
     phantasmalForce: {
         name: 'phantasmal force'
-    }
+    },
+    shillelagh: {
+        name: 'shillelagh'
+    },
 }

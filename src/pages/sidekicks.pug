@@ -10,6 +10,17 @@ append scripts
 append content 
     #sidekick-builder.container
         h2 Build a sidekick
-        form#monster-form
+        form#sidekick-form
             .form-row 
                 include ../pug/monster-selection.pug
+            include ../pug/identity-selection.pug
+    #sidekick-stats.container
+        include ../pug/stat-block.pug
+
+append footer
+    p 
+        a(id="direct-link" href="/") Direct link
+    button#fight-club(onclick="exportFightClub(sidekickStats)") Export as XML for Fight Club
+    details
+        summary Using this tool
+        p This tool was created to assist in building sidekicks based on the sidekick rules in Unearthed Arcana. To start select a creature to use as a base. The chosen creature will automatically be scaled to CR 1/2, the maximum allowed per RAW. Sidekick stats will then be added on top of the monster stat block.

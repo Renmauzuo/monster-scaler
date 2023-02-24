@@ -44,7 +44,7 @@ input {
     }
 }
 
-#monster-stats {
+#monster-stats, #sidekick-stats {
     text-align: center;
 
 }
@@ -140,6 +140,11 @@ $redColor: #922610;
         + .tapered-rule {
             margin-top: 10px;
         }
+
+        .trait-spacer {
+            display: block;
+            height: 10px;
+        }
     }
 
     #ability-scores {
@@ -157,3 +162,4 @@ $redColor: #922610;
         }
     }
 }
+
