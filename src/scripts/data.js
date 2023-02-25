@@ -190,7 +190,7 @@ const monsterList = {
         }
     },
     awakenedPlant: {
-        menuName: 'Awakened Plant',
+        name: 'Awakened Plant',
         type: typePlant,
         alignment: alignmentUnaligned,
         variants: {
@@ -574,7 +574,7 @@ const monsterList = {
         }
     },
     dolphinDelighter: {
-        menuName: "Dolphin Delighter",
+        name: "Dolphin Delighter",
         type: typeFey,
         alignment: alignmentChaoticGood,
         lockedStats: {
@@ -856,7 +856,7 @@ const monsterList = {
         }
     },
     fireElemental: {
-        menuName: "Fire Elemental",
+        name: "Fire Elemental",
         type: typeElemental,
         alignment: alignmentNeutral,
         lockedStats: {
@@ -918,7 +918,7 @@ const monsterList = {
         }
     },
     killerWhale: {
-        menuName: "Killer Whale",
+        name: "Killer Whale",
         type: typeBeast,
         alignment: alignmentUnaligned,
         lockedStats: {
@@ -1102,7 +1102,7 @@ const monsterList = {
         }
     },
     saberToothedTiger: {
-        menuName: 'Saber-Toothed Tiger',
+        name: 'Saber-Toothed Tiger',
         type: typeBeast,
         alignment: alignmentUnaligned,
         lockedStats: {
@@ -1154,7 +1154,7 @@ const monsterList = {
         }
     },
     shark: {
-        menuName: 'Shark',
+        name: 'Shark',
         type: typeBeast,
         alignment: alignmentUnaligned,
         variants: {
@@ -2105,7 +2105,7 @@ const traits = {
         dcStat: "str"
     },
     speakWithBeastsAndPlants: {
-        name: "Speak with Beasts and Plants.",
+        name: "Speak with Beasts and Plants",
         description: "{{description}} can communicate with beasts and plants as if they shared a language."
     },
     stoneCunning : {
@@ -2184,7 +2184,7 @@ const actions = {
     },
     feyCharm: {
         name: "Fey Charm",
-        description: "{{description}} targets one humanoid or beast that {{pronoun:subject}} can see within 30 feet of {{pronoun:object}}. If the target can see {{description}}, it must succeed on a DC {{trait:DC}} Wisdom saving throw or be magically charmed. The charmed creature regards {{description}} as a trusted friend to be heeded and protected. Although the target isn't under {{description}}'s control, it takes {{description}}'s requests or actions in the most favorable way it can.<span class='trait-spacer'></span>Each time {{description}} or its allies do anything harmful to the target, it can repeat the saving throw, ending the effect on itself on a success. Otherwise, the effect lasts 24 hours or until {{description}} dies, is on a different plane of existence from the target, or ends the effect as a bonus action. If a target's saving throw is successful, the target is immune to {{description}}'s Fey Charm for the next 24 hours.<span class='trait-spacer'></span>{{description}} can have no more than one humanoid and up to three beasts charmed at a time.",
+        description: "{{description}} targets one humanoid or beast that {{pronoun:subject}} can see within 30 feet of {{pronoun:object}}. If the target can see {{description}}, it must succeed on a DC {{trait:DC}} Wisdom saving throw or be magically charmed. The charmed creature regards {{description}} as a trusted friend to be heeded and protected. Although the target isn't under {{description}}'s control, it takes {{description}}'s requests or actions in the most favorable way it can.<span class='trait-spacer'></span>Each time {{description}} or {{pronoun:possessiveAdj}} allies do anything harmful to the target, it can repeat the saving throw, ending the effect on itself on a success. Otherwise, the effect lasts 24 hours or until {{description}} dies, is on a different plane of existence from the target, or ends the effect as a bonus action. If a target's saving throw is successful, the target is immune to {{description}}'s Fey Charm for the next 24 hours.<span class='trait-spacer'></span>{{description}} can have no more than one humanoid and up to three beasts charmed at a time.",
         allowsSave: true,
         dcStat: 'cha'
     },
@@ -2224,7 +2224,7 @@ const pronouns = [
     }
 ]
 
-var spells = {
+const spells = {
     barkskin: {
         name: 'barkskin'
     },
@@ -2254,5 +2254,22 @@ var spells = {
     },
     shillelagh: {
         name: 'shillelagh'
+    },
+}
+
+const sidekickClasses = {
+    expert: {},
+    spellcaster: {
+        roles: {
+            healer: {},
+            mage: {},
+            prodigy: {}
+        }
+    },
+    warrior: {
+        roles: {
+            defensive: {},
+            offensive: {}
+        }
     },
 }

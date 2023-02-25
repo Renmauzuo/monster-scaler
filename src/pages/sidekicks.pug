@@ -14,6 +14,13 @@ append content
             .form-row 
                 include ../pug/monster-selection.pug
             include ../pug/identity-selection.pug
+            .form-row
+                div 
+                    label(for='class') Class:
+                    select#class(name='class')
+                #role-wrapper 
+                    label(for='role') Role:
+                    select#role(name='role')
     #sidekick-stats.container
         include ../pug/stat-block.pug
 

@@ -4,9 +4,7 @@ const numberStrings = ['zero', 'one', 'two', 'three', 'four', 'five'];
 $(function () {
 
     if ($('#creature').length) {
-        for (let monster in monsterList) {
-            $('<option value='+monster+'>'+(monsterList[monster].menuName || toSentenceCase(monster))+'</option>').appendTo('#creature');
-        }
+        populateSelect(monsterList, '#creature');
     
         $('#creature').on('change', function () {
             setupVariantSelect(true);
@@ -132,7 +130,7 @@ function scaleMonster(monsterID, targetCR, options = {}) {
     }
     derivedStats.appearance = derivedStats.slug; //TODO: Updated for creatures where appearance isn't slug (ie, treants are trees)
     //Description for traits. The creature's proper name if it has one, otherwise "the [slug]"
-    derivedStats.description = (derivedStats.unique ? derivedStats.name : 'the ' + derivedStats.slug) ;
+    derivedStats.description = (derivedStats.unique ? derivedStats.name : 'the ' + derivedStats.slug);
 
     //Traits require a different approach from some other stats as we take a base from the trait library, but potentially apply modifiers to it based on creature stats.
     //TODO: Adjust for creatures that gain additional traits as they level up
@@ -341,15 +339,31 @@ function scaleMonster(monsterID, targetCR, options = {}) {
  * @param {Object} sourceStats The statblock to display
  */
 function renderStatblock(sourceStats) {
+    //Create a list of spells available to the creature (via spellcasting, innate spellcasting, or spell like abilities) in case any affect the stateblock
+    let availableSpells = [];   
+    for (let traitName in sourceStats.traits) {
+        let trait = sourceStats.traits[traitName];
+        if (trait.spellList) {
+            for (let spell in trait.spellList) {
+                availableSpells.push(spell);
+            }
+        }
+    }
+
     //If this is a wildshape we show their name, but also what type of creature this form is in parenthesis. This makes it easier for shapeshifters to track multiple stat blocks.
     $('#monster-name').html((sourceStats.wildShape && sourceStats.defaultName !== sourceStats.name) ? (sourceStats.name + ' (' + sourceStats.defaultName + ')') : sourceStats.name);
     $('#monster-type').html(sizes[sourceStats.size].name + ' ' + sourceStats.type + ', ' + sourceStats.alignment);
 
+    let armorString;
     if (sourceStats.bonusArmor) {
-        $('#armor-class span').html((10 + sourceStats.bonusArmor + sourceStats.abilityModifiers.dex) + ' ('+(sourceStats.armorDescription||'Bonus Armor')+')');
+        armorString = (10 + sourceStats.bonusArmor + sourceStats.abilityModifiers.dex) + ' ('+(sourceStats.armorDescription||'Bonus Armor')+')';
     } else {
-        $('#armor-class span').html(10 + sourceStats.abilityModifiers.dex);
+        armorString = 10 + sourceStats.abilityModifiers.dex;
     }
+    if (availableSpells.includes('barkskin')) {
+        armorString+= ' (16 with barkskin)';
+    }
+    $('#armor-class span').html(armorString);
 
     //Dwarves make HP more complicated
     let bonusHP = sourceStats.abilityModifiers.con * sourceStats.hitDice;
@@ -547,11 +561,16 @@ function renderStatblock(sourceStats) {
             } else {
                 abilityModifier = sourceStats.abilityModifiers.str;
             }
+            let shillelagh = false;
+            if (availableSpells.includes('shillelagh') && attack === 'club' || attack ==='quarterstaff') {
+                shillelagh = true;
+            }
 
             //Save some things for Fight Club export
             currentAttack.attackBonus = sourceStats.proficiency + abilityModifier;
             currentAttack.damageBonus = abilityModifier;
             if (sourceStats.wildShape) {
+                //TODO: Handle these differently
                 currentAttack.attackBonus += parseInt($('#ws-attack-bonus').val());
                 currentAttack.damageBonus += parseInt($('#ws-damage-bonus').val());
             }
@@ -564,7 +583,12 @@ function renderStatblock(sourceStats) {
                 rangeString = 'reach ' + sizes[sourceStats.size].reach[currentAttack.reach];
             }
             //Monster stat blocks never have negative to hit, so we set 0 as the minimum
-            attackString += '+' + Math.max(currentAttack.attackBonus, 0) + ' to hit, '+rangeString+ ' ft., ';
+            attackString += '+' + Math.max(currentAttack.attackBonus, 0) + ' to hit';
+            if(shillelagh) {
+                attackString += ' (+' + (sourceStats.proficiency + sourceStats.abilityModifiers[sourceStats.castingStat]) + ' to hit with shillelagh)';
+            }
+
+            attackString += ', ' + rangeString+ ' ft., ';
             if (currentAttack.proneOnly) {
                 attackString += 'one prone creature';
             } else if (currentAttack.creatureOnly) {
@@ -585,6 +609,10 @@ function renderStatblock(sourceStats) {
             }
 
             attackString += ' ' +  currentAttack.damageType + ' damage';
+
+            if (shillelagh) {
+                attackString += ', or ' + damageString(currentAttack.damageDice, 8, sourceStats.abilityModifiers[sourceStats.castingStat]) + ' with shillelagh'
+            }
 
             //Add riders and procs
             if (currentAttack.damageRiderDice) {
@@ -1327,4 +1355,16 @@ function serializeForm($form) {
     output = output.replace('&', '');
 
     return output;
+}
+
+/**
+ * Populates a select with entries from an object.
+ * 
+ * @param {object} dataSource The source object
+ * @param {string} selector The query selector for the select to populate
+ */
+function populateSelect(dataSource, selector) {
+    for (let key in dataSource) {
+        $('<option value='+key+'>'+(dataSource[key].name || toSentenceCase(key))+'</option>').appendTo(selector);
+    }
 }
