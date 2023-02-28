@@ -1,15 +1,18 @@
-const abilityScores = ["str", "con", "dex", "int", "wis", "cha"]; //For iterating through all ability scores
 const numberStrings = ['zero', 'one', 'two', 'three', 'four', 'five'];
 
 $(function () {
 
-    if ($('#creature').length) {
-        populateSelect(monsterList, '#creature');
-    
-        $('#creature').on('change', function () {
-            setupVariantSelect(true);
-        });
-    }
+    $('[data-on-change]').on('change', function () {
+        window[$(this).data('on-change')](true);
+    });
+
+    $('[data-limit]').on('change', function () {
+        if ($(this).val().length > $(this).data('limit')) {
+            $(this).val($(this).data('old-val'));
+        } else {
+            $(this).data('old-val', $(this).val());
+        }
+    });
 
 });
  
@@ -175,12 +178,12 @@ function scaleMonster(monsterID, targetCR, options = {}) {
     }
 
     derivedStats.abilityModifiers = {};
-    for (let i = 0; i < abilityScores.length; i++) {
-        if (!derivedStats[abilityScores[i]]) {
-            let abilityBenchmarks = findBenchmarksForStat(abilityScores[i], targetCR, sourceStats);
-            derivedStats[abilityScores[i]] = extrapolateFromBenchmark(abilityScores[i], targetCR, abilityBenchmarks, false);
+    for (let ability in abilities) {
+        if (!derivedStats[ability]) {
+            let abilityBenchmarks = findBenchmarksForStat(ability, targetCR, sourceStats);
+            derivedStats[ability] = extrapolateFromBenchmark(ability, targetCR, abilityBenchmarks, false);
         }
-        derivedStats.abilityModifiers[abilityScores[i]] = abilityScoreModifier(derivedStats[abilityScores[i]]);
+        derivedStats.abilityModifiers[ability] = abilityScoreModifier(derivedStats[ability]);
     }    
 
     //Need to check vs undefined rather than do implicit cast to acocunt for cases where bonus armor is already derived as 0
@@ -394,11 +397,27 @@ function renderStatblock(sourceStats) {
     }
     $('#speed span').html(speedString);
 
-    for (let i = 0; i < abilityScores.length; i++) {
-        let abilityScore = abilityScores[i];
-        let modifier = abilityScoreModifier(sourceStats[abilityScore]);
+    for (let ability in abilities) {
+        let modifier = abilityScoreModifier(sourceStats[ability]);
         let modifierString = "(" + (modifier >= 0 ? '+' : '') + modifier + ")";
-       $('#monster-'+abilityScore).html(sourceStats[abilityScore] + " " + modifierString);
+       $('#monster-'+ability).html(sourceStats[ability] + " " + modifierString);
+    }
+
+    if (sourceStats.saves) {
+        $('#saving-throws').show();
+        let saveString = "";
+        for (let i = 0; i < sourceStats.saves.length; i++) {
+            let save = sourceStats.saves[i];
+            if (saveString.length) {
+                saveString += ', ';
+            }
+            let saveModifier = sourceStats.proficiency + sourceStats.abilityModifiers[save];
+            let modifierString = (saveModifier >= 0 ? '+' : '') + saveModifier;
+            saveString+= abilities[save].name + ' ' + modifierString;
+        }
+        $('#saving-throws span').html(saveString);
+    } else {
+        $('#saving-throws').hide();
     }
 
     //TODO: When we add homebrow monsters we may need to account for creatures that gain new skills as they go up in CR.
@@ -1355,6 +1374,77 @@ function serializeForm($form) {
     output = output.replace('&', '');
 
     return output;
+}
+
+/**
+ * Attempts to parse the current search/query parameters to populate form inputs.
+ * Page specific scripts can call this once all data driven fields are generated/populated.
+ * 
+ */
+function deserializeQuery() {
+    if (location.search.length) {
+        let params = new URLSearchParams(location.search);
+
+        //Skip variant at first because it must come after monster
+        $('select:not([data-depends-on])').each(function () {
+            let value = params.get($(this).attr('id'));
+            if (value) {
+                if ($(this).attr('multiple')) {
+                    //Convert value to an array
+                    $(this).val(value.split(','));
+                    if ($(this).is('[data-limit')) {
+                        $(this).data('old-val', $(this).val());
+                    }
+                } else {
+                    //Make sure the value is valid
+                    if ($(this).children('option[value="'+value+'"]').length) {
+                        $(this).val(value);
+                    }
+                }
+            }
+
+            //Trigger the change event if it has one, to populate any dependent selects
+            if ($(this).data('on-change')) {
+                window[$(this).data('on-change')](false);
+            }
+        });
+
+        //Repeat above for any selects which depend on another select for their value
+        //This might need to change if we ever have multiple tiers of dependency, eg c depends on b, which depends on a.
+        //But it works for now
+        $('select[data-depends-on]').each(function () {
+            let value = params.get($(this).attr('id'));
+            if (value) {
+                if ($(this).attr('multiple')) {
+                    //Convert value to an array
+                    $(this).val(value.split(','));
+                    if ($(this).is('[data-limit')) {
+                        $(this).data('old-val', $(this).val());
+                    }
+                } else {
+                    //Make sure the value is valid
+                    if ($(this).children('option[value="'+value+'"]').length) {
+                        $(this).val(value);
+                    }
+                }
+            }
+        });
+
+        $('input:not([type="checkbox"])').each(function () {
+            let value = params.get($(this).attr('id'));
+            if (value) {
+                $(this).val(value);
+            }
+        });
+
+        $('input[type="checkbox"]').each(function () {
+            if(params.get($(this).attr('id')) !== null) {
+                $(this)[0].checked = true;
+            }
+        });
+
+
+    }
 }
 
 /**

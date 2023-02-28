@@ -1,8 +1,8 @@
 #monster-wrapper
     label(for='monster-select') Monster Template:
-    select#creature(name='monster-select' data-source='monsterList')
+    select#creature(name='monster-select' data-source='monsterList' data-on-change='setupVariantSelect')
 #variant-wrapper 
-    label(for='variant-select') Variant:
+    label(for='variant-select' data-depends-on='monster-select') Variant:
     select#variant(name='variant-select')
 #race-wrapper 
     label(for='race-select') Race:

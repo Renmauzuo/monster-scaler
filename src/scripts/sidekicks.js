@@ -1,63 +1,11 @@
 let sidekickStats;
 $(function () {
+    populateSelect(monsterList, '#creature');
     populateSelect(sidekickClasses, '#class');
-
-    if (location.search.length) {
-        let params = new URLSearchParams(location.search);
-
-        //Skip variant at first because it must come after monster
-        $('select:not(#variant,#role)').each(function () {
-            let value = params.get($(this).attr('id'));
-            if (value) {
-                if ($(this).attr('multiple')) {
-                    //Convert value to an array
-                    $(this).val(value.split(','));
-                } else {
-                    //Make sure the value is valid
-                    if ($(this).children('option[value="'+value+'"]').length) {
-                        $(this).val(value);
-                    }
-                }
-            }
-        });
-
-        //Need to do this after monster is selected, but before variant is selected
-        setupVariantSelect(false);
-        //Select the variant if it has one
-        let paramsVariant = params.get('variant');
-        if (paramsVariant && $('#variant option[value="'+paramsVariant+'"]').length) {
-            $('#variant').val(paramsVariant);
-        }
-
-        //Need to do this after class is selected, but before role is selected
-        setupRoleSelect(false);
-        //Select the variant if it has one
-        let paramsRole = params.get('role');
-        if (paramsRole && $('#role option[value="'+paramsRole+'"]').length) {
-            $('#role').val(paramsRole);
-        }
-
-        $('input:not([type="checkbox"])').each(function () {
-            let value = params.get($(this).attr('id'));
-            if (value) {
-                $(this).val(value);
-            }
-        });
-
-        $('input[type="checkbox"]').each(function () {
-            if(params.get($(this).attr('id')) !== null) {
-                $(this)[0].checked = true;
-            }
-        });
-    }
-
-    $('#class').on('change', function () {
-        setupRoleSelect(true);
-    });
+    deserializeQuery();
 
     //Pretty much any input change means a recalculation
     $('input,select').on('change', buildSelectedSidekick);
-
     buildSelectedSidekick();
 
 });
@@ -66,6 +14,7 @@ function buildSelectedSidekick() {
     let monsterID = $('#creature').val();
     let customName = $('#name').val();
     let customGender = parseInt($('#gender').val());
+    let level = parseInt($('#level').val());
 
     //Gather up options to pass to the calculator
     let options = {};
@@ -82,6 +31,33 @@ function buildSelectedSidekick() {
     $('#direct-link').attr('href', directLink);
 
     sidekickStats = scaleMonster(monsterID, '0.5', options);
+
+    //Adjust for sidekick level
+    sidekickStats.hitDice += level;
+    sidekickStats.proficiency = averageStats[level].proficiency;
+
+    //Disable any skills the sidekick already has in the "bonus proficiencies" select
+    $('#bonus-skills option').attr('disabled', false);
+    for (let skill in sidekickStats.skills) {
+        $('#bonus-skills option[value='+skill+']').attr('disabled', true);
+    }
+
+    let bonusSkills = $('#bonus-skills').val();
+    if (bonusSkills.length) {
+        sidekickStats.skills = sidekickStats.skills || [];
+        for (let i = 0; i < bonusSkills.length; i++) {
+            let skill = bonusSkills[i];
+            if (!sidekickStats.skills[skill]) {
+                sidekickStats.skills[skill] = 1;
+            }
+        }
+    }
+
+    let bonusSave = $('#bonus-save').val();
+    if (bonusSave.length) {
+        sidekickStats.saves = sidekickStats.saves || [];
+        sidekickStats.saves.push(bonusSave);
+    }
 
     //Apply any customizations to the derived statblock
     if (customGender) {
@@ -100,14 +76,17 @@ function buildSelectedSidekick() {
 }
 
 /**
+ * Makes changes to the form based on selected class:
  * Shows or hides the role dropdown based on the current class, and populates it with any role options.
+ * Updates the list of bonus proficiencies
  *
  * @param {boolean} animated Whether or not to animate the show/hide
  */
-function setupRoleSelect(animated) {
+function onClassChange(animated) {
     let animationDuration = animated ? 400 : 0;
     let classID = $('#class').val();
     let selectedClass = sidekickClasses[classID];
+
     if (selectedClass.roles) {
         $('#role').empty();
         populateSelect(selectedClass.roles, '#role');
@@ -115,4 +94,23 @@ function setupRoleSelect(animated) {
     } else {
         $('#role-wrapper').fadeOut(animationDuration);
     }
+
+    $('#bonus-skills').empty().data('limit', selectedClass.bonusProficiencies.count);
+    $('#bonus-skill-count').html(selectedClass.bonusProficiencies.count);
+    if (selectedClass.bonusProficiencies.skills) {
+        for (let i = 0; i < selectedClass.bonusProficiencies.skills.length; i++) {
+            let key = selectedClass.bonusProficiencies.skills[i];
+            $('<option value='+key+'>'+(skills[key].name || toSentenceCase(key))+'</option>').appendTo('#bonus-skills');
+        }
+    } else {
+        //If there's no list of skills use all
+        populateSelect(skills, '#bonus-skills');
+    }
+
+    $('#bonus-save').empty();
+    for (let i = 0; i < selectedClass.bonusProficiencies.saves.length; i++) {
+        let key = selectedClass.bonusProficiencies.saves[i];
+        $('<option value='+key+'>'+abilities[key].name+'</option>').appendTo('#bonus-save');
+    }
+
 }
