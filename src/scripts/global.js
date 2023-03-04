@@ -985,6 +985,8 @@ function toSentenceCase(targetString) {
                 cha: "Charisma"
             }
             tokenValue = statNames[statBlock.castingStat];
+        } else if (token === "castingModifier") {
+            tokenValue = '+' + statBlock.abilityModifiers[statBlock.castingStat];
         } else if (token === "spellSaveDC") {
             tokenValue = 8 + statBlock.proficiency + statBlock.abilityModifiers[statBlock.castingStat];
         } else {
@@ -1021,7 +1023,7 @@ function toSentenceCase(targetString) {
                     } else {
                         tokenValue = damageString(damageDice, damageDieSize);
                     }
-                } else if (tokenArray[1] == 'spellListText') {
+                } else if (tokenArray[1] == 'spellListInnate') {
                     let spellList = [];
                     for (let spellId in trait.spellList) {
                         let spell = trait.spellList[spellId];
@@ -1384,7 +1386,6 @@ function deserializeQuery() {
     if (location.search.length) {
         let params = new URLSearchParams(location.search);
 
-
         //Skip variant at first because it must come after monster
         $('select').each(function () {
             let value = params.get($(this).attr('id'));
@@ -1428,6 +1429,11 @@ function deserializeQuery() {
         });
 
 
+    } else {
+        //If there's no search string then fire all the change events to make sure everything gets into the right state
+        $('[data-on-change]').each(function () {
+            window[$(this).data('on-change')](false);
+        });
     }
 }
 

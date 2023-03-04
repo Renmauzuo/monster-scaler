@@ -59,7 +59,7 @@ function buildSelectedSidekick() {
     }
 
     let bonusSave = $('#bonus-save').val();
-    if (bonusSave.length) {
+    if (bonusSave && bonusSave.length) {
         sidekickStats.saves = sidekickStats.saves || [];
         sidekickStats.saves.push(bonusSave);
     }
@@ -74,6 +74,9 @@ function buildSelectedSidekick() {
         //No need to save the original name like we do for mosnters since there are no wild shapes here
         sidekickStats.name = customName;
         sidekickStats.description = customName;
+    } else {
+        sidekickStats.name = toSentenceCase(classID) + ' (' + sidekickStats.name + ')';
+        sidekickStats.description = 'the ' + classID;
     }
 
     let asiFilter = selectedClass.asi.filter(function (x) {
@@ -110,6 +113,28 @@ function buildSelectedSidekick() {
             sidekickStats[ability] += currentValue;
             sidekickStats.abilityModifiers[ability] = abilityScoreModifier(sidekickStats[ability]);
         });
+    }
+
+    let earnedFeatures = selectedClass.features.filter(function (x) {
+        return x.level <= level;
+    });
+    for (let i = 0; i < earnedFeatures.length; i++) {
+        let feature = earnedFeatures[i];
+        if (feature.trait) {
+            sidekickStats.traits[feature.trait] = traits[feature.trait];
+            if (feature.options) {
+                let value = $('#'+feature.trait).val();
+                feature.optionResult(sidekickStats, value);
+            }
+        }
+    }
+
+    //Apply role bonuses
+    if ($('#role').is(':visible')) {
+        let selectedRole = selectedClass.roles[$('#role').val()];
+        if (selectedRole.merge) {
+            sidekickStats = mergeObjects(sidekickStats, selectedRole.merge);
+        }
     }
 
     //Once we have all the stats populate the statblock:
@@ -154,6 +179,33 @@ function onClassChange(animated) {
         $('<option value='+key+'>'+abilities[key].name+'</option>').appendTo('#bonus-save');
     }
 
+    //Delete old feature inputs when changing class
+    $('#class-features').empty();
+    //Create new class feature inputs if necessary
+    for (let i = 0; i < selectedClass.features.length; i++) {
+        let feature = selectedClass.features[i];
+        if (feature.options) {
+            let traitId = feature.trait;
+            let $wrapper = $('<div data-level='+feature.level+'></div>');
+            $('<label for='+traitId+'>'+traits[traitId].name+'</label>').appendTo($wrapper);
+
+            let $select = $('<select id='+traitId+' name='+traitId+' data-result='+feature.optionResult+'></select>');
+            for (let i = 0; i < feature.options.length; i++) {
+                let option = feature.options[i];
+                $('<option>'+option+'</option>').appendTo($select);
+            }
+            $select.appendTo($wrapper);
+
+            //See if there's a query param for this new input
+            let params = new URLSearchParams(location.search);
+            let value = params.get(traitId);
+            if (value) {
+                $select.val(value);
+            }
+
+            $wrapper.appendTo('#class-features');
+        }
+    }
 }
 
 /**
@@ -164,6 +216,8 @@ function onClassChange(animated) {
 function onLevelChange(animated) {
     let animationDuration = animated ? 400 : 0;
     let level = parseInt($('#level').val());
+    let classID = $('#class').val();
+    let selectedClass = sidekickClasses[classID];
     //Show ASI inputs if sidekick qualifies
     //While different classes get ASIs at different levels, getting the first one at 4 is pretty universal
     if (level >= 4) {
@@ -173,4 +227,13 @@ function onLevelChange(animated) {
     }
     //Range max will also be adjusted, but that can't be done until after the monster is scaled, since we need its ability scores to determine the cap
     //This is just done here so the ASI Wrapper is shown/hidden appropriately on page load based on the query params
+
+    //Update features based on new level
+    $('[data-level]').each(function () {
+        if ($(this).data('level') > level) {
+            $(this).slideUp(animated);
+        } else {
+            $(this).slideDown(animated);            
+        }
+    });
 }
