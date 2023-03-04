@@ -15,6 +15,8 @@ function buildSelectedSidekick() {
     let customName = $('#name').val();
     let customGender = parseInt($('#gender').val());
     let level = parseInt($('#level').val());
+    let classID = $('#class').val();
+    let selectedClass = sidekickClasses[classID];
 
     //Gather up options to pass to the calculator
     let options = {};
@@ -31,6 +33,9 @@ function buildSelectedSidekick() {
     $('#direct-link').attr('href', directLink);
 
     sidekickStats = scaleMonster(monsterID, '0.5', options);
+
+    //Delete the sidekick's CR, since sidekicks do not have a challenge rating
+    delete sidekickStats.cr;
 
     //Adjust for sidekick level
     sidekickStats.hitDice += level;
@@ -69,6 +74,42 @@ function buildSelectedSidekick() {
         //No need to save the original name like we do for mosnters since there are no wild shapes here
         sidekickStats.name = customName;
         sidekickStats.description = customName;
+    }
+
+    let asiFilter = selectedClass.asi.filter(function (x) {
+        return x <= level;
+    });
+    //2 ASI points per level that gives an ASI
+    let asiCount = asiFilter.length * 2;
+    //Calculate the max of each asi input. This is based on how many ASI points are available, as well as the creature's ability scores (since the cap is 20)
+    if (asiCount) {
+        //Before we begin we need to calculate how many points are already spent
+        let asiSpent = 0;
+        $('#asi-wrapper input').each(function () {
+            asiSpent += parseInt($(this).val());
+        });
+        let asiAvailable = asiCount - asiSpent;
+        $('#asi-points').html(asiAvailable);
+        asiAvailable != 1 ? $('#asi-plural').show() : $('#asi-plural').hide();
+
+        $('#asi-wrapper input').each(function () {
+            let ability = $(this).data('ability');
+            let currentValue = parseInt($(this).val());
+            
+            //First determine the absolute max based on the creature's ability score
+            //Unlikely for a CR 1/2 creature to have over 20 in a stat but y'never know
+            let abilityMax = Math.max(0, 20 - sidekickStats[ability]);
+            
+            //The second possible max is the number of available points PLUS any already spent on this ability
+            let asiMax = asiAvailable + currentValue;
+
+            $(this).attr('max', Math.min(abilityMax, asiMax));
+            $('#asi-'+ability+'-current span').html(currentValue);
+
+            //While we're here add the ability to the statblock
+            sidekickStats[ability] += currentValue;
+            sidekickStats.abilityModifiers[ability] = abilityScoreModifier(sidekickStats[ability]);
+        });
     }
 
     //Once we have all the stats populate the statblock:
@@ -113,4 +154,23 @@ function onClassChange(animated) {
         $('<option value='+key+'>'+abilities[key].name+'</option>').appendTo('#bonus-save');
     }
 
+}
+
+/**
+ * Handles certain changes based on character level, such as showing and hiding inputs for class specific features
+ *
+ * @param {boolean} animated Whether or not to animate the show/hide
+ */
+function onLevelChange(animated) {
+    let animationDuration = animated ? 400 : 0;
+    let level = parseInt($('#level').val());
+    //Show ASI inputs if sidekick qualifies
+    //While different classes get ASIs at different levels, getting the first one at 4 is pretty universal
+    if (level >= 4) {
+        $('#asi-wrapper').slideDown(animationDuration);
+    } else {
+        $('#asi-wrapper').slideUp(animationDuration);
+    }
+    //Range max will also be adjusted, but that can't be done until after the monster is scaled, since we need its ability scores to determine the cap
+    //This is just done here so the ASI Wrapper is shown/hidden appropriately on page load based on the query params
 }

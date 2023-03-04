@@ -20,7 +20,7 @@ append content
                     select#class(name='class' data-on-change='onClassChange')
                 div
                     label(for='level') Level:
-                    input#level(name='level' type='number' step="1" min="1" value="1")
+                    input#level(name='level' type='number' step="1" min="1" value="1" max="30" data-on-change='onLevelChange')
                 #role-wrapper 
                     label(for='role') Role:
                     select#role(name='role' data-depends-on='class')
@@ -33,9 +33,13 @@ append content
                     label(for='bonus-skills') Bonus Skills (select #[span#bonus-skill-count]):
                     select#bonus-skills(name='bonus-skills' multiple data-depends-on='class' data-limit)
             #asi-wrapper
-                p Feats and Ability Score Increases: 
-                .form-row 
-
+                p You have #[span#asi-points] extra ability score point#[span#asi-plural s] to spend:
+                each val in ['str','dex','con','int','wis','cha']
+                    div 
+                        label(for='asi-'+val)= val.toUpperCase()
+                        input(type='range' min='0' step='1' value='0' id='asi-'+val name='asi-'+val data-ability=val)
+                        p(id='asi-'+val+'-current') +
+                            span
     #sidekick-stats.container
         include ../pug/stat-block.pug
 

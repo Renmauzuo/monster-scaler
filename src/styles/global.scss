@@ -163,3 +163,14 @@ $redColor: #922610;
     }
 }
 
+#asi-wrapper {
+    div {
+        display: grid;
+        grid-template-columns: 40px 130px auto;
+        column-gap: 20px;
+
+        p {
+            margin: 0;
+        }
+    }
+}

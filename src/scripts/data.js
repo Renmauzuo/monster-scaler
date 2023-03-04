@@ -2259,12 +2259,14 @@ const spells = {
 
 const sidekickClasses = {
     expert: {
+        asi: [4,8,10,12,16,19],
         bonusProficiencies: {
             count: 5,
             saves: ['dex', 'int', 'cha']
         }  
     },
     spellcaster: {
+        asi: [4,8,12,16,18],
         bonusProficiencies: {
             count: 2,
             skills: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'performance', 'persuasion', 'religion'],
@@ -2277,6 +2279,7 @@ const sidekickClasses = {
         }
     },
     warrior: {
+        asi: [4,8,12,14,16,19],
         bonusProficiencies: {
             count: 2,
             skills: ['acrobatics', 'animalHandling', 'athletics', 'intimidation', 'nature', 'perception', 'survival'],
