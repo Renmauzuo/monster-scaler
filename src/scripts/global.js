@@ -357,13 +357,31 @@ function renderStatblock(sourceStats) {
     $('#monster-name').html((sourceStats.wildShape && sourceStats.defaultName !== sourceStats.name) ? (sourceStats.name + ' (' + sourceStats.defaultName + ')') : sourceStats.name);
     $('#monster-type').html(sizes[sourceStats.size].name + ' ' + sourceStats.type + ', ' + sourceStats.alignment);
 
-    let armorString;
-    if (sourceStats.bonusArmor) {
-        armorString = (10 + sourceStats.bonusArmor + sourceStats.abilityModifiers.dex) + ' ('+(sourceStats.armorDescription||'Bonus Armor')+')';
+    let armorDescription;
+    let acTotal;
+    if (sourceStats.armor) {
+        let armor = armorTypes[sourceStats.armor];
+        armorDescription = armor.name || toSentenceCase(sourceStats.armor);
+        acTotal = armor.ac;
+        if (armor.type === armorTypeLight) {
+            acTotal += sourceStats.abilityModifiers.dex;
+        } else if (armor.type === armorTypeMedium) {
+            acTotal += Math.max(sourceStats.abilityModifiers.dex, 2);
+        }
     } else {
-        armorString = 10 + sourceStats.abilityModifiers.dex;
+        acTotal = 10 + sourceStats.abilityModifiers.dex;
     }
-    if (availableSpells.includes('barkskin')) {
+
+    if (sourceStats.bonusArmor) {
+        acTotal += sourceStats.bonusArmor;
+
+        //Only add an armor description if we didn't already get one from worn armor
+        if (!armorDescription) {
+            armorDescription = sourceStats.armorDescription || 'Bonus Armor';
+        }
+    }
+    let armorString = acTotal + (armorDescription ? ' (' + armorDescription +')' : '');
+    if (acTotal < 16 && availableSpells.includes('barkskin')) {
         armorString+= ' (16 with barkskin)';
     }
     $('#armor-class span').html(armorString);
@@ -592,6 +610,10 @@ function renderStatblock(sourceStats) {
                 currentAttack.attackBonus += parseInt($('#ws-attack-bonus').val());
                 currentAttack.damageBonus += parseInt($('#ws-damage-bonus').val());
             }
+            if (currentAttack.enhancement) {
+                currentAttack.attackBonus += currentAttack.enhancement;
+                currentAttack.damageBonus += currentAttack.enhancement;
+            }
             
             let attackString = '<em>' + (currentAttack.ranged ? 'Ranged' : 'Melee') + ' ' + (currentAttack.spellAttack ? 'Spell' : 'Weapon') + ' Attack:</em> ';
             let rangeString;
@@ -645,7 +667,7 @@ function renderStatblock(sourceStats) {
                 attackString+= ' ' + replaceTokensInString(currentAttack.generatedProc.description, sourceStats, currentAttack.generatedProc);
             }
             currentAttack.text = attackString; //Save text for Fight Club
-            $('<p><strong>'+currentAttack.name+'</strong> '+attackString+'</p>').appendTo('#attacks');
+            $('<p><strong>'+(currentAttack.name||toSentenceCase(attack))+'</strong> '+attackString+'</p>').appendTo('#attacks');
         }
     }
 
@@ -959,6 +981,20 @@ function toSentenceCase(targetString) {
     return targetString.replace(/(^\s*\w|[\.\!\?]\s*\w)/g,function(c){return c.toUpperCase()});
 }
 
+/**
+ * Returns a title case version of a string
+ *
+ * @param {string} targetString The string to convert to title case
+ * @return {string} The title case string
+ */
+function toTitleCase(targetString) {
+    var sentence = targetString.toLowerCase().split(" ");
+    for(var i = 0; i< sentence.length; i++){
+       sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
+    }
+    return sentence.join(" ");
+}
+
  /**
  * Replaced various tokens in a string with appropriate values
  *
@@ -1009,13 +1045,13 @@ function toSentenceCase(targetString) {
                         dc += parseInt(trait.dcAdjustment);
                     }
                     tokenValue = dc;
-                } else if (tokenArray[1] == 'size') {
+                } else if (tokenArray[1] === 'size') {
                     let targetSize = statBlock.size;
                     if (trait.sizeAdjustment) {
                         targetSize += trait.sizeAdjustment;
                     }
                     tokenValue = sizes[targetSize].name;
-                } else if (tokenArray[1] == 'damage') {
+                } else if (tokenArray[1] === 'damage') {
                     let damageDice = trait.damageDice;
                     let damageDieSize = trait.damageDieSize;
                     if (damageDieSize === 1) {
@@ -1023,7 +1059,14 @@ function toSentenceCase(targetString) {
                     } else {
                         tokenValue = damageString(damageDice, damageDieSize);
                     }
-                } else if (tokenArray[1] == 'spellListInnate') {
+                } else if (tokenArray[1] === "castingClass") {
+                    //Because spellcasters can have two casting classes we convert the array to a string, then replace the comma
+                    tokenValue = ('' + statBlock.castingClass).replace(',',' and ');
+                } else if (tokenArray[1] === "ordinalLevel") {
+                    //Default to character level if trait doesn't have level set
+                    let level = trait.level || statBlock.level;
+                    tokenValue = getOrdinal(level);
+                } else if (tokenArray[1] === 'spellListInnate') {
                     let spellList = [];
                     for (let spellId in trait.spellList) {
                         let spell = trait.spellList[spellId];
@@ -1438,13 +1481,41 @@ function deserializeQuery() {
 }
 
 /**
- * Populates a select with entries from an object.
+ * Populates a select with entries from an object or array.
  * 
- * @param {object} dataSource The source object
+ * @param {object|array} dataSource The source object or array
  * @param {string} selector The query selector for the select to populate
  */
 function populateSelect(dataSource, selector) {
-    for (let key in dataSource) {
-        $('<option value='+key+'>'+(dataSource[key].name || toSentenceCase(key))+'</option>').appendTo(selector);
+    if (Array.isArray(dataSource)) {
+        for (let i = 0; i < dataSource.length; i ++) {
+            $('<option>'+dataSource[i]+'</option>').appendTo(selector);
+        }
+    } else {
+        for (let key in dataSource) {
+            $('<option value='+key+'>'+(dataSource[key].name || toSentenceCase(key))+'</option>').appendTo(selector);
+        }
     }
+
 }
+
+/**
+ * Finds the ordinal for a given number
+ * 
+ * @param {number} n The number to convert to an ordinal
+ * @return {string} The ordinal for the parameter.
+ */
+function getOrdinal(n) {
+    if (n % 10 == 1 && n % 100 != 11) {
+      return n + 'st';
+    }
+    if (n % 10 == 2 && n % 100 != 12) {
+      return n + 'nd';
+    }
+    if (n % 10 == 3 && n % 100 != 13) {
+      return n + 'rd';
+    }
+  
+    return n + 'th';
+  }
+  

@@ -40,7 +40,24 @@ append content
                         input(type='range' min='0' step='1' value='0' id='asi-'+val name='asi-'+val data-ability=val)
                         p(id='asi-'+val+'-current') +
                             span
-            #class-features
+            #class-features.form-row
+            p One of these days we'll add some more robust equipment selection, but for now just add the basics to the statblock below:
+            .form-row 
+                div 
+                    label(for='armor') Armor:
+                    select#armor(name='armor')
+                        option None
+                div
+                    label(for='armor-enhancement') Enhancement Bonus:
+                    input#armor-enhancement(name='armor-enhancement' type='number' step="1" min="0" value="0")
+            .form-row 
+                div 
+                    label(for='weapon') Weapon:
+                    select#weapon(name='weapon')
+                        option None
+                div
+                    label(for='weapon-enhancement') Enhancement Bonus:
+                    input#weapon-enhancement(name='weapon-enhancement' type='number' step="1" min="0" value="0")
     #sidekick-stats.container
         include ../pug/stat-block.pug
 

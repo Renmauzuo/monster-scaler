@@ -2122,6 +2122,10 @@ const traits = {
         name: "Speak with Beasts and Plants",
         description: "{{description}} can communicate with beasts and plants as if they shared a language."
     },
+    spellcasting: {
+        name: "Spellcasting",
+        description: "{{description}} is a {{trait:ordinalLevel}}-level spellcaster. {{pronoun:object}} spellcasting ability is {{castingStatName}} (spell save DC {{spellSaveDC}}, {{castingModifier}} to hit with spell attacks). {{description}} has the following {{trait:castingClass}} spells prepared:{{spellListClass}}"
+    },
     stoneCunning : {
         name: "Stonecunning",
         description: "Whenever {{description}} makes an Intelligence (History) check related to the origin of stonework, {{pronoun:subject}} is considered proficient in the History skill and add double {{pronoun:possessiveAdj}} proficiency bonus to the check, instead of {{pronoun:possessiveAdj}} normal proficiency bonus."
@@ -2238,6 +2242,13 @@ const pronouns = [
     }
 ]
 
+const classArtificer = 'artificer';
+const classBard = 'bard';
+const classCleric = 'cleric';
+const classDruid = 'druid';
+const classSorcerer = 'sorcerer';
+const classWarlock = 'warlock';
+const classWizard = 'wizard';
 
 const schoolAbjuration = 'Abjuration';
 const schoolConjuration = 'Conjuration';
@@ -2262,7 +2273,19 @@ const spells = {
     barkskin: {
         name: 'barkskin'
     },
+    controlFlames: {
+        classes: [classDruid, classSorcerer, classWizard],
+        level: 0,
+        name: 'control flames',
+    },
+    createBonfire: {
+        classes: [classDruid, classSorcerer, classWarlock, classWizard, classArtificer],
+        level: 0,
+        name: 'create bonfire',
+    },
     druidcraft: {
+        classes: [classDruid],
+        level: 0,
         name: 'druidcraft'
     },
     entangle: {
@@ -2271,11 +2294,36 @@ const spells = {
     fly: {
         name: 'fly'
     },
+    frostbite: {
+        classes: [classDruid, classSorcerer, classWarlock, classWizard, classArtificer],
+        level: 0,
+        name: 'frostbite'
+    },
     goodberry: {
         name: 'goodberry'
     },
+    guidance: {
+        classes: [classCleric, classDruid, classArtificer],
+        level: 0,
+        name: 'guidance'
+    },
+    gust: {
+        classes: [classDruid, classSorcerer, classWizard],
+        level: 0,
+        name: 'gust'
+    },
     hypnoticPattern: {
         name: 'hypnotic pattern'
+    },
+    infestation: {
+        classes: [classDruid, classSorcerer, classWarlock, classWizard],
+        level: 0,
+        name: 'infestation'
+    },
+    light: {
+        classes: [classBard, classCleric, classSorcerer, classWizard, classArtificer],
+        level: 0,
+        name: 'light'
     },
     minorIllusion: {
         name: 'minor illusion'
@@ -2314,32 +2362,63 @@ const sidekickClasses = {
         },
         features: [
             {
+                level: 1,
+                trait: 'spellcasting',
+                options: [
+                    {
+                        id: 'cantrips',
+                        label: 'Cantrips Known',
+                        limit: (statblock) => {
+                            return spellProgression.half[statblock.level][0];
+                        },
+                        list: (statblock) => {
+                            let cantrips = {};
+                            for (let spell in spells) {
+                                if (spells[spell].level === 0) {
+                                    cantrips[spell] = {name: toTitleCase(spells[spell].name) };
+                                }
+                            }
+                            return cantrips;
+                        },
+                        result: (statblock, value) => {
+                        }
+                    }
+                ],
+            },
+            {
                 level: 6,
                 trait: 'potentCantrips'
             },
             {
                 level: 14,
                 trait: 'empoweredSpells',
-                options: magicSchools,
-                //I really wanted to make this whole thing data driven, but y'know sometimes you just need a bespoke callback function
-                optionResult: (statblock, value) => {
-                    statblock.traits.empoweredSpells.school = value;
-                }
+                options: [{
+                    id: 'empoweredSpells',
+                    label: 'Empowered Spells School',
+                    list: magicSchools,
+                    //I really wanted to make this whole thing data driven, but y'know sometimes you just need a bespoke callback function
+                    result: (statblock, value) => {
+                        statblock.traits.empoweredSpells.school = value;
+                    }
+                }], 
             }
         ],
         roles: {
             healer: {
                 merge: {
+                    castingClass: [classDruid, classCleric],
                     castingStat: 'wis'
                 }
             },
             mage: {
                 merge: {
+                    castingClass: [classWizard],
                     castingStat: 'wis'
                 }
             },
             prodigy: {
                 merge: {
+                    castingClass: [classBard, classWarlock],
                     castingStat: 'wis'
                 }
             }
@@ -2380,6 +2459,7 @@ const abilities = {
     }
 }
 
+//TODO: Add full progression, add progression to 30 (or more)
 const spellProgression = {
     half: [
        //0   1   2   3   4   5   6   7   8   9
@@ -2405,6 +2485,80 @@ const spellProgression = {
         [4],[4],[3],[3],[3],[2],                //20
         [5],[4],[3],[3],[3],[2],[1],            //21
         [5],[4],[3],[3],[3],[2],[1],[1]         //22
+        [5],[4],[3],[3],[3],[2],[1],[1]         //23
+        [5],[4],[3],[3],[3],[2],[1],[1]         //24
+        [5],[4],[3],[3],[3],[2],[1],[1]         //25
+        [5],[4],[3],[3],[3],[2],[1],[1]         //26
+        [5],[4],[3],[3],[3],[2],[1],[1]         //27
+        [5],[4],[3],[3],[3],[2],[1],[1]         //28
+        [5],[4],[3],[3],[3],[2],[1],[1]         //29
+        [5],[4],[3],[3],[3],[2],[1],[1]         //30
        //0   1   2   3   4   5   6   7   8   9
     ]
+}
+
+const armorTypeLight = 1;
+const armorTypeMedium = 2;
+const armorTypeHeavy = 3;
+const armorTypes = {
+    padded: {
+        ac: 11,
+        type: armorTypeLight
+    },
+    leather: {
+        ac: 11,
+        type: armorTypeLight
+    },
+    studdedLeather: {
+        ac: 12,
+        name: 'Studded Leather',
+        type: armorTypeLight
+    },
+    chainShirt: {
+        ac: 13,
+        name: 'Chain Shirt',
+        type: armorTypeMedium
+    },
+    scaleMail: {
+        ac: 14,
+        name: 'Scale Mail',
+        type: armorTypeMedium
+    },
+    breastplate: {
+        ac: 14,
+        type: armorTypeMedium
+    },
+    halfPlate: {
+        ac: 15,
+        name: 'Half Plate',
+        type: armorTypeMedium
+    },
+    ringMail: {
+        ac: 14,
+        name: 'Ring Mail',
+        type: armorTypeHeavy
+    },
+    chainMail: {
+        ac: 16,
+        name: 'Chain Mail',
+        type: armorTypeHeavy
+    },
+    split: {
+        ac: 17,
+        type: armorTypeHeavy
+    },
+    plate: {
+        ac: 18,
+        type: armorTypeHeavy
+    },
+}
+
+//TODO: Add remaining weapons
+const weaponTypes = {
+    quarterstaff : {
+        damageDice: 1,
+        damageDieSize: 6,
+        damageType: damageTypeBludgeoning,
+        reach: 5
+    }
 }
