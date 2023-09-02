@@ -1272,6 +1272,7 @@ function mergeArrays(array1, array2) {
  * @param {Object} statblock The statblock to convert to XML
  */
 function exportFightClub(statblock) {
+    //TODO: Gotta fix this for pages without CR
     let cr = $('#target-cr').val();
     let fightClubXML = xmlNode('name', $('#monster-name').html());
     fightClubXML += xmlNode('size', sizes[statblock.size].name.substring(0,1));
@@ -1335,6 +1336,29 @@ function exportFightClub(statblock) {
     var filename = statblock.slug+'-cr-'+cr+'.xml';
     var pom = document.createElement('a');
     var bb = new Blob([fightClubXML], {type: 'text/plain'});
+
+    pom.setAttribute('href', window.URL.createObjectURL(bb));
+    pom.setAttribute('download', filename);
+
+    pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
+    pom.draggable = true; 
+    pom.classList.add('dragout');
+
+    pom.click();
+}
+
+/**
+ * Converts a creature's statistic into JSON and initiates a download
+ * @param {Object} statblock The statblock to convert to JSON
+ */
+function exportJSON(statblock) {
+    //TODO: Gotta fix this for pages without CR
+    let cr = $('#target-cr').val();
+    let jsonOutput = JSON.stringify(statblock);
+
+    var filename = statblock.slug+'-cr-'+cr+'.json';
+    var pom = document.createElement('a');
+    var bb = new Blob([jsonOutput], {type: 'text/plain'});
 
     pom.setAttribute('href', window.URL.createObjectURL(bb));
     pom.setAttribute('download', filename);

@@ -1,0 +1,102 @@
+extends ../pug/_base.pug
+
+append vars
+    - let damageTypes = ['Acid','Cold','Fire','Force','Lightning','Poison','Psychic','Necrotic','Radiant','Thunder'];
+    - title = "Monster Scaler";
+    - description = "Tool for scaling monsters up or down in Dungeons and Dragons 5th edition.";
+
+append scripts
+    script(src='scripts/monsters.min.js')
+
+append content
+    #monster-selector.container
+        h2 Pick a monster
+        form#monster-form
+            .form-row 
+                include ../pug/monster-selection.pug
+                #cr-wrapper
+                    label(for='cr-select') Challenge Rating:
+                    select#target-cr(name='cr-select')
+                        option(value='0') 0
+                        option(value='0.125') 1/8
+                        option(value='0.25') 1/4
+                        option(value='0.5') 1/2
+                        - var i = 0;
+                        while i < 30
+                            option(value=++i)= i
+            include ../pug/identity-selection.pug
+            #npc-wrapper
+                input#unique-npc(type="checkbox" name="unique-npc")
+                label(for="unique-npc") Proper name/unique NPC
+                br
+            input#wild-shape(type="checkbox" name="wild-shape")
+            label(for="wild-shape") This is a wild shape/shapechange
+            #wild-shape-wrapper
+                div
+                    label(for='player-level') Shapeshifter Level:
+                    input#player-level(name='player-level' type='number' step="1" min="1" max="30" value="10")
+                .form-row
+                    div
+                        label(for='player-int') Intelligence:
+                        input#player-int(name='player-int' type='number' step="1" min="0" value="10")
+                    div
+                        label(for='player-wis') Wisdom:
+                        input#player-wis(name='player-wis' type='number' step="1" min="0" value="10")
+                    div
+                        label(for='player-cha') Charisma:
+                        input#player-cha(name='player-cha' type='number' step="1" min="0" value="10")
+                .form-row
+                    div
+                        label(for='ws-ac-bonus') Extra AC:
+                        input#ws-ac-bonus(name='ws-ac-bonus' type='number' step="1" min="0" value="0")
+                    div
+                        label(for='ws-attack-bonus') Extra Attack:
+                        input#ws-attack-bonus(name='ws-attack-bonus' type='number' step="1" min="0" value="0")
+                    div
+                        label(for='ws-damage-bonus') Extra Damage:
+                        input#ws-damage-bonus(name='ws-damage-bonus' type='number' step="1" min="0" value="0")
+                .form-row
+                    div
+                        label(for='ws-rider-dice') Damage Rider Dice:
+                        input#ws-rider-dice(name='ws-rider-dice' type='number' step="1" min="0" value="0")
+                    div
+                        label(for='ws-rider-die-size') Damage Rider Die Size:
+                        input#ws-rider-die-size(name='ws-rider-die-size' type='number' step="1" min="1" value="0")
+                    div 
+                        label(for='ws-rider-type') Damage Rider Type:
+                        select#ws-rider-type(name='ws-rider-type')
+                            each val in damageTypes
+                                option(value=val.toLowerCase())= val
+                .form-row 
+                    div 
+                        label(for='ws-resists') Resistances:
+                        select#ws-resists(name='ws-resists' multiple)
+                            each val in damageTypes
+                                option= val
+                    div 
+                        label(for='ws-immunities') Immunities:
+                        select#ws-immunities(name='ws-immunities' multiple)
+                            each val in damageTypes
+                                option= val
+                input#magic-attacks(type="checkbox" name="magic-attacks")
+                label(for="magic-attacks") Magic Attacks
+        p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
+    #monster-stats.container
+        include ../pug/stat-block.pug
+
+append footer
+    p 
+        a(id="direct-link" href="/") Direct link
+    button#fight-club(onclick="exportFightClub(monsterStats)") Export as XML for Fight Club
+    br
+    button#json(onclick="exportJSON(monsterStats)") Export as JSON
+    details
+        summary Using this tool
+        p This tool was created to scale certain monsters up or down a few levels to make them useable as summons or wild shape forms for a wider range of levels. Feel free to use this calculator however you like, though caution is advised when scaling low CR monsters up to very high levels, or vice versa. While stats like hp, damage, and ability scores are scaled up and down the tool currently does not adjust things like resistances, immunities, or legendary abilities. Scaling a high CR monster down to low levels may not be appropriate for a low level party as its abilities would still make it very powerful, while a low CR creature scaled up to very high levels may have appropriate stats but would lack the resistances and immunities commonly found at the higher CR. In particular be wary of scaling CR 0 monsters. Since the average stats for CR 0 are so low even a few points of variation can lead to a creature with vastly above average stat values at higher CRs.
+    details
+        summary How it works 
+        p This tool works by comparing a creature's stats to a list of averages for its original CR, then applying that to averages for its new CR. For example, if a creature has 150% of the average strength for its original CR then it will have roughly 150% (rounded) of average strength at its scaled CR. Some of the averages were taken from the "Monster Statistics by Challenge Rating" table in the Dungeon Masters Guide; others were calculated by averaging the stats of many existing creatures.
+    details 
+        summary Wild Shape/Shapechange Options 
+        p If you select the "wild shape/shapechange" checkbox additional fields will appear allowing you to add your own stats if you are using a particular form as a wild shape. Mental ability scores (int, wis, cha) will override whatever is in the creature's actual stat block. There are also additional fields to add bonus stats or abilities which you might have from class features or items which affect wild shapes, such as the Insignia of the Claw.
+

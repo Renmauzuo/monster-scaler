@@ -10,6 +10,10 @@
 	margin: auto;
 }
 
+ul {
+    padding-left: 1rem;
+}
+
 label {
     display: block;
     margin-bottom: .5em;
@@ -171,6 +175,39 @@ $redColor: #922610;
 
         p {
             margin: 0;
+        }
+    }
+}
+
+nav {
+    ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        background-color: #f1f1f1;
+        font-size: 0;
+
+        li {
+            display: inline-block;
+
+            a {
+                color: black;
+                text-decoration: none;
+                padding: 8px 16px;
+                display: block;
+                border-right: 1px solid black;
+                font-size: 16px;
+
+                &.active {
+                    background-color: lightblue;
+                }
+                
+                &:hover {
+                    background-color: darkgray;
+                    color: #f1f1f1;
+                }
+
+            }
         }
     }
 }

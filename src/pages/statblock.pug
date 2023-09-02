@@ -1,0 +1,26 @@
+extends ../pug/_base.pug
+
+append vars
+    - title = "Statblock Renderer";
+    - description = "Renders a user input statblock in standard statblock format.";
+
+append scripts
+    script(src='scripts/statblock.min.js')
+
+append content 
+    #statblock-renderer.container
+        h2 Enter a Statblock
+        form#statblock-form
+            .form-row
+                div 
+                    label(for='statblock-input') Statblock JSON:
+                    textarea#statblock-input(name='statblock-input')
+    #rendered-stats.container
+        include ../pug/stat-block.pug
+
+append footer
+    button#fight-club(onclick="exportFightClub(intputStats)") Export as XML for Fight Club
+    details
+        summary Using this tool
+        p This tool allows you to enter a JSON object of any creature/character and render it as a statblock. You can use #[a(href="resources/sample-statblock.json") this file] for an example of a basic statblock.
+        p You can also use the JSON exports from other tools as a starting point. Not that these will contain some extra fields (such as attack strings) which this tool does not need, as it derives them itself. However, while unnecessary they won't cause any harm if you leave them in the statblock.

@@ -1,3 +1,4 @@
+include _mixins.pug
 - var title;
 - var description;
 block vars
@@ -11,6 +12,12 @@ html(lang="en")
         link(rel='stylesheet' type='text/css' href='styles/global.min.css')
         block styles
 body
+    nav.container 
+        ul
+            +navItem('Home','index')
+            +navItem('Monster Scaler','monsters')
+            +navItem('Sidekick Builder','sidekicks')
+            +navItem('Statblock Renderer','statblock')
     block content
     #footer.container
         block footer

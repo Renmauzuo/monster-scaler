@@ -1,0 +1,65 @@
+{
+    "cr": "0",
+    "gender": 4,
+    "attacks": {
+      "fist": {
+        "reach": 3,
+        "damageType": "bludgeoning",
+        "name": "Fist",
+        "damageDice": 1,
+        "damageDieSize": 4,
+        "attackBonus": 0,
+        "damageBonus": -2
+      },
+      "rock": {
+        "damageType": "bludgeoning",
+        "name": "Rock",
+        "ranged": true,
+        "damageDice": 1,
+        "damageDieSize": 4,
+        "range": 25,
+        "longRange": 50,
+        "attackBonus": 0,
+        "damageBonus": -2
+      }
+    },
+    "skills": {
+      "athletics": 1,
+      "perception": 1
+    },
+    "slug": "ape",
+    "multiattack": {
+      "attacks": {
+        "fist": 2
+      }
+    },
+    "type": "beast",
+    "proficiency": 2,
+    "alignment": "unaligned",
+    "name": "Ape",
+    "appearance": "ape",
+    "description": "the ape",
+    "traits": {},
+    "size": 2,
+    "abilityModifiers": {
+      "str": -2,
+      "dex": 2,
+      "con": 1,
+      "int": -3,
+      "wis": 1,
+      "cha": -3
+    },
+    "str": 7,
+    "dex": 14,
+    "con": 13,
+    "int": 5,
+    "wis": 12,
+    "cha": 5,
+    "bonusArmor": 0,
+    "hitDice": 1,
+    "speed": 30,
+    "climb": 30,
+    "sensesString": "",
+    "passivePerception": 13,
+    "multiattackString": "The ape makes two fist attacks."
+  }
