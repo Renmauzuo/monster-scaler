@@ -41,14 +41,6 @@
     "description": "the ape",
     "traits": {},
     "size": 2,
-    "abilityModifiers": {
-      "str": -2,
-      "dex": 2,
-      "con": 1,
-      "int": -3,
-      "wis": 1,
-      "cha": -3
-    },
     "str": 7,
     "dex": 14,
     "con": 13,
@@ -60,6 +52,5 @@
     "speed": 30,
     "climb": 30,
     "sensesString": "",
-    "passivePerception": 13,
-    "multiattackString": "The ape makes two fist attacks."
+    "passivePerception": 13
   }

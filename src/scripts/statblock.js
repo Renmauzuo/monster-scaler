@@ -5,7 +5,6 @@ $(function () {
 });
 
 function renderInput() {
-    console.log('yo');
     inputStats = JSON.parse($('#statblock-input').val());
     renderStatblock(inputStats);
 };
