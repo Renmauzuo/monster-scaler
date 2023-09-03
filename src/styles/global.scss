@@ -141,14 +141,14 @@ $redColor: #922610;
             }
         }
 
-        + .tapered-rule {
-            margin-top: 10px;
-        }
-
         .trait-spacer {
             display: block;
             height: 10px;
         }
+    }
+
+    .spacer {
+        height: 10px;
     }
 
     #ability-scores {

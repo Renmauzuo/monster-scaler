@@ -7,9 +7,7 @@
         "damageType": "bludgeoning",
         "name": "Fist",
         "damageDice": 1,
-        "damageDieSize": 4,
-        "attackBonus": 0,
-        "damageBonus": -2
+        "damageDieSize": 4
       },
       "rock": {
         "damageType": "bludgeoning",
@@ -18,9 +16,7 @@
         "damageDice": 1,
         "damageDieSize": 4,
         "range": 25,
-        "longRange": 50,
-        "attackBonus": 0,
-        "damageBonus": -2
+        "longRange": 50
       }
     },
     "skills": {

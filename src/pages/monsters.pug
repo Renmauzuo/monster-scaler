@@ -6,6 +6,7 @@ append vars
     - description = "Tool for scaling monsters up or down in Dungeons and Dragons 5th edition.";
 
 append scripts
+    script(src='scripts/html2canvas.min.js')
     script(src='scripts/monsters.min.js')
 
 append content
@@ -90,6 +91,8 @@ append footer
     button#fight-club(onclick="exportFightClub(monsterStats)") Export as XML for Fight Club
     br
     button#json(onclick="exportJSON(monsterStats)") Export as JSON
+    br
+    button#generate-image(onclick="generateImage()") Generate Image
     details
         summary Using this tool
         p This tool was created to scale certain monsters up or down a few levels to make them useable as summons or wild shape forms for a wider range of levels. Feel free to use this calculator however you like, though caution is advised when scaling low CR monsters up to very high levels, or vice versa. While stats like hp, damage, and ability scores are scaled up and down the tool currently does not adjust things like resistances, immunities, or legendary abilities. Scaling a high CR monster down to low levels may not be appropriate for a low level party as its abilities would still make it very powerful, while a low CR creature scaled up to very high levels may have appropriate stats but would lack the resistances and immunities commonly found at the higher CR. In particular be wary of scaling CR 0 monsters. Since the average stats for CR 0 are so low even a few points of variation can lead to a creature with vastly above average stat values at higher CRs.

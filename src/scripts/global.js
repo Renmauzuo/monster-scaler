@@ -353,15 +353,6 @@ function renderStatblock(sourceStats) {
         }
     }
 
-    sourceStats.abilityModifiers = sourceStats.abilityModifiers || {};
-    for (let ability in abilities) {
-        let modifier = abilityScoreModifier(sourceStats[ability]);
-        //Save the ability modifiers if the statblock hasn't already done that
-        sourceStats.abilityModifiers[ability] = modifier;
-        let modifierString = "(" + (modifier >= 0 ? '+' : '') + modifier + ")";
-       $('#monster-'+ability).html(sourceStats[ability] + " " + modifierString);
-    }
-
     //If this is a wildshape we show their name, but also what type of creature this form is in parenthesis. This makes it easier for shapeshifters to track multiple stat blocks.
     $('#monster-name').html((sourceStats.wildShape && sourceStats.defaultName !== sourceStats.name) ? (sourceStats.name + ' (' + sourceStats.defaultName + ')') : sourceStats.name);
     $('#monster-type').html(sizes[sourceStats.size].name + ' ' + sourceStats.type + ', ' + sourceStats.alignment);
@@ -423,6 +414,12 @@ function renderStatblock(sourceStats) {
         speedString += (speedString.length ? ', ' : '') + "Fly " + sourceStats.fly + ' ft.';
     }
     $('#speed span').html(speedString);
+
+    for (let ability in abilities) {
+        let modifier = abilityScoreModifier(sourceStats[ability]);
+        let modifierString = "(" + (modifier >= 0 ? '+' : '') + modifier + ")";
+       $('#monster-'+ability).html(sourceStats[ability] + " " + modifierString);
+    }
 
     if (sourceStats.saves) {
         $('#saving-throws').show();
@@ -1373,6 +1370,18 @@ function exportJSON(statblock) {
     pom.click();
 }
 
+/**
+ * Saves the current statblock as an image using html2canvas
+ */
+function generateImage() {
+    html2canvas(document.querySelector("#stat-block"), {scale: '2'}).then(canvas => {
+        var imageData = canvas.toDataURL("image/png");
+        var link = document.createElement('a');
+        link.download = 'filename.png';
+        link.href = imageData;
+        link.click();
+    });
+}
 
 /**
  * Simple helper function to return an XML node based on a tag and value. Shortcut to save having to type tags twice.

@@ -1,0 +1,111 @@
+{
+    "wip" : "I started making my heavily homebrewed druid as a sample to import but didn't get very far",
+    "cr": "1",
+    "gender": 1,
+    "armorDescription": "Hide of the Feral Guardian",
+    "attacks": {
+      "gore": {
+        "reach": 3,
+        "damageType": "piercing",
+        "name": "Psychic Touch",
+        "finesse": true,
+        "damageDice": 6,
+        "damageDieSize": 9
+      }
+    },
+    "castingStat": "wis",
+    "languages": [
+      "Common",
+      "Sylvan"
+    ],
+    "resistances": [
+      "psychic"
+    ],
+    "immunities": [
+      "poison"
+    ],
+    "conditionImmunities": [
+      "charmed",
+      "frightened",
+      "poisoned"
+    ],
+    "skills": {
+      "persuasion": 1,
+      "sleightOfHand": 1
+    },
+    "slug": "naiad",
+    "size": 3,
+    "traits": {
+      "amphibious": {
+        "name": "Amphibious",
+        "description": "{{description}} can breathe air and water.",
+        "text": "The naiad can breathe air and water."
+      },
+      "invisibleInWater": {
+        "name": "Invisible in Water",
+        "description": "{{description}} is invisible while fully immersed in water.",
+        "text": "The naiad is invisible while fully immersed in water."
+      },
+      "innateSpellcasting": {
+        "name": "Innate Spellcasting",
+        "description": "{{description}}'s spellcasting ability is Charisma (spell save DC {{trait:DC}}). {{pronoun:subject}} can innately cast the following spells, requiring no material components: {{trait:spellListInnate}}",
+        "allowsSave": true,
+        "dcStat": "cha",
+        "dcAdjustment": 0,
+        "spellList": {
+          "minorIllusion": {
+            "uses": 0
+          },
+          "phantasmalForce": {
+            "uses": 3
+          },
+          "fly": {
+            "uses": 1
+          },
+          "hypnoticPattern": {
+            "uses": 1
+          }
+        },
+        "text": "The naiad's spellcasting ability is Charisma (spell save DC 10). He can innately cast the following spells, requiring no material components: <span class='trait-spacer'></span>At will: minor illusion<br/>3/day: phantasmal force<br/>1/day each: fly, hypnotic pattern<br/>"
+      },
+      "magicResistance": {
+        "name": "Magic Resistance",
+        "description": "{{description}} has advantage on saving throws against spells and other magical effects.",
+        "text": "The naiad has advantage on saving throws against spells and other magical effects."
+      }
+    },
+    "multiattack": {
+      "attacks": {
+        "psychicTouch": 2
+      }
+    },
+    "type": "fey",
+    "proficiency": 2,
+    "alignment": "chaotic neutral",
+    "name": "Thureg",
+    "appearance": "naiad",
+    "description": "the naiad",
+    "abilityModifiers": {
+      "str": -3,
+      "dex": 3,
+      "con": -1,
+      "int": 1,
+      "wis": -1,
+      "cha": 0
+    },
+    "str": 4,
+    "dex": 16,
+    "con": 8,
+    "int": 13,
+    "wis": 9,
+    "cha": 11,
+    "bonusArmor": 1,
+    "hitDice": 1,
+    "speed": 30,
+    "swim": 30,
+    "defaultName": "Naiad",
+    "unique": true,
+    "sensesString": "",
+    "passivePerception": 9,
+    "multiattackString": "The naiad makes two psychic touch attacks."
+  }
