@@ -6,7 +6,7 @@ $(function () {
         window[$(this).data('on-change')](true);
     });
 
-    $('[data-limit]').on('change', function () {
+    $(document).on('change', '[data-limit]', function () {
         if ($(this).val().length > $(this).data('limit')) {
             $(this).val($(this).data('old-val'));
         } else {

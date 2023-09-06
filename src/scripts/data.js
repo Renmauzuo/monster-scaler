@@ -2061,10 +2061,6 @@ const traits = {
         name: "Flyby",
         description: "{{description}} doesn't provoke an opportunity attack when it flies out of an enemy's reach.",
     },
-    helpful: {
-        name: "Helpful",
-        description: "{{description}} is adept at giving well-timed assistance; {{description}} can take the Help action as a bonus action.",
-    },
     holdBreath: {
         name: "Hold Breath",
         description: "{{description}} can hold {{pronoun:possessiveAdj}} breath for {{trait:duration}} minutes.",
@@ -2209,12 +2205,16 @@ const actions = {
     feyLeap: {
         name: "Fey Leap",
         description: "{{description}} teleports up to 30 feet to an unoccupied space {{pronoun:subject}} can see. Immediately before teleporting, {{description}} can choose one creature within 5 feet of {{pronoun:object}}. That creature can teleport with {{description}}, appearing in an unoccupied space within 5 feet of {{description}}'s destination space."
+    },
+    helpful: {
+        name: "Helpful",
+        description: "{{description}} takes the Help action."
     }
 };
 
 
 const pronouns = [
-    {}, //First one is black since 0 is default for creature type
+    {}, //First one is blank since 0 is default for creature type
     {
         subject: 'he',
         object: 'him',
@@ -2346,10 +2346,35 @@ const sidekickClasses = {
             count: 5,
             saves: ['dex', 'int', 'cha']
         },
+        //TODO: Add the extra armor/tool/weapon proficiencies. 
         features: [
             {
                 level: 1,
-                trait: 'helpful'
+                bonusAction: 'helpful'
+            },
+            {
+                level: 3,
+                options: [
+                    {
+                        id: 'expertExpertise',
+                        label: 'Skill Expertise',
+                        limit: 2,
+                        list: (statblock) => {
+                            let skillList = {};
+                            //Get a list of skills the expert is proficient in
+                            for (let skill in statblock.skills) {
+                                skillList[skill] = skills[skill];
+                            }
+                            return skillList;
+                        },
+                        result: (statblock, value) => {
+                            //Apply the chosen expertise
+                            for (let i = 0; i < value.length; i++) {
+                                statblock.skills[value[i]] = skillRankExpert;
+                            }
+                        }
+                    }
+                ]
             }
         ]
     },
@@ -2380,8 +2405,6 @@ const sidekickClasses = {
                             }
                             return cantrips;
                         },
-                        result: (statblock, value) => {
-                        }
                     }
                 ],
             },
