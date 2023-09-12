@@ -86,10 +86,16 @@ function scaleMonster(monsterID, targetCR, options = {}) {
         derivedStats = mergeObjects(derivedStats, selectedVariant.lockedStats);
     }
     let currentRace;
-    if (selectedMonster.type === typeHumanoid) {
+    let type;
+    if (selectedVariant && selectedVariant.type) {
+        type = selectedVariant.type;
+    } else {
+        type = selectedMonster.type;
+    }
+    if (type === typeHumanoid) {
         if (selectedMonster.race === raceAny) {
             currentRace = races[options.race];
-            derivedStats.type = selectedMonster.type + ' (' + currentRace.name + ')';
+            derivedStats.type = type + ' (' + currentRace.name + ')';
 
             //If not any race apply the mods for the chosen race
             if (currentRace !== races[0]) {
@@ -103,10 +109,10 @@ function scaleMonster(monsterID, targetCR, options = {}) {
             }
 
         } else {
-            derivedStats.type = selectedMonster.type + ' (' + selectedMonster.type + ')';
+            derivedStats.type = type + ' (' + type + ')';
         }
     } else {
-        derivedStats.type = selectedMonster.type;
+        derivedStats.type = type;
         if (selectedMonster.subtype) {
             derivedStats.type += ' (' + selectedMonster.subtype + ')';
         }
@@ -132,8 +138,6 @@ function scaleMonster(monsterID, targetCR, options = {}) {
         derivedStats.slug = findNearestLowerBenchmark("slug", targetCR, sourceStats);
     }
     derivedStats.appearance = derivedStats.slug; //TODO: Updated for creatures where appearance isn't slug (ie, treants are trees)
-    //Description for traits. The creature's proper name if it has one, otherwise "the [slug]"
-    derivedStats.description = (derivedStats.unique ? derivedStats.name : 'the ' + derivedStats.slug);
 
     //Traits require a different approach from some other stats as we take a base from the trait library, but potentially apply modifiers to it based on creature stats.
     //TODO: Adjust for creatures that gain additional traits as they level up
@@ -1103,6 +1107,10 @@ function toTitleCase(targetString) {
                 }
             } else if (tokenArray[0] == 'pronoun') {
                 tokenValue = pronouns[statBlock.gender][tokenArray[1]];
+            } else if (tokenArray[0] == 'abilityBonus') {
+                let baseBonus = statBlock.abilityModifiers[tokenArray[1]];
+                baseBonus += statBlock.proficiency * parseInt(tokenArray[2]);
+                tokenValue = '+' + baseBonus;
             }
         }
 

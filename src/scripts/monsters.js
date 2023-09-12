@@ -64,6 +64,8 @@ function calculateSelectedMonster() {
     } else {
         $('#npc-wrapper').hide();
     }
+    //Description for traits. The creature's proper name if it has one, otherwise "the [slug]"
+    monsterStats.description = (monsterStats.unique ? monsterStats.name : 'the ' + monsterStats.slug);
 
     //Apply wildshape modifiers if any
     if (wildShape) {

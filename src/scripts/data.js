@@ -20,12 +20,14 @@ const typeElemental = 'elemental';
 const typeHumanoid = 'humanoid';
 const typePlant = 'plant';
 const typeFey = 'fey';
+const typeUndead = 'undead';
 
 const alignmentUnaligned = 'unaligned';
 const alignmentNeutral = 'neutral';
 const alignmentAny = 'any alignment';
 const alignmentChaoticNeutral = 'chaotic neutral';
 const alignmentChaoticGood = 'chaotic good';
+const alignmentChaoticEvil = 'chaotic evil'
 
 const alignmentMaskUnaligned = 0;
 const alignmentMaskLG = 1;
@@ -74,9 +76,16 @@ const damageTypePiercing = 'piercing';
 const damageTypeBludgeoning = 'bludgeoning';
 const damageTypeSlashing = 'slashing';
 const damageTypeMundanePhysical = 'Bludgeoning, Piercing, and Slashing From Nonmagical Attacks';
+const damageTypeMundanePiercingSlashing = "Piercing and Slashing From Nonmagical Attacks";
+const damageTypeAcid = 'acid';
+const damageTypeCold = 'cold';
 const damageTypeFire = 'fire';
+const damageTypeLightning = 'lightning';
+const damageTypeNecrotic = 'necrotic';
 const damageTypePoison = 'poison';
 const damageTypePsychic = 'psychic';
+const damageTypeRadiant = 'radiant';
+const damageTypethunder = 'thunder';
 
 const conditionExhaustion = 'exhaustion';
 const conditionGrappled = 'grappled';
@@ -84,7 +93,7 @@ const conditionParalyzed = 'paralyzed';
 const conditionPetrified = 'petrified';
 const conditionPoisoned = 'poisoned';
 const conditionProne = 'prone';
-const conditionRestrainted = 'restrained';
+const conditionRestrained = 'restrained';
 const conditionUnconscious = 'unconscious';
 const conditionCharmed = 'charmed';
 const conditionFrightened = 'frightened';
@@ -864,7 +873,7 @@ const monsterList = {
             languages: [languageIgnan],
             resistances: [damageTypeMundanePhysical],
             immunities: [damageTypeFire, damageTypePoison],
-            conditionImmunities: [conditionExhaustion, conditionGrappled, conditionParalyzed, conditionPetrified, conditionPoisoned, conditionProne, conditionRestrainted, conditionUnconscious],
+            conditionImmunities: [conditionExhaustion, conditionGrappled, conditionParalyzed, conditionPetrified, conditionPoisoned, conditionProne, conditionRestrained, conditionUnconscious],
             attacks: {
                 touch: {
                     reach: reachMediumShort,
@@ -1148,6 +1157,93 @@ const monsterList = {
                     claw: {
                         damageDice: 2,
                         damageDieSize: 6
+                    }
+                }
+            }
+        }
+    },
+    shadow: {
+        alignment: alignmentChaoticEvil,
+        lockedStats: {
+            attacks: {
+                strengthDrain: {
+                    reach: reachMedium,
+                    damageType: damageTypeNecrotic,
+                    name: 'Strength Drain',
+                    finesse: true,
+                    proc: "strengthDrain"
+                }
+            },
+            conditionImmunities: [conditionExhaustion, conditionFrightened, conditionGrappled, conditionParalyzed, conditionPetrified, conditionPoisoned, conditionProne, conditionRestrained],
+            immunities: [damageTypeNecrotic, damageTypePoison],
+            resistances: [damageTypeAcid, damageTypeCold, damageTypeFire, damageTypeLightning, damageTypethunder],
+            skills: {
+                stealth: skillRankProficient
+            },
+            slug: "shadow",
+        },
+        stats: {
+            2 : {
+                hitDice: 3,
+                speed: 40,
+                size: sizeMedium,
+                str: 6,
+                dex: 14,
+                con: 13,
+                int: 6,
+                wis: 10,
+                cha: 8,
+                attacks: {
+                    strengthDrain: {
+                        damageDice: 2,
+                        damageDieSize: 6
+                    }
+                },
+            }
+        },
+        traits: [
+            "amorphous",
+            "shadowStealth",
+            "sunlightWeakness"
+        ],
+        variants: {
+            shadow: {
+                name: "Shadow",
+                type: typeUndead,
+                lockedStats: {
+                    resistances: [damageTypeMundanePhysical],
+                    vulnerabilities: [damageTypeRadiant]
+                },
+                stats: {
+                    2: {
+                        name: "Shadow"
+                    }
+                }
+            },
+            detachedShadow: {
+                name: "Detached Shadow",
+                type: typeFey,
+                lockedStats: {
+                    resistances: [damageTypeMundanePhysical],
+                    vulnerabilities: [damageTypeRadiant]
+                },
+                stats: {
+                    2: {
+                        name: "Detached Shadow"
+                    }
+                }
+            },
+            reflection: {
+                name: "Reflection",
+                type: typeFey,
+                lockedStats: {
+                    slug: "reflection",
+                    resistances: [damageTypeMundanePiercingSlashing],
+                    vulnerabilities: [damageTypeBludgeoning]
+                },
+                stats: {
+                    2: {
+                        name: "Reflection"
                     }
                 }
             }
@@ -2019,6 +2115,10 @@ const races = [
 //Procs, traits, and actions could possibly be condensed into one list since they are used similarly.
 //The only real reason they're kept apart is in case we ever add custom monster building, they'll need to be differentiated, but that could be handled with a field
 const traits = {
+    amorphous: {
+        name: "Amorphous",
+        description: "{{description}} can move through a space as narrow as 1 inch wide without squeezing."
+    },
     amphibious: {
         name: "Amphibious",
         description: "{{description}} can breathe air and water."
@@ -2114,6 +2214,10 @@ const traits = {
         allowsSave: true,
         dcStat: "str"
     },
+    shadowStealth: {
+        name: "Shadow Stealth",
+        description: "While in dim light or darkness, {{description}} can take the Hide action as a bonus action. {{pronoun:possessive}} stealth bonus is also improved to {{abilityBonus:dex:2}}."
+    },
     speakWithBeastsAndPlants: {
         name: "Speak with Beasts and Plants",
         description: "{{description}} can communicate with beasts and plants as if they shared a language."
@@ -2125,6 +2229,10 @@ const traits = {
     stoneCunning : {
         name: "Stonecunning",
         description: "Whenever {{description}} makes an Intelligence (History) check related to the origin of stonework, {{pronoun:subject}} is considered proficient in the History skill and add double {{pronoun:possessiveAdj}} proficiency bonus to the check, instead of {{pronoun:possessiveAdj}} normal proficiency bonus."
+    },
+    sunlightWeakness: {
+        name: "Sunlight Weakness",
+        description: "While in sunlight, {{description}} has disadvantage on attack rolls, ability checks, and saving throws."
     },
     treeStride: {
         name: "Tree Stride",
@@ -2146,7 +2254,7 @@ const traits = {
     },
     waterSusceptibility: {
         name: "Water Suspceptibility",
-        description: "For every 5 ft. the elemental moves in water, or for every gallon of water splashed on {{pronoun:object}}, {{pronoun:subject}} takes {{trait:damage}} cold damage.",
+        description: "For every 5 ft. {{description}} moves in water, or for every gallon of water splashed on {{pronoun:object}}, {{pronoun:subject}} takes {{trait:damage}} cold damage.",
         dealsDamage: true //Technically it's the opposite, but why reinvent the wheel
     }
 }
@@ -2180,6 +2288,10 @@ const procs = {
         name: "Status No Save",
         description: "The target is {{trait:condition}} until the start of {{description}}'s next turn.",
         appliesCondition: true
+    },
+    strengthDrain: {
+        name: "Strength Drain",
+        description: "the target's Strength score is reduced by 1d4. The target dies if this reduces its Strength to 0. Otherwise, the reduction lasts until the target finishes a short or long rest. If a non-evil humanoid dies from this attack, a new {{slug}} rises from the corpse 1d4 hours later."
     },
     takeDown: {
         name: "Takedown",
