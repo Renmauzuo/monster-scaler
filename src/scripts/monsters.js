@@ -81,6 +81,12 @@ function calculateSelectedMonster() {
         if ($('#ws-immunities').val().length) {
             wildShapeStats.immunities = $('#ws-immunities').val();
         }
+        if ($('#ws-condition-immunities').val().length) {
+            wildShapeStats.conditionImmunities = $('#ws-condition-immunities').val();
+        }
+        if ($('#ws-saves').val().length) {
+            wildShapeStats.saves = $('#ws-saves').val();
+        }
         if ($('#magic-attacks')[0].checked) {
             wildShapeStats.traits = {
                 magicAttacks : traits.magicAttacks
@@ -90,6 +96,7 @@ function calculateSelectedMonster() {
         monsterStats.proficiency = averageStats[$('#player-level').val()].proficiency;
         monsterStats.wildShape = wildShape;
         monsterStats.bonusArmor += parseInt($('#ws-ac-bonus').val());
+        monsterStats.saveBonus = parseInt($('#ws-save-bonus').val());
 
     }
 

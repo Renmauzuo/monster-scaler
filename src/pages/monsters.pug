@@ -2,6 +2,7 @@ extends ../pug/_base.pug
 
 append vars
     - let damageTypes = ['Acid','Cold','Fire','Force','Lightning','Poison','Psychic','Necrotic','Radiant','Thunder'];
+    - let conditions = ['Blinded', 'Charmed', 'Deafened', 'Frightened', 'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified', 'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconcious', 'Exhaustion'];
     - title = "Monster Scaler";
     - description = "Tool for scaling monsters up or down in Dungeons and Dragons 5th edition.";
 
@@ -79,6 +80,24 @@ append content
                         select#ws-immunities(name='ws-immunities' multiple)
                             each val in damageTypes
                                 option= val
+                    div 
+                        label(for='ws-condition-immunities') Condition Immunities:
+                        select#ws-condition-immunities(name='ws-condition-immunities' multiple)
+                            each val in conditions
+                                option(value=val.toLowerCase())= val
+                .form-row
+                    div
+                        label(for='ws-saves') Saves:
+                        select#ws-saves(name='ws-saves' multiple)
+                            option(value="str") Strength
+                            option(value="dex") Dexterity
+                            option(value="con") Constitution
+                            option(value="int") Intelligence
+                            option(value="wis") Wisdom
+                            option(value="cha") Charisma
+                    div
+                        label(for='ws-save-bonus') Save Bonus:
+                        input#ws-save-bonus(name='ws-save-bonus' type='number' step="1" min="0" value="0")
                 input#magic-attacks(type="checkbox" name="magic-attacks")
                 label(for="magic-attacks") Magic Attacks
         p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
