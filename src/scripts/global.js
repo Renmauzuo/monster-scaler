@@ -1041,6 +1041,8 @@ function toTitleCase(targetString) {
             tokenValue = statNames[statBlock.castingStat];
         } else if (token === "castingModifier") {
             tokenValue = '+' + statBlock.abilityModifiers[statBlock.castingStat];
+        } else if (token === "spellAttackModifier") {
+            tokenValue = '+' + (statBlock.abilityModifiers[statBlock.castingStat] + statBlock.proficiency);
         } else if (token === "spellSaveDC") {
             tokenValue = 8 + statBlock.proficiency + statBlock.abilityModifiers[statBlock.castingStat];
         } else {
@@ -1107,17 +1109,19 @@ function toTitleCase(targetString) {
                         return output;
                     }
 
-                    tokenValue = "<span class='trait-spacer'></span>";
+                    tokenValue = "";
                     if (spellList[0]) {
                         tokenValue += "At will: " + formatSpellNames(spellList[0]);
-                        tokenValue += "<br/>";
                     }
                     for (let i = spellList.length - 1; i > 0; i--) {
                         if (spellList[i]) {
+                            if (tokenValue.length) {
+                                tokenValue += "<br/>";
+                            }
                             tokenValue += i + '/day' + (spellList[i].length > 1 ? ' each' : '') + ': ' + formatSpellNames(spellList[i]); 
-                            tokenValue += "<br/>";
                         }
                     }
+                    tokenValue = "<span class='trait-spacer'></span>" + tokenValue;
                 }
             } else if (tokenArray[0] == 'pronoun') {
                 tokenValue = pronouns[statBlock.gender][tokenArray[1]];
@@ -1322,7 +1326,8 @@ function exportFightClub(statblock) {
     fightClubXML += xmlNode('senses', statblock.sensesString);
     for (let traitName in statblock.traits) {
         let traitXML = xmlNode('name', statblock.traits[traitName].name);
-        traitXML += xmlNode('text', statblock.traits[traitName].text);
+        //We need to remove HTML children and replace them with appropriate XML entities for FightClub
+        traitXML += xmlNode('text', statblock.traits[traitName].text.replace(/<br\/>/g, '</text><text>').replace(/<span class='trait-spacer'><\/span>/g, '</text><text>'));
         fightClubXML += xmlNode('trait', traitXML);
     }
     if (statblock.multiattack) {
