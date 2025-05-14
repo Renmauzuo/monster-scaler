@@ -75,6 +75,13 @@ function calculateSelectedMonster() {
             wis: $('#player-wis').val(),
             cha: $('#player-cha').val()
         }
+        
+        //Recalculate int, wis, and cha modifiers
+        wildShapeStats.abilityModifiers = {};
+        wildShapeStats.abilityModifiers.int = abilityScoreModifier(wildShapeStats.int);
+        wildShapeStats.abilityModifiers.wis = abilityScoreModifier(wildShapeStats.wis);
+        wildShapeStats.abilityModifiers.cha = abilityScoreModifier(wildShapeStats.cha);
+
         if ($('#ws-resists').val().length) {
             wildShapeStats.resistances = $('#ws-resists').val();
         }
@@ -97,6 +104,8 @@ function calculateSelectedMonster() {
         monsterStats.wildShape = wildShape;
         monsterStats.bonusArmor += parseInt($('#ws-ac-bonus').val());
         monsterStats.saveBonus = parseInt($('#ws-save-bonus').val());
+        monsterStats.bonusHP = parseInt($('#ws-hp-bonus').val());
+
 
     }
 
