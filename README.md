@@ -81,3 +81,4 @@ Cleans, rebuilds, and watches.
 Credit:  
 [This codepen](https://codepen.io/retractedhack/pen/gPLpWe) for some of the statblock CSS.  
 [This spreadsheet](https://docs.google.com/spreadsheets/d/1FIjaz6S0JXrXaCVhHEDeq-nH7xHzlqAx6inuRbDjhjU/edit#gid=1346812326) as a data source for determining some of the average monster stats
+[Pixabay](https://pixabay.com/) for sound effects.

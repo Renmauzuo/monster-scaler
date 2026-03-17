@@ -862,7 +862,8 @@ const monsterList = {
                     }
                 }
             }
-        }
+        },
+        sounds: ["elephant-trumpet"]
     },
     fireElemental: {
         name: "Fire Elemental",
@@ -1182,6 +1183,7 @@ const monsterList = {
             },
             slug: "shadow",
         },
+        sounds: ['creepy-sound'],
         stats: {
             2 : {
                 hitDice: 3,
@@ -1487,7 +1489,7 @@ const monsterList = {
                 name: "Legendary Wolf"
             }
         },
-        sounds: ["howl"]
+        sounds: ["howl", "growl"]
     }
 }
 

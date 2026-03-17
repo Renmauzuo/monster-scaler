@@ -1009,7 +1009,7 @@ function toSentenceCase(targetString) {
  * @return {string} The title case string
  */
 function toTitleCase(targetString) {
-    var sentence = targetString.toLowerCase().split(" ");
+    var sentence = targetString.toLowerCase().split(/[ -]/);
     for(var i = 0; i< sentence.length; i++){
        sentence[i] = sentence[i][0].toUpperCase() + sentence[i].slice(1);
     }

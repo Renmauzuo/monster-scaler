@@ -114,11 +114,13 @@ function calculateSelectedMonster() {
 
     const sounds = monsterList[monsterID].sounds;
     if (sounds) {
-        $('#soundList').empty();
+        $('#sound-list').empty();
 
         for (let i = 0; i < sounds.length; i ++) {
-            $(`<p>${toSentenceCase(sounds[i])}</p>`).appendTo('#soundList');
-            $(`<audio controls><source src="sounds/${sounds[i]}.mp3" type="audio/mpeg"></audio>`).appendTo('#soundList');
+            const wrapper = $('<div></div>');
+            $(`<p>${toTitleCase(sounds[i])}</p>`).appendTo(wrapper);
+            $(`<audio controls><source src="sounds/${sounds[i]}.mp3" type="audio/mpeg"></audio>`).appendTo(wrapper);
+            wrapper.appendTo('#sound-list');
         }
 
         $('#sounds').show();
