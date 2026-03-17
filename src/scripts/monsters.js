@@ -112,4 +112,18 @@ function calculateSelectedMonster() {
     //Once we have all the stats populate the statblock:
     renderStatblock(monsterStats);
 
+    const sounds = monsterList[monsterID].sounds;
+    if (sounds) {
+        $('#soundList').empty();
+
+        for (let i = 0; i < sounds.length; i ++) {
+            $(`<p>${toSentenceCase(sounds[i])}</p>`).appendTo('#soundList');
+            $(`<audio controls><source src="sounds/${sounds[i]}.mp3" type="audio/mpeg"></audio>`).appendTo('#soundList');
+        }
+
+        $('#sounds').show();
+    } else {
+        $('#sounds').hide();
+    }
+
 }

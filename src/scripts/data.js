@@ -1486,7 +1486,8 @@ const monsterList = {
             20 : {
                 name: "Legendary Wolf"
             }
-        }
+        },
+        sounds: ["howl"]
     }
 }
 

@@ -19,6 +19,7 @@ const cleanCSS = () => promisedDel('docs/**/*.css');
 const cleanHTML = () => promisedDel('docs/**/*.html');
 const cleanJS = () => promisedDel('docs/**/*.js');
 const cleanJSON = () => promisedDel('docs/**/*.json');
+const cleanSounds = () => promisedDel('docs/**/*.mp3');
 
 const html = () =>
 	gulp.src('src/pages/**/*.pug', { base: 'src/pages/' })
@@ -79,13 +80,18 @@ const json = () =>
     gulp.src('src/**/*.json', { base: 'src' })
         .pipe(gulp.dest('docs'));
 
-const build = gulp.series(gulp.parallel(css, js, html, json), cacheBusting);
+const sounds = () =>
+    gulp.src('src/**/*.mp3', { base: 'src' })
+        .pipe(gulp.dest('docs'));
+
+const build = gulp.series(gulp.parallel(css, js, html, json, sounds), cacheBusting);
 
 const watch = () => {
 	gulp.watch('src/**/*.scss', gulp.series(cleanCSS, css));
 	gulp.watch('src/**/*.pug', gulp.series(cleanHTML, html, cacheBusting));
 	gulp.watch('src/**/*.js', gulp.series(cleanJS, js));
 	gulp.watch('src/**/*.json', gulp.series(cleanJSON, json));
+	gulp.watch('src/**/*.mp3', gulp.series(cleanSounds, sounds));
 };
 		
 
