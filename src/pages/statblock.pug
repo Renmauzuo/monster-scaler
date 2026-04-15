@@ -16,7 +16,7 @@ append content
                     label(for='statblock-input') Statblock JSON:
                     textarea#statblock-input(name='statblock-input')
     #rendered-stats.container
-        include ../pug/stat-block.pug
+        .stat-block
 
 append footer
     button#fight-club(onclick="exportFightClub(intputStats)") Export as XML for Fight Club

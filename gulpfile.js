@@ -7,6 +7,8 @@ const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const rollup = require('gulp-better-rollup');
 const rollupBabel = require('rollup-plugin-babel');
+const rollupResolve = require('rollup-plugin-node-resolve');
+const rollupCommonjs = require('rollup-plugin-commonjs');
 const cachebust = require('gulp-cache-bust');
 
 const $ = gulpLoadPlugins();
@@ -61,19 +63,24 @@ const css = () =>
 
 
 const js = () =>
-	gulp.src('src/**/*.js', { base: 'src' })
+	gulp.src(['src/scripts/*.js', '!src/scripts/data.js', '!src/scripts/global.js', '!src/scripts/html2canvas.js'], { base: 'src' })
 		.pipe(development($.sourcemaps.init()))
 		.pipe(rollup({
-			treeshake: false, //No treeshaking because some of the constants in mosnters.js aren't used until runtime
-			plugins: [rollupBabel()]
+			treeshake: false,
+			plugins: [rollupResolve({ browser: true, preferBuiltins: false }), rollupCommonjs(), rollupBabel()]
 		}, {
-			format: 'cjs'
+			format: 'iife'
 		}))
 		.pipe($.rename((path) => {
 			path.basename += '.min'
 		}))
 		.pipe(development($.sourcemaps.write('.')))
 		.pipe(production($.eol()))
+		.pipe(gulp.dest('docs'));
+
+const vendor = () =>
+	gulp.src('src/scripts/html2canvas.js', { base: 'src' })
+		.pipe($.rename((path) => { path.basename += '.min' }))
 		.pipe(gulp.dest('docs'));
 
 const json = () =>
@@ -84,7 +91,7 @@ const sounds = () =>
     gulp.src('src/**/*.mp3', { base: 'src' })
         .pipe(gulp.dest('docs'));
 
-const build = gulp.series(gulp.parallel(css, js, html, json, sounds), cacheBusting);
+const build = gulp.series(gulp.parallel(css, js, vendor, html, json, sounds), cacheBusting);
 
 const watch = () => {
 	gulp.watch('src/**/*.scss', gulp.series(cleanCSS, css));
@@ -92,6 +99,8 @@ const watch = () => {
 	gulp.watch('src/**/*.js', gulp.series(cleanJS, js));
 	gulp.watch('src/**/*.json', gulp.series(cleanJSON, json));
 	gulp.watch('src/**/*.mp3', gulp.series(cleanSounds, sounds));
+	// Rebuild JS when toolkit5e packages are recompiled
+	gulp.watch('../../toolkit5e/packages/*/dist/**/*.js', gulp.series(cleanJS, js));
 };
 		
 

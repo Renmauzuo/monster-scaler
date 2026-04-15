@@ -69,7 +69,7 @@ button {
 }
 
 $redColor: #922610;
-#stat-block {
+#stat-block, .stat-block {
     background: #FDF1DC;
     padding: 0 10px;
     box-shadow: 0 0 1.5em #867453;
@@ -125,7 +125,7 @@ $redColor: #922610;
 
     p {
         margin: 0 0 10px;
-        &#monster-type {
+        &#monster-type, &.monster-type {
             font-weight: normal;
             font-style: italic;
             margin: 0 0 10px;
@@ -151,7 +151,7 @@ $redColor: #922610;
         height: 10px;
     }
 
-    #ability-scores {
+    #ability-scores, .ability-scores {
         display: flex;
         margin-bottom: 10px;
         justify-content: space-around;

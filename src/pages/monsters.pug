@@ -26,6 +26,12 @@ append content
                         - var i = 0;
                         while i < 30
                             option(value=++i)= i
+                #legendary-wrapper
+                    label(for='legendary') Legendary:
+                    select#legendary(name='legendary')
+                        option(value='0') None
+                        option(value='3') 3 Resistances
+                        option(value='5') 5 Resistances
             include ../pug/identity-selection.pug
             #npc-wrapper
                 input#unique-npc(type="checkbox" name="unique-npc")
@@ -105,7 +111,7 @@ append content
                 label(for="magic-attacks") Magic Attacks
         p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
     #monster-stats.container
-        include ../pug/stat-block.pug
+        .stat-block
 
 append footer
     #sounds

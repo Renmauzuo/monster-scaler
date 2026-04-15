@@ -1,3 +1,7 @@
+import { monsterList, sidekickClasses, weaponTypes, spellProgression } from './data.js';
+import { setupVariantSelect, scaleMonster, renderStatblock, serializeForm, deserializeQuery, populateSelect } from './global.js';
+import { abilityScoreModifier, mergeObjects, toTitleCase, toSentenceCase, damageString, sizes, abilities, skills, averageStats, armorTypes } from '@toolkit5e/base';
+
 let sidekickStats;
 $(function () {
     populateSelect(monsterList, '#creature');

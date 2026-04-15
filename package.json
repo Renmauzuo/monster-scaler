@@ -7,6 +7,9 @@
     "production": "NODE_ENV=production npx gulp rebuild"
   },
   "dependencies": {
+    "@toolkit5e/base": "file:../../toolkit5e/packages/base",
+    "@toolkit5e/monster-scaler": "file:../../toolkit5e/packages/monster-scaler",
+    "@toolkit5e/statblock": "file:../../toolkit5e/packages/statblock",
     "autoprefixer": "^10.2.6",
     "cssnano": "^5.0.5",
     "gulp": "^4.0.2",
@@ -26,6 +29,8 @@
     "postcss-combine-duplicated-selectors": "^10.0.3",
     "postcss-import": "^14.0.2",
     "promised-del": "^1.0.2",
-    "rollup-plugin-babel": "^4.4.0"
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0"
   }
 }

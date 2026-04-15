@@ -1,3 +1,8 @@
+import { monsterList, monsterSounds } from './data.js';
+import { averageStats, traits, mergeObjects, toTitleCase, abilityScoreModifier } from '@toolkit5e/base';
+import { scaleMonster } from '@toolkit5e/monster-scaler';
+import { setupVariantSelect, renderStatblock, serializeForm, deserializeQuery, populateSelect } from './global.js';
+
 var monsterStats;
 
 $(function () {
@@ -6,14 +11,17 @@ $(function () {
 
     if ($('#wild-shape')[0].checked) {
         $('#wild-shape-wrapper').show();
+        $('#legendary').val('0').prop('disabled', true);
     }
 
 
     $('#wild-shape').on('change', function () {
         if ($(this)[0].checked) {
             $('#wild-shape-wrapper').slideDown();
+            $('#legendary').val('0').prop('disabled', true);
         } else {
             $('#wild-shape-wrapper').slideUp();
+            $('#legendary').prop('disabled', false);
         }
     });
 
@@ -41,6 +49,10 @@ function calculateSelectedMonster() {
     }
     if ($('#race-select').is(':visible')) {
         options.race = $('#race-select').val();
+    }
+    const legendaryVal = parseInt($('#legendary').val());
+    if (legendaryVal === 3 || legendaryVal === 5) {
+        options.legendary = legendaryVal;
     }
 
     //Generate a direct link to this specific creature and stat set
@@ -106,13 +118,30 @@ function calculateSelectedMonster() {
         monsterStats.saveBonus = parseInt($('#ws-save-bonus').val());
         monsterStats.bonusHP = parseInt($('#ws-hp-bonus').val());
 
+        // Apply attack/damage bonuses and rider dice directly to each attack
+        const wsAttackBonus = parseInt($('#ws-attack-bonus').val()) || 0;
+        const wsDamageBonus = parseInt($('#ws-damage-bonus').val()) || 0;
+        const wsRiderDice = parseInt($('#ws-rider-dice').val()) || 0;
+        const wsRiderDieSize = parseInt($('#ws-rider-die-size').val()) || 0;
+        const wsRiderType = $('#ws-rider-type').val();
+        for (const attackKey in monsterStats.attacks) {
+            const atk = monsterStats.attacks[attackKey];
+            if (wsAttackBonus) atk.bonusAttack = wsAttackBonus;
+            if (wsDamageBonus) atk.bonusDamage = wsDamageBonus;
+            if (wsRiderDice && !atk.damageRiderDice) {
+                atk.damageRiderDice = wsRiderDice;
+                atk.damageRiderDieSize = wsRiderDieSize;
+                atk.damageRiderType = wsRiderType;
+            }
+        }
+
 
     }
 
     //Once we have all the stats populate the statblock:
     renderStatblock(monsterStats);
 
-    const sounds = monsterList[monsterID].sounds;
+    const sounds = monsterSounds[monsterID];
     if (sounds) {
         $('#sound-list').empty();
 
