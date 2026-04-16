@@ -60,7 +60,13 @@ export function renderStatblock(sourceStats) {
 // Export / utility functions (site-specific)
 // ---------------------------------------------------------------------------
 
-function exportFightClub(statblock) {
+function exportFileSlug(statblock) {
+    const name = statblock.defaultName ? statblock.name : statblock.slug;
+    return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+function exportFightClub() {
+    const statblock = window.monsterStats;
     let cr = $('#target-cr').val();
     let fightClubXML = xmlNode('name', $('.monster-name').html());
     fightClubXML += xmlNode('size', sizes[statblock.size].name.substring(0, 1));
@@ -80,10 +86,10 @@ function exportFightClub(statblock) {
     fightClubXML += xmlNode('passive', statblock.passivePerception);
     fightClubXML += xmlNode('languages', $('.languages span').html());
     fightClubXML += xmlNode('cr', cr);
-    fightClubXML += xmlNode('resist', $('.resistances span').html().toLowerCase());
-    fightClubXML += xmlNode('immune', $('.immunities span').html().toLowerCase());
-    fightClubXML += xmlNode('vulnerable', $('.vulnerabilities span').html().toLowerCase());
-    fightClubXML += xmlNode('conditionImmune', $('.condition-immunities span').html().toLowerCase());
+    fightClubXML += xmlNode('resist', ($('.resistances span').html() ?? '').toLowerCase());
+    fightClubXML += xmlNode('immune', ($('.immunities span').html() ?? '').toLowerCase());
+    fightClubXML += xmlNode('vulnerable', ($('.vulnerabilities span').html() ?? '').toLowerCase());
+    fightClubXML += xmlNode('conditionImmune', ($('.condition-immunities span').html() ?? '').toLowerCase());
     fightClubXML += xmlNode('senses', statblock.sensesString);
     for (let traitName in statblock.traits) {
         let traitXML = xmlNode('name', statblock.traits[traitName].name);
@@ -115,18 +121,22 @@ function exportFightClub(statblock) {
         }
     }
     fightClubXML = "<?xml version='1.0' encoding='utf-8'?>" + xmlNode('compendium', xmlNode('monster', fightClubXML));
-    downloadBlob(fightClubXML, statblock.slug + '-cr-' + cr + '.xml', 'text/plain');
+    downloadBlob(fightClubXML, exportFileSlug(statblock) + '-cr-' + cr + '.xml', 'text/plain');
 }
 
-function exportJSON(statblock) {
+function exportJSON() {
+    const statblock = window.monsterStats;
     let cr = $('#target-cr').val();
-    downloadBlob(JSON.stringify(statblock), statblock.slug + '-cr-' + cr + '.json', 'text/plain');
+    downloadBlob(JSON.stringify(statblock), exportFileSlug(statblock) + '-cr-' + cr + '.json', 'text/plain');
 }
 
 function generateImage() {
+    const statblock = window.monsterStats;
+    const cr = $('#target-cr').val();
+    const filename = exportFileSlug(statblock) + '-cr-' + cr + '.png';
     html2canvas(document.querySelector('.stat-block'), { scale: '2' }).then(canvas => {
         let link = document.createElement('a');
-        link.download = 'statblock.png';
+        link.download = filename;
         link.href = canvas.toDataURL('image/png');
         link.click();
     });

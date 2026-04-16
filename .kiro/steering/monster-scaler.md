@@ -52,6 +52,24 @@ npm run production  # clean + build in production mode (minified)
 
 Gulp tasks: `css`, `js`, `vendor`, `html`, `json`, `sounds`, `cacheBusting`.
 
+## Code Documentation
+
+Use JSDoc comments on all functions in the site's JS modules. This enables hover documentation in the IDE, which is especially useful since the site uses plain JS without TypeScript's type inference.
+
+Include a description plus `@param` and `@returns` tags:
+
+```js
+/**
+ * Scales a monster and renders its statblock to the page.
+ * @param {string} monsterID - Key from `monsterList` (e.g. `'wolf'`)
+ * @param {string} cr - Target challenge rating (e.g. `'5'`)
+ * @param {Object} [options] - Optional scaleMonster options
+ */
+function scaleAndRender(monsterID, cr, options) { ... }
+```
+
+For callbacks and module-level helpers, a one-line `/** ... */` description is fine if the params are obvious. The goal is that mousing over a call site shows something useful rather than just `(alias) fn(...args): void`.
+
 ## Key Conventions
 
 - `data-on-change="fnName"` attributes on inputs/selects call `window[fnName](animated)` on change. Any function used this way must be explicitly assigned to `window` at the bottom of the module that defines it. Currently: `window.setupVariantSelect`.

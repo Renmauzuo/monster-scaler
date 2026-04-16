@@ -5,6 +5,7 @@ import { setupVariantSelect, renderStatblock, serializeForm, deserializeQuery, p
 import { initResourceTracker, clearInstanceKeys } from './resource-tracker.js';
 
 var monsterStats;
+window.monsterStats = null;
 
 $(function () {
     populateSelect(monsterList, '#creature');
@@ -62,6 +63,7 @@ function calculateSelectedMonster() {
     $('#direct-link').attr('href', directLink);
 
     monsterStats = scaleMonster(monsterID, targetCR, options);
+    window.monsterStats = monsterStats;
 
     //Apply any customizations to the derived statblock
     if (customGender) {

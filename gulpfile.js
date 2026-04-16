@@ -96,11 +96,11 @@ const build = gulp.series(gulp.parallel(css, js, vendor, html, json, sounds), ca
 const watch = () => {
 	gulp.watch('src/**/*.scss', gulp.series(cleanCSS, css));
 	gulp.watch('src/**/*.pug', gulp.series(cleanHTML, html, cacheBusting));
-	gulp.watch('src/**/*.js', gulp.series(cleanJS, js));
+	gulp.watch('src/**/*.js', gulp.series(cleanJS, gulp.parallel(js, vendor)));
 	gulp.watch('src/**/*.json', gulp.series(cleanJSON, json));
 	gulp.watch('src/**/*.mp3', gulp.series(cleanSounds, sounds));
 	// Rebuild JS when toolkit5e packages are recompiled
-	gulp.watch('../../toolkit5e/packages/*/dist/**/*.js', gulp.series(cleanJS, js));
+	gulp.watch('../../toolkit5e/packages/*/dist/**/*.js', gulp.series(cleanJS, gulp.parallel(js, vendor)));
 };
 		
 
