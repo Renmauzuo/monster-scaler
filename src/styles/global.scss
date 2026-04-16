@@ -223,3 +223,266 @@ nav {
     }
 }
 
+
+// ---------------------------------------------------------------------------
+// Resource Tracker styles
+// Feature: resource-tracker
+// ---------------------------------------------------------------------------
+
+$rtRed: #922610;
+$rtParchment: #F5E6C8;
+$rtShadow: #867453;
+$rtBorder: #8B6914;
+
+.resource-tracker {
+  background: $rtParchment;
+  border: 2px solid $rtBorder;
+  box-shadow: 0 0 1.5em $rtShadow;
+  max-width: 440px;
+  margin: 24px auto 50px;
+  padding: 10px;
+  font-family: sans-serif;
+  font-size: 16px;
+  text-align: left;
+
+  h4 {
+    color: $rtRed;
+    font-variant: small-caps;
+    border-bottom: 1px solid $rtBorder;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 10px 0 6px;
+  }
+}
+
+.rt-panel-label {
+  font-variant: small-caps;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: $rtBorder;
+  text-align: center;
+  margin-bottom: 8px;
+  border-bottom: 1px solid $rtBorder;
+  padding-bottom: 4px;
+}
+
+.rt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+
+  .rt-instance-label { font-weight: bold; color: $rtRed; }
+}
+
+.rt-hp-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  button { margin-bottom: 0; }
+
+  .rt-hp-input {
+    width: 60px;
+    text-align: center;
+    font-size: 1.2em;
+    margin: 0;
+    min-width: unset;
+  }
+
+  .rt-hp-sep, .rt-hp-max { font-size: 1.1em; }
+
+  &.rt-hp--zero .rt-hp-input { color: $rtRed; font-weight: bold; }
+  &.rt-hp--over .rt-hp-input { color: #1a6e1a; font-weight: bold; }
+}
+
+.rt-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.rt-toggle {
+  flex: 1;
+  text-align: left;
+  padding: 4px 8px;
+  border: 1px solid $rtRed;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9em;
+
+  &.rt-toggle--spent {
+    background: #ddd;
+    color: #888;
+    text-decoration: line-through;
+  }
+}
+
+.rt-hit-dice {
+  font-size: 0.85em;
+  color: #555;
+  margin-top: 4px;
+}
+
+.rt-reaction-toggle {
+  margin-top: 8px;
+  padding: 4px 8px;
+  border: 1px solid $rtRed;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9em;
+
+  &.rt-toggle--spent {
+    background: #ddd;
+    color: #888;
+    text-decoration: line-through;
+  }
+}
+
+.rt-checkboxes {
+  display: flex;
+  gap: 4px;
+
+  input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    min-width: unset;
+    cursor: pointer;
+  }
+}
+
+.rt-condition-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.rt-condition {
+  padding: 3px 8px;
+  border: 1px solid #aaa;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85em;
+  border-radius: 3px;
+
+  &.rt-condition--active {
+    background: $rtRed;
+    color: #fff;
+    border-color: $rtRed;
+  }
+}
+
+.rt-exhaustion {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  button { margin-bottom: 0; }
+
+  label { display: inline; margin: 0; }
+
+  input[type='number'] {
+    width: 50px;
+    text-align: center;
+    margin: 0;
+    min-width: unset;
+  }
+}
+
+.rt-page-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  max-width: 440px;
+  margin: 16px auto 8px;
+  padding: 8px 12px;
+  background: darken($rtParchment, 6%);
+  border: 1px solid $rtBorder;
+  border-radius: 3px;
+
+  #tracker-quantity {
+    width: 56px;
+    text-align: center;
+    margin: 0;
+    min-width: unset;
+  }
+
+  label[for='tracker-quantity'] {
+    display: inline;
+    margin: 0;
+    font-size: 0.9em;
+    color: #555;
+    white-space: nowrap;
+  }
+
+  // Keep the quantity label+input together as a wrappable unit
+  .rt-quantity-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  // Keep round display + buttons together — wraps as a unit
+  .rt-action-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+
+    button { margin-bottom: 0; }
+  }
+
+  .rt-round-display {
+    font-style: italic;
+    color: #555;
+    white-space: nowrap;
+    margin-right: auto;
+  }
+
+  .rt-btn {
+    padding: 6px 10px;
+    border: 1px solid $rtRed;
+    background: transparent;
+    color: $rtRed;
+    cursor: pointer;
+    font-variant: small-caps;
+    font-size: 0.95em;
+
+    &:hover { background: $rtRed; color: #fff; }
+    &--round { font-weight: bold; }
+  }
+}
+
+.rt-rest-type, .rt-last-roll {
+  font-size: 0.8em;
+  color: #666;
+  white-space: nowrap;
+}
+
+// Use grid on the section itself so all rows share the same column widths.
+// Checkboxes column is sized by the widest checkbox group; name takes the rest.
+.rt-section.rt-limited-use,
+.rt-section.rt-spell-slots {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 4px 8px;
+
+  h4 {
+    grid-column: 1 / -1;  // heading spans full width
+  }
+
+  .rt-row {
+    display: contents;  // rows participate in the parent grid directly
+  }
+}
+
+.rt-slot-label, .rt-ability-name {
+  font-size: 0.9em;
+}

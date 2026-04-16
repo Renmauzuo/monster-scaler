@@ -4,7 +4,8 @@
     "build": "npx gulp build",
     "watch": "npx gulp watch",
     "development": "NODE_ENV=development npx gulp rebuild",
-    "production": "NODE_ENV=production npx gulp rebuild"
+    "production": "NODE_ENV=production npx gulp rebuild",
+    "test": "vitest --run"
   },
   "dependencies": {
     "@toolkit5e/base": "file:../../toolkit5e/packages/base",
@@ -32,5 +33,9 @@
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0"
+  },
+  "devDependencies": {
+    "fast-check": "^4.6.0",
+    "vitest": "^0.34.6"
   }
 }

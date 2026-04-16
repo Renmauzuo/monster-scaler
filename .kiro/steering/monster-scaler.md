@@ -25,8 +25,9 @@ The site uses ES modules bundled by Rollup into IIFE bundles — one per page.
 - `statblock.js` — JSON statblock renderer page
 
 **Modules** (imported by entry points, not bundled standalone):
-- `global.js` — Shared UI logic: `scaleMonster` wrapper, `renderStatblock`, `populateSelect`, `serializeForm`, `deserializeQuery`, export functions
+- `global.js` — Shared UI logic: `renderStatblock`, `populateSelect`, `serializeForm`, `deserializeQuery`, export functions
 - `data.js` — Site-specific data only: `sidekickClasses`, `spellProgression`, `weaponTypes`, `magicSchools`, `alignmentStrings`
+- `resource-tracker.js` — Encounter resource tracker module: `initResourceTracker(statblock, targetElement, instanceNumber)` returns `{ applyRound, applyShortRest, applyLongRest }`. Used by `monsters.js` for the page-level encounter tracker.
 
 **Vendored** (copied as-is, not bundled):
 - `html2canvas.js` — PNG export library, loaded via `<script>` tag
@@ -63,7 +64,7 @@ Gulp tasks: `css`, `js`, `vendor`, `html`, `json`, `sounds`, `cacheBusting`.
 
 ## Known Gaps
 
-- `onClassChange` and `onLevelChange` are referenced via `data-on-change` in `sidekicks.pug` but not yet implemented.
+- `onClassChange` and `onLevelChange` are implemented in `sidekicks.js` but referenced via `data-on-change` attributes — they must remain assigned to `window` to work with the `data-on-change` dispatch mechanism.
 
 ## Dependency Management
 

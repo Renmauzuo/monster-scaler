@@ -274,7 +274,16 @@ When the monster or CR changes, or when the quantity input changes, all `rt-stat
 `extractResources(statblock)` scans four collections in order: `traits`, `actions`, `bonusActions`, `legendaryActions`. For each entry it applies the following classification rules (non-exclusive — an ability can be both a rest ability and a limited-use ability):
 
 ```
+// Special case: Legendary Resistance — classified as a Limited_Use_Ability, NOT a Rest_Ability
+if statblock.legendaryResistances is set and > 0:
+  → add to limitedUseAbilities:
+      { key: 'legendaryResistance', name: 'Legendary Resistance',
+        max: statblock.legendaryResistances, remaining: statblock.legendaryResistances,
+        recharge: 'long' }
+  → the 'legendaryResistance' trait key is added to a skip-set for the classification pass below
+
 for each (key, trait) in [traits, actions, bonusActions, legendaryActions]:
+  if key is in the skip-set (e.g. 'legendaryResistance'), skip this entry
 
   1. Recharge ability check:
      if trait.name matches /\(Recharge (\d)[–-]6\)/
@@ -288,6 +297,8 @@ for each (key, trait) in [traits, actions, bonusActions, legendaryActions]:
      if trait.description matches /(\d+)\/(day|encounter)/i
        → add to limitedUseAbilities with max = parseInt(capture group 1)
          and recharge = trait.recharge ?? null
+         Note: spell-like abilities (e.g. dryad's "3/day" spells) are correctly handled
+         here by the pattern on the trait description — no special-casing needed.
 ```
 
 HP initialisation:
@@ -370,14 +381,15 @@ Toggle button: `rt-toggle--available` when ready, `rt-toggle--spent` when spent.
 ```html
 <div class="rt-section rt-rest-abilities">
   <h4>Rest Abilities</h4>
-  <div class="rt-row" data-key="legendaryResistance">
+  <div class="rt-row" data-key="secondWind">
     <button class="rt-toggle rt-toggle--available">
-      Legendary Resistance
+      Second Wind
     </button>
-    <span class="rt-rest-type">Long Rest</span>
+    <span class="rt-rest-type">Short Rest</span>
   </div>
 </div>
 ```
+Note: Legendary Resistance is NOT rendered here — it appears in the Limited Use section as checkboxes (e.g. three checkboxes for "Legendary Resistance (3/Day)").
 
 ### Spell Slots Section
 ```html

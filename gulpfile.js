@@ -63,7 +63,7 @@ const css = () =>
 
 
 const js = () =>
-	gulp.src(['src/scripts/*.js', '!src/scripts/data.js', '!src/scripts/global.js', '!src/scripts/html2canvas.js'], { base: 'src' })
+	gulp.src(['src/scripts/*.js', '!src/scripts/data.js', '!src/scripts/global.js', '!src/scripts/html2canvas.js', '!src/scripts/*.test.js'], { base: 'src' })
 		.pipe(development($.sourcemaps.init()))
 		.pipe(rollup({
 			treeshake: false,

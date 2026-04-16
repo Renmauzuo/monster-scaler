@@ -2,6 +2,7 @@ import { monsterList, monsterSounds } from './data.js';
 import { averageStats, traits, mergeObjects, toTitleCase, abilityScoreModifier } from '@toolkit5e/base';
 import { scaleMonster } from '@toolkit5e/monster-scaler';
 import { setupVariantSelect, renderStatblock, serializeForm, deserializeQuery, populateSelect } from './global.js';
+import { initResourceTracker, clearInstanceKeys } from './resource-tracker.js';
 
 var monsterStats;
 
@@ -140,6 +141,58 @@ function calculateSelectedMonster() {
 
     //Once we have all the stats populate the statblock:
     renderStatblock(monsterStats);
+
+    // --- Resource Tracker ---
+    const quantity = parseInt(document.getElementById('tracker-quantity').value, 10) || 1;
+    const instancesContainer = document.getElementById('resource-tracker-instances');
+
+    // Clean up stale localStorage for the previous monster
+    if (window._rtPrevSlug) {
+      clearInstanceKeys(window._rtPrevSlug, window._rtPrevCr);
+    }
+    window._rtPrevSlug = monsterStats.slug ?? monsterStats.name;
+    window._rtPrevCr = monsterStats.cr ?? '0';
+
+    // Reset round counter
+    document.getElementById('rt-round-display').textContent = 'Round 1';
+    window._rtRound = 1;
+
+    // Create tracker instances
+    instancesContainer.innerHTML = '';
+    window._rtTrackers = [];
+    for (let i = 1; i <= quantity; i++) {
+      const el = document.createElement('div');
+      el.className = 'resource-tracker';
+      instancesContainer.appendChild(el);
+      window._rtTrackers.push(initResourceTracker(monsterStats, el, i));
+    }
+
+    // Wire page-level buttons (re-wire on each monster change)
+    document.getElementById('rt-btn-round').onclick = () => {
+      window._rtTrackers.forEach(t => t.applyRound());
+      window._rtRound = (window._rtRound || 1) + 1;
+      document.getElementById('rt-round-display').textContent = 'Round ' + window._rtRound;
+    };
+    document.getElementById('rt-btn-short-rest').onclick = () => {
+      window._rtTrackers.forEach(t => t.applyShortRest());
+    };
+    document.getElementById('rt-btn-long-rest').onclick = () => {
+      window._rtTrackers.forEach(t => t.applyLongRest());
+    };
+
+    // Wire quantity input to tear down and recreate instances
+    document.getElementById('tracker-quantity').onchange = () => {
+      const newQty = parseInt(document.getElementById('tracker-quantity').value, 10) || 1;
+      clearInstanceKeys(window._rtPrevSlug, window._rtPrevCr);
+      instancesContainer.innerHTML = '';
+      window._rtTrackers = [];
+      for (let i = 1; i <= newQty; i++) {
+        const el = document.createElement('div');
+        el.className = 'resource-tracker';
+        instancesContainer.appendChild(el);
+        window._rtTrackers.push(initResourceTracker(monsterStats, el, i));
+      }
+    };
 
     const sounds = monsterSounds[monsterID];
     if (sounds) {
