@@ -204,6 +204,7 @@ function buildSelectedSidekick() {
     }
 
     //Once we have all the stats populate the statblock:
+    window.monsterStats = sidekickStats;
     renderStatblock(sidekickStats);
 }
 
@@ -312,3 +313,6 @@ function onLevelChange(animated) {
         }
     });
 }
+
+window.onClassChange = onClassChange;
+window.onLevelChange = onLevelChange;

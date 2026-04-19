@@ -21,13 +21,14 @@ The site uses ES modules bundled by Rollup into IIFE bundles — one per page.
 
 **Entry points** (become standalone bundles):
 - `monsters.js` — Monster scaler page
+- `encounter.js` — Encounter tracker page
 - `sidekicks.js` — Sidekick builder page
 - `statblock.js` — JSON statblock renderer page
 
 **Modules** (imported by entry points, not bundled standalone):
 - `global.js` — Shared UI logic: `renderStatblock`, `populateSelect`, `serializeForm`, `deserializeQuery`, export functions
 - `data.js` — Site-specific data only: `sidekickClasses`, `spellProgression`, `weaponTypes`, `magicSchools`, `alignmentStrings`
-- `resource-tracker.js` — Encounter resource tracker module: `initResourceTracker(statblock, targetElement, instanceNumber)` returns `{ applyRound, applyShortRest, applyLongRest }`. Used by `monsters.js` for the page-level encounter tracker.
+- `resource-tracker.js` — Encounter resource tracker module: `initResourceTracker(statblock, targetElement, instanceNumber)` returns `{ applyRound, applyShortRest, applyLongRest }`. Used by `encounter.js`.
 
 **Vendored** (copied as-is, not bundled):
 - `html2canvas.js` — PNG export library, loaded via `<script>` tag
@@ -79,6 +80,7 @@ For callbacks and module-level helpers, a one-line `/** ... */` description is f
 - Wild shape bonuses (attack/damage bonuses, rider dice) are applied directly to the attack objects in `monsters.js` before calling `renderStatblock`, not inside the renderer. Use `atk.bonusAttack`, `atk.bonusDamage`, and `atk.damageRiderDice`/`atk.damageRiderDieSize`/`atk.damageRiderType` on each attack.
 - Statblock elements use classes (not IDs) so multiple statblocks can coexist on a page. The `exportFightClub` function reads rendered values from the DOM using class selectors (`.monster-name`, `.armor-class span`, etc.).
 - The `#legendary` select (None / 3 Resistances / 5 Resistances) passes `options.legendary` to `scaleMonster`. It is disabled and reset to "None" whenever the wild shape checkbox is active — legendary and wild shape are mutually exclusive. `serializeForm` skips it when set to `'0'` so it doesn't pollute clean URLs.
+- The "Add to Encounter" button in `monsters.js` pushes the current `monsterStats` statblock into `localStorage['encounter-list']` (a JSON array). The encounter page reads this array, renders one tracker per entry via `initResourceTracker`, and handles remove/clear. Instance numbers are assigned per-slug so duplicates get `#1`/`#2` labels while unique creatures show no number.
 
 ## Known Gaps
 
