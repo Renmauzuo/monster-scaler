@@ -112,18 +112,6 @@ append content
         p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
     #monster-stats.container
         .stat-block
-    #resource-tracker
-      .rt-page-controls
-        .rt-quantity-group
-            label(for='tracker-quantity') Trackers:
-            input#tracker-quantity(type='number' min='1' value='1')
-        .rt-action-group
-            span#rt-round-display.rt-round-display Round 1
-            button#rt-btn-round.rt-btn.rt-btn--round Next Round
-            button#rt-btn-short-rest.rt-btn Short Rest
-            button#rt-btn-long-rest.rt-btn Long Rest
-      #resource-tracker-instances
-
 append footer
     #sounds
         h2 Suggested Sounds 
@@ -135,6 +123,8 @@ append footer
     button#json(onclick="exportJSON()") Export as JSON
     br
     button#generate-image(onclick="generateImage()") Generate Image
+    br
+    button#add-to-encounter(onclick="addToEncounter()") Add to Encounter
     details
         summary Using this tool
         p This tool was created to scale certain monsters up or down a few levels to make them useable as summons or wild shape forms for a wider range of levels. Feel free to use this calculator however you like, though caution is advised when scaling low CR monsters up to very high levels, or vice versa. While stats like hp, damage, and ability scores are scaled up and down the tool currently does not adjust things like resistances, immunities, or legendary abilities. Scaling a high CR monster down to low levels may not be appropriate for a low level party as its abilities would still make it very powerful, while a low CR creature scaled up to very high levels may have appropriate stats but would lack the resistances and immunities commonly found at the higher CR. In particular be wary of scaling CR 0 monsters. Since the average stats for CR 0 are so low even a few points of variation can lead to a creature with vastly above average stat values at higher CRs.

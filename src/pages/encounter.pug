@@ -1,0 +1,24 @@
+extends ../pug/_base.pug
+
+append vars
+    - title = "Encounter Tracker";
+    - description = "Track resources for a mixed encounter in Dungeons and Dragons 5th edition.";
+
+append scripts
+    script(src='scripts/encounter.min.js')
+
+append content
+    #encounter-page.container
+        h2 Encounter Tracker
+        .rt-page-controls
+            .rt-action-group
+                span#rt-round-display.rt-round-display Round 1
+                .rt-buttons
+                    button#rt-btn-round.rt-btn.rt-btn--round Next Round
+                    button#rt-btn-short-rest.rt-btn Short Rest
+                    button#rt-btn-long-rest.rt-btn Long Rest
+                    button#rt-btn-clear.rt-btn.rt-btn--danger Clear All
+        #encounter-instances
+        p#encounter-empty(style='display:none') No creatures in the encounter. Use the 
+            a(href='monsters.html') Monster Scaler
+            |  to add some.

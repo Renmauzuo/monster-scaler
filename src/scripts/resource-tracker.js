@@ -181,7 +181,7 @@ export function extractResources(statblock, instanceNumber) {
   }
 
   return {
-    instanceLabel: `${statblock.name} #${instanceNumber}`,
+    instanceLabel: instanceNumber > 0 ? `${statblock.name} #${instanceNumber}` : statblock.name,
     maxHp,
     currentHp: maxHp,
     hitDiceMax: hitDice,
@@ -393,13 +393,7 @@ export function renderTracker(state, statblock, el) {
   // Clear existing content
   while (el.firstChild) el.removeChild(el.firstChild);
 
-  // 1. Panel label
-  const panelLabel = document.createElement('div');
-  panelLabel.className = 'rt-panel-label';
-  panelLabel.textContent = 'Encounter Tracker';
-  el.appendChild(panelLabel);
-
-  // 2. Header
+  // 1. Header
   const header = document.createElement('div');
   header.className = 'rt-header';
   const instanceLabel = document.createElement('span');
