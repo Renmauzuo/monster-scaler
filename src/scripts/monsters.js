@@ -160,20 +160,3 @@ function calculateSelectedMonster() {
     }
 
 }
-
-/**
- * Adds the current statblock to the encounter list in localStorage.
- */
-function addToEncounter() {
-    if (!monsterStats) return;
-    const list = JSON.parse(localStorage.getItem('encounter-list') ?? '[]');
-    list.push(monsterStats);
-    localStorage.setItem('encounter-list', JSON.stringify(list));
-    // Brief visual feedback
-    const btn = document.getElementById('add-to-encounter');
-    const orig = btn.textContent;
-    btn.textContent = 'Added!';
-    setTimeout(() => { btn.textContent = orig; }, 1000);
-}
-
-window.addToEncounter = addToEncounter;

@@ -47,11 +47,11 @@ function renderEncounter() {
     empty.style.display = 'none';
 
     list.forEach((statblock, index) => {
-    // Count how many of this same slug appear in the list
-    const slug = statblock.slug ?? statblock.name;
-    const sameSlugTotal = list.filter(s => (s.slug ?? s.name) === slug).length;
-    const instanceNumber = list.slice(0, index).filter(s => (s.slug ?? s.name) === slug).length + 1;
-    const showNumber = sameSlugTotal > 1;
+    // Count how many entries share the same name
+    const name = statblock.name;
+    const sameNameTotal = list.filter(s => s.name === name).length;
+    const instanceNumber = list.slice(0, index).filter(s => s.name === name).length + 1;
+    const showNumber = sameNameTotal > 1;
 
         const wrapper = document.createElement('div');
         wrapper.className = 'encounter-entry';

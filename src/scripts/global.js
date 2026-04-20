@@ -214,8 +214,25 @@ export function populateSelect(dataSource, selector) {
     }
 }
 
+/**
+ * Adds the current statblock (window.monsterStats) to the encounter list in localStorage.
+ */
+function addToEncounter() {
+    const statblock = window.monsterStats;
+    if (!statblock) return;
+    const list = JSON.parse(localStorage.getItem('encounter-list') ?? '[]');
+    list.push(statblock);
+    localStorage.setItem('encounter-list', JSON.stringify(list));
+    // Brief visual feedback
+    const btn = document.getElementById('add-to-encounter');
+    const orig = btn.textContent;
+    btn.textContent = 'Added!';
+    setTimeout(() => { btn.textContent = orig; }, 1000);
+}
+
 // Expose functions referenced by data-on-change attributes
 window.setupVariantSelect = setupVariantSelect;
 window.exportFightClub = exportFightClub;
 window.exportJSON = exportJSON;
 window.generateImage = generateImage;
+window.addToEncounter = addToEncounter;

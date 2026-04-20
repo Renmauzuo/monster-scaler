@@ -20,6 +20,8 @@ append content
 
 append footer
     button#fight-club(onclick="exportFightClub(intputStats)") Export as XML for Fight Club
+    br
+    button#add-to-encounter(onclick="addToEncounter()") Add to Encounter
     details
         summary Using this tool
         p This tool allows you to enter a JSON object of any creature/character and render it as a statblock. You can use #[a(href="resources/sample-statblock.json") this file] for an example of a basic statblock.

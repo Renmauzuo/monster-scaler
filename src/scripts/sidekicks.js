@@ -1,7 +1,7 @@
 import { monsterList, sidekickClasses, weaponTypes, spellProgression } from './data.js';
 import { setupVariantSelect, renderStatblock, serializeForm, deserializeQuery, populateSelect } from './global.js';
 import { scaleMonster } from '@toolkit5e/monster-scaler';
-import { abilityScoreModifier, mergeObjects, toTitleCase, toSentenceCase, damageString, sizes, abilities, skills, averageStats, armorTypes } from '@toolkit5e/base';
+import { abilityScoreModifier, mergeObjects, toTitleCase, toSentenceCase, damageString, sizes, abilities, skills, averageStats, armorTypes, traits, actions } from '@toolkit5e/base';
 
 let sidekickStats;
 $(function () {
