@@ -1,0 +1,6 @@
+docs/
+node_modules/
+
+# Pug — community plugin can be unpredictable
+src/pages/
+src/pug/
