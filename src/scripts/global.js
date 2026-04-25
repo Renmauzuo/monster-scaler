@@ -1,6 +1,6 @@
 import {
     sizes,
-    typeHumanoid, raceAny,
+    creatureTypes, raceKeys,
     toTitleCase,
 } from '@toolkit5e/base';
 
@@ -41,7 +41,7 @@ export function setupVariantSelect(animated) {
         $('#variant-wrapper').fadeOut(animationDuration);
     }
 
-    if (selectedMonster.type === typeHumanoid && selectedMonster.race === raceAny) {
+    if (selectedMonster.type === creatureTypes.humanoid && selectedMonster.race === raceKeys.any) {
         $('#race-wrapper').fadeIn(animationDuration);
     } else {
         $('#race-wrapper').fadeOut(animationDuration);

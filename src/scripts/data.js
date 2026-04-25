@@ -1,4 +1,4 @@
-import { skills, skillRankExpert, spells, sizes } from '@toolkit5e/base';
+import { skills, skillRanks, spells, sizes } from '@toolkit5e/base';
 import { monsterList } from '@toolkit5e/monster-scaler';
 
 export { monsterList };
@@ -91,7 +91,7 @@ export const sidekickClasses = {
                         return skillList;
                     },
                     result: (statblock, value) => {
-                        for (let i = 0; i < value.length; i++) { statblock.skills[value[i]] = skillRankExpert; }
+                        for (let i = 0; i < value.length; i++) { statblock.skills[value[i]] = skillRanks.expert; }
                     },
                 }],
             },
