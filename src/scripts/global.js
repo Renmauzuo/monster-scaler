@@ -1,6 +1,6 @@
 import {
     sizes,
-    creatureTypes, raceKeys,
+    creatureTypes, raceKeys, races,
     toTitleCase,
 } from '@toolkit5e/base';
 
@@ -8,6 +8,11 @@ import { monsterList } from '@toolkit5e/monster-scaler';
 import { renderStatblock as renderStatblockPackage } from '@toolkit5e/statblock';
 
 $(function () {
+
+    // Populate the race dropdown from the races data
+    for (let i = 0; i < races.length; i++) {
+        $('<option value=' + i + '>' + toTitleCase(races[i].name) + '</option>').appendTo('#race-select');
+    }
 
     $('[data-on-change]').on('change', function () {
         window[$(this).data('on-change')](true);

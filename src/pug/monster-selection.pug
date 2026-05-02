@@ -1,11 +1,9 @@
 #monster-wrapper
     label(for='monster-select') Monster Template:
-    select#creature(name='monster-select' data-source='monsterList' data-on-change='setupVariantSelect')
+    select#creature(name='monster-select' data-on-change='setupVariantSelect')
 #variant-wrapper 
     label(for='variant-select' data-depends-on='monster-select') Variant:
     select#variant(name='variant-select')
 #race-wrapper 
     label(for='race-select') Race:
     select#race-select(name='race-select')
-        each val, index in ['Any Race', 'Dwarf', 'Human']
-            option(value=index)= val

@@ -15,6 +15,7 @@ $(function () {
         $('#legendary').val('0').prop('disabled', true);
     }
 
+    updateAlignmentVisibility();
 
     $('#wild-shape').on('change', function () {
         if ($(this)[0].checked) {
@@ -29,9 +30,28 @@ $(function () {
     //Pretty much any input change means a recalculation
     $('input,select').on('change', calculateSelectedMonster);
 
+    // Update alignment visibility when creature or variant changes
+    $('#creature').on('change', updateAlignmentVisibility);
+    $(document).on('change', '#variant', updateAlignmentVisibility);
+
     calculateSelectedMonster();
 
 });
+
+/**
+ * Shows or hides the alignment dropdown based on the selected creature's default alignment.
+ * Hidden for creatures with alignment "unaligned" since alignment doesn't apply to them.
+ */
+function updateAlignmentVisibility() {
+    let monsterID = $('#creature').val();
+    let template = monsterList[monsterID];
+    if (template && template.alignment !== 'unaligned') {
+        $('#alignment-wrapper').show();
+    } else {
+        $('#alignment-wrapper').hide();
+        $('#alignment').val('');
+    }
+}
 
 /**
  * Scales monster stats based on the selected template and challenge rating.
@@ -67,6 +87,12 @@ function calculateSelectedMonster() {
     //Apply any customizations to the derived statblock
     if (customGender) {
         monsterStats.gender = customGender;
+    }
+
+    // Apply alignment override if selected
+    let customAlignment = $('#alignment').val();
+    if (customAlignment) {
+        monsterStats.alignment = customAlignment;
     }
 
     if (customName) {
