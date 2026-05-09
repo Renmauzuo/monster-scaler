@@ -27,7 +27,7 @@ select,input {
 
 //I think it looks better to have the CR dropdown after the monster type dropdown
 //But not all places with the monster selection will have CR selection so it's left out of the include. Instead we reorder it.
-#variant-wrapper, #race-wrapper {
+#variant-wrapper, #race-wrapper, #lineage-wrapper {
     display: none;
     order: 1;
 }
@@ -53,7 +53,7 @@ input {
 
 }
 
-#wild-shape-wrapper, #alignment-wrapper {
+#wild-shape-wrapper, #alignment-wrapper, #advanced-options-wrapper {
     display: none;
 }
 

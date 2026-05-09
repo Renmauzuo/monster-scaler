@@ -1,7 +1,7 @@
 import { monsterList, monsterSounds } from './data.js';
 import { averageStats, traits, mergeObjects, toTitleCase, abilityScoreModifier } from '@toolkit5e/base';
 import { scaleMonster } from '@toolkit5e/monster-scaler';
-import { setupVariantSelect, renderStatblock, serializeForm, deserializeQuery, populateSelect } from './global.js';
+import { setupVariantSelect, setupLineageSelect, renderStatblock, serializeForm, deserializeQuery, populateSelect } from './global.js';
 
 var monsterStats;
 window.monsterStats = null;
@@ -24,6 +24,14 @@ $(function () {
         } else {
             $('#wild-shape-wrapper').slideUp();
             $('#legendary').prop('disabled', false);
+        }
+    });
+
+    $('#advanced-options').on('change', function () {
+        if ($(this)[0].checked) {
+            $('#advanced-options-wrapper').slideDown();
+        } else {
+            $('#advanced-options-wrapper').slideUp();
         }
     });
 
@@ -69,7 +77,10 @@ function calculateSelectedMonster() {
         options.variant = $('#variant').val();
     }
     if ($('#race-select').is(':visible')) {
-        options.race = $('#race-select').val();
+        options.race = parseInt($('#race-select').val());
+    }
+    if ($('#lineage-select').is(':visible')) {
+        options.lineage = parseInt($('#lineage-select').val());
     }
     const legendaryVal = parseInt($('#legendary').val());
     if (legendaryVal === 3 || legendaryVal === 5) {
@@ -122,15 +133,6 @@ function calculateSelectedMonster() {
         wildShapeStats.abilityModifiers.wis = abilityScoreModifier(wildShapeStats.wis);
         wildShapeStats.abilityModifiers.cha = abilityScoreModifier(wildShapeStats.cha);
 
-        if ($('#ws-resists').val().length) {
-            wildShapeStats.resistances = $('#ws-resists').val();
-        }
-        if ($('#ws-immunities').val().length) {
-            wildShapeStats.immunities = $('#ws-immunities').val();
-        }
-        if ($('#ws-condition-immunities').val().length) {
-            wildShapeStats.conditionImmunities = $('#ws-condition-immunities').val();
-        }
         if ($('#ws-saves').val().length) {
             wildShapeStats.saves = $('#ws-saves').val();
         }
@@ -162,8 +164,22 @@ function calculateSelectedMonster() {
                 atk.damageRiderType = wsRiderType;
             }
         }
+    }
 
-
+    // Apply advanced options — extra resistances/immunities added on top of existing ones
+    if ($('#advanced-options')[0].checked) {
+        const extraResists = $('#extra-resists').val();
+        if (extraResists && extraResists.length) {
+            monsterStats.resistances = [...new Set([...(monsterStats.resistances || []), ...extraResists])];
+        }
+        const extraImmunities = $('#extra-immunities').val();
+        if (extraImmunities && extraImmunities.length) {
+            monsterStats.immunities = [...new Set([...(monsterStats.immunities || []), ...extraImmunities])];
+        }
+        const extraConditionImmunities = $('#extra-condition-immunities').val();
+        if (extraConditionImmunities && extraConditionImmunities.length) {
+            monsterStats.conditionImmunities = [...new Set([...(monsterStats.conditionImmunities || []), ...extraConditionImmunities])];
+        }
     }
 
     //Once we have all the stats populate the statblock:

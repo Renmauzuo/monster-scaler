@@ -48,8 +48,29 @@ export function setupVariantSelect(animated) {
 
     if (selectedMonster.type === creatureTypes.humanoid && selectedMonster.race === raceKeys.any) {
         $('#race-wrapper').fadeIn(animationDuration);
+        setupLineageSelect(animated);
     } else {
         $('#race-wrapper').fadeOut(animationDuration);
+        $('#lineage-wrapper').fadeOut(animationDuration);
+    }
+}
+
+/**
+ * Shows or hides the lineage dropdown based on the selected race, and populates it with lineage options.
+ * @param {boolean} animated Whether or not to animate the show/hide
+ */
+export function setupLineageSelect(animated) {
+    let animationDuration = animated ? 400 : 0;
+    let raceIndex = parseInt($('#race-select').val());
+    let selectedRace = races[raceIndex];
+    if (selectedRace && selectedRace.lineages && selectedRace.lineages.length > 0) {
+        $('#lineage-select').empty();
+        for (let i = 0; i < selectedRace.lineages.length; i++) {
+            $('<option value=' + i + '>' + selectedRace.lineages[i].name + '</option>').appendTo('#lineage-select');
+        }
+        $('#lineage-wrapper').fadeIn(animationDuration);
+    } else {
+        $('#lineage-wrapper').fadeOut(animationDuration);
     }
 }
 
@@ -237,6 +258,7 @@ function addToEncounter() {
 
 // Expose functions referenced by data-on-change attributes
 window.setupVariantSelect = setupVariantSelect;
+window.setupLineageSelect = setupLineageSelect;
 window.exportFightClub = exportFightClub;
 window.exportJSON = exportJSON;
 window.generateImage = generateImage;

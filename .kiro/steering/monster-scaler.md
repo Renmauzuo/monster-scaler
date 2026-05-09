@@ -73,7 +73,7 @@ For callbacks and module-level helpers, a one-line `/** ... */` description is f
 
 ## Key Conventions
 
-- `data-on-change="fnName"` attributes on inputs/selects call `window[fnName](animated)` on change. Any function used this way must be explicitly assigned to `window` at the bottom of the module that defines it. Currently: `window.setupVariantSelect`.
+- `data-on-change="fnName"` attributes on inputs/selects call `window[fnName](animated)` on change. Any function used this way must be explicitly assigned to `window` at the bottom of the module that defines it. Currently: `window.setupVariantSelect`, `window.setupLineageSelect`.
 - Inline `onclick` attributes in pug (export buttons) also require window assignment: `window.exportFightClub`, `window.exportJSON`, `window.generateImage`.
 - `global.js` wraps the package's `scaleMonster(template, cr, options)` with a site-local version that accepts a `monsterID` string and does the `monsterList` lookup internally.
 - `renderStatblock` in `global.js` is a thin wrapper around the package's `renderStatblock`, passing `document.querySelector('.stat-block')` as the target element. The statblock container is just a bare `.stat-block` div in each page's pug — the renderer builds all DOM itself.

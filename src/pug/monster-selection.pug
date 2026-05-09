@@ -6,4 +6,7 @@
     select#variant(name='variant-select')
 #race-wrapper 
     label(for='race-select') Race:
-    select#race-select(name='race-select')
+    select#race-select(name='race-select' data-on-change='setupLineageSelect')
+#lineage-wrapper
+    label(for='lineage-select') Lineage:
+    select#lineage-select(name='lineage-select')

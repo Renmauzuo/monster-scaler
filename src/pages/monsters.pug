@@ -75,22 +75,6 @@ append content
                         select#ws-rider-type(name='ws-rider-type')
                             each val in damageTypes
                                 option(value=val.toLowerCase())= val
-                .form-row 
-                    div 
-                        label(for='ws-resists') Resistances:
-                        select#ws-resists(name='ws-resists' multiple)
-                            each val in damageTypes
-                                option= val
-                    div 
-                        label(for='ws-immunities') Immunities:
-                        select#ws-immunities(name='ws-immunities' multiple)
-                            each val in damageTypes
-                                option= val
-                    div 
-                        label(for='ws-condition-immunities') Condition Immunities:
-                        select#ws-condition-immunities(name='ws-condition-immunities' multiple)
-                            each val in conditions
-                                option(value=val.toLowerCase())= val
                 .form-row
                     div
                         label(for='ws-saves') Saves:
@@ -109,6 +93,25 @@ append content
                         input#ws-hp-bonus(name='ws-hp-bonus' type='number' step="1" min="0" value="0")
                 input#magic-attacks(type="checkbox" name="magic-attacks")
                 label(for="magic-attacks") Magic Attacks
+            input#advanced-options(type="checkbox" name="advanced-options")
+            label(for="advanced-options") Advanced Options
+            #advanced-options-wrapper
+                .form-row 
+                    div 
+                        label(for='extra-resists') Extra Resistances:
+                        select#extra-resists(name='extra-resists' multiple)
+                            each val in damageTypes
+                                option(value=val.toLowerCase())= val
+                    div 
+                        label(for='extra-immunities') Extra Immunities:
+                        select#extra-immunities(name='extra-immunities' multiple)
+                            each val in damageTypes
+                                option(value=val.toLowerCase())= val
+                    div 
+                        label(for='extra-condition-immunities') Extra Condition Immunities:
+                        select#extra-condition-immunities(name='extra-condition-immunities' multiple)
+                            each val in conditions
+                                option(value=val.toLowerCase())= val
         p If you don&apos;t see a particular monster listed look for a similar monster of a different CR. Some default monsters have been condensed as they are already very similar. A Dire Wolf is just a CR 1 wolf, for example.
     #monster-stats.container
         .stat-block
