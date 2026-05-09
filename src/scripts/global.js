@@ -238,6 +238,9 @@ export function populateSelect(dataSource, selector) {
             $('<option value=' + key + '>' + (dataSource[key].name || toTitleCase(key)) + '</option>').appendTo(selector);
         }
     }
+    $(selector).html($(selector).find('option').sort(function(a, b) {
+        return $(a).text().toLowerCase() > $(b).text().toLowerCase() ? 1 : -1;
+    }));
 }
 
 /**
