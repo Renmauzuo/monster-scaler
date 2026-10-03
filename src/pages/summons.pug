@@ -1,0 +1,47 @@
+extends ../pug/_base.pug
+
+append vars
+    - title = "Summon Spirit Calculator";
+    - description = "Tool for generating statblocks for the Tasha's Cauldron of Everything summon spells in Dungeons and Dragons 5th edition.";
+
+append scripts
+    script(src='scripts/html2canvas.min.js')
+    script(src='scripts/summons.min.js')
+
+append content
+    #summon-selector.container
+        h2 Summon a spirit
+        p Generates a statblock for the Tasha&apos;s Cauldron of Everything summon spells. Enter the spell slot level you&apos;re casting at and your spell attack modifier and spell save DC, and the spirit&apos;s stats will be filled in accordingly.
+        form#summon-form
+            .form-row
+                #summon-wrapper
+                    label(for='summon-select') Summon Spell:
+                    select#summon-select(name='summon-select' data-on-change='setupOptionSelect')
+                #summon-option-wrapper
+                    label(for='summon-option') Form:
+                    select#summon-option(name='summon-option')
+            .form-row
+                div
+                    label(for='spell-level') Spell Level (min #[span#min-level]):
+                    input#spell-level(name='spell-level' type='number' step='1' min='1' max='9' value='1')
+                div
+                    label(for='spell-attack') Spell Attack Modifier:
+                    input#spell-attack(name='spell-attack' type='number' step='1' value='5')
+                div
+                    label(for='spell-dc') Spell Save DC:
+                    input#spell-dc(name='spell-dc' type='number' step='1' value='13')
+    #summon-stats.container
+        .stat-block
+append footer
+    p
+        a(id="direct-link" href="/") Direct link
+    button#fight-club(onclick="exportFightClub(summonStats)") Export as XML for Fight Club
+    br
+    button#json(onclick="exportJSON(summonStats)") Export as JSON
+    br
+    button#generate-image(onclick="generateImage()") Generate Image
+    br
+    button#add-to-encounter(onclick="addToEncounter()") Add to Encounter
+    details
+        summary Using this tool
+        p The summon spells from Tasha&apos;s Cauldron of Everything use a single stat block whose armor class, hit points, number of attacks, and damage scale with the level of the spell slot you use, while the attack rolls and save DCs come from your own spell attack modifier and spell save DC. Pick the spell, choose the form (the subtype you select when casting), then enter the slot level and your caster stats. The generated stat block updates live and can be exported or added to the encounter tracker.
